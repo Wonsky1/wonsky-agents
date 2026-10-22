@@ -1,0 +1,3 @@
+- Before writing dish names from the receipt/menu, first search existing restaurant notes for a similar/common dish name and reuse that normalized wording when possible.
+- Use consistent English dish types; prefer this set: appetizer, main, dessert, cocktail, drink, pizza, pasta, seafood, soup, salad, side, snack, cake, course; prefer `appetizer` over `starter` and avoid localized variants like `закуска`.
+- Before filling a restaurant note, ask for `would_return` and both overall restaurant ratings if the user has not already provided them.

@@ -1,0 +1,4 @@
+- Before creating a product note, search existing product notes for matching category, subcategory, brand, and store spellings; reuse the normalized wording when possible.
+- Prefer existing English category and subcategory names for food products; if none exist, use a simple English singular/plural phrase that reads naturally in wikilinks.
+- For stores, reuse the existing capitalization from the vault, for example `Lidl`, `Auchan`, `Żabka`, or `Any`.
+- If the user provides a product photo and wants it embedded, copy the image into the vault's resource/attachment location first, then insert the Obsidian embed under the `## 📸 Фото` section.

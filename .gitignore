@@ -1,0 +1,19 @@
+# Operating system and Python artifacts
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local configuration and personal review history
+.env
+.env.*
+!.env.example
+skills/github-pr-review/reviewer-preferences.md
+
+# Local scratch files
+work/
+*.log
