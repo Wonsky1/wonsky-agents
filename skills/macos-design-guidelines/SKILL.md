@@ -11,6 +11,24 @@ metadata:
 
 Mac apps serve power users who expect deep keyboard control, persistent menu bars, resizable multi-window layouts, and tight system integration. These guidelines codify Apple's HIG into actionable rules with SwiftUI and AppKit examples.
 
+## Version compatibility (required)
+
+Before applying examples, establish the project's minimum macOS deployment target, the build SDK/Xcode version, and the runtime OS. Read the user’s requested support range, MACOSX_DEPLOYMENT_TARGET in project/xcconfig settings, Package.swift and CI configuration. Resolve conflicting targets before implementation. On macOS, sw_vers -productVersion reports only the host OS; never use it as the deployment target. If the target remains unknown, ask the user rather than assuming the latest release.
+
+| Supported version | Guidance |
+|---|---|
+| macOS 11–12 | Use APIs available at the actual minimum; retain compatible NavigationView/AppKit implementations where newer navigation is unavailable. |
+| macOS 13 | NavigationSplitView/NavigationStack are available; retain ObservableObject-based state when supporting releases before macOS 14. |
+| macOS 14–15 | Observation is available; choose state ownership to match the project and its minimum target. Use native materials without requiring Liquid Glass APIs. |
+| macOS 26 | Standard controls adapt to the new design with an appropriate SDK. Custom Liquid Glass requires an explicit user request, compatible SDK, runtime availability checks and a functional older-system fallback. |
+| macOS 27 or later | Verify the exact API availability and design changes in current Apple documentation and the installed SDK; do not extrapolate availability from macOS 26. |
+
+The matrix identifies API milestones, not complete version profiles. Check every API used, including window and toolbar modifiers. Use #available or @available with functional fallbacks for APIs newer than the deployment target. Runtime checks do not make unknown symbols compile against an older SDK; avoid those symbols or use verified compile-time conditions. Do not raise the deployment target or migrate unrelated code without user intent. Accessibility, keyboard support and native window behavior apply across versions.
+
+Keep one portable skill containing all supported branches. Select guidance when working on a project; installation must not rewrite the skill for the installing computer. For SwiftUI work also read ../swiftui-expert-skill/SKILL.md.
+
+Sources: [Apple navigation compatibility](https://developer.apple.com/documentation/technotes/tn3154-adopting-swiftui-navigation-split-view), [Apple Observation migration](https://developer.apple.com/documentation/swiftui/migrating-from-the-observable-object-protocol-to-the-observable-macro), [SwiftUI new design in macOS 26](https://developer.apple.com/videos/play/wwdc2025/323/), [SDK-dependent standard control appearance](https://developer.apple.com/videos/play/wwdc2025/102/), [AppKit changes in macOS 27](https://developer.apple.com/videos/play/wwdc2026/289/).
+
 ---
 
 ## 1. Menu Bar (CRITICAL)

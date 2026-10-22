@@ -1,0 +1,32 @@
+name: Installer compatibility
+
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+jobs:
+  installer:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ['3.9', '3.14']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Installer tests (temporary homes only)
+        run: python -B -m unittest discover -s tests -v
+      - name: Context helper tests
+        if: runner.os != 'Windows'
+        run: python -B -m unittest discover -s skills/repository-context/scripts/tests -v
+      - name: Native Unix launcher
+        if: runner.os != 'Windows'
+        run: sh install.sh --dry-run --targets codex
+      - name: Native Windows launcher
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: .\install.ps1 --dry-run --targets codex
