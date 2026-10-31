@@ -7,15 +7,17 @@ description: Creates pytest unit tests for changed files. Detects staged/unstage
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 ## Philosophy
 
-Tests verify **what the code should do**, not what it currently does. If a test for correct behavior fails, **fix the source code**, not the test.
+Tests verify **what the code should do**, not what it currently does. If a test for correct behavior fails, identify the source defect rather than weakening the assertion. Apply the fix only within authorized remediation scope.
 
 ## Scope
 
-Only test files that have been changed. Don't waste time testing unchanged code.
+Use this workflow only when the user requested test creation/execution, within the approved write scope. A review-only delegation inspects and reports without test or source writes. Fix source only when remediation is also authorized; otherwise report the failing contract.
+
+Focus on changed behavior and its affected consumers, including relevant existing tests. Unchanged test files can contain the regression that matters; do not select checks solely by whether their files changed.
 
 ## Workflow
 
@@ -122,7 +124,7 @@ def make_task(*, chat_id="123", url="https://example.com", name="test", **overri
 
 ### Step 5: Write tests
 
-1. **Use `pytest` style** — plain functions or classes, `@pytest.mark.asyncio` for async.
+1. **Use the project's pytest conventions** — plain functions or classes. For async tests, use the configured plugin/mode and fixtures (for example pytest-asyncio or AnyIO); do not add a competing marker or plugin by default.
 2. **Arrange-Act-Assert** — clear separation.
 3. **One logical assertion per test** — multiple `assert` fine if verifying same behavior.
 4. **No implementation leakage** — don't assert on private internals or execution order unless that IS the contract.
@@ -161,16 +163,16 @@ Detect the project's test runner:
 | `Pipfile.lock` exists | `pipenv run pytest ...` |
 | None of the above | `pytest ...` |
 
-**Only run test files you created/modified:**
+**Select relevant checks:** include new/modified tests and existing tests of the changed behavior, affected callers and public contracts. Use the actual configured runner; the commands below show arguments, not a second `pytest` token. Expand to a broader suite when risk or user-requested verification warrants it. Record the selection and limits.
 
 ```bash
-<runner> pytest path/to/test_file.py -v
+<pytest-command> path/to/test_file.py -v
 ```
 
 Specific test:
 
 ```bash
-<runner> pytest path/to/test_file.py::TestClassName::test_method -v
+<pytest-command> path/to/test_file.py::TestClassName::test_method -v
 ```
 
 ### Step 7: Triage failures
@@ -184,7 +186,7 @@ Test fails
   └── Source code doesn't meet its contract → Fix the source code
 ```
 
-**If the source code is wrong, fix the source code, not the test.**
+**If the source code is wrong and remediation is authorized, fix it rather than weakening the test. Otherwise report the defect and retain the failing evidence.**
 
 After fixing, re-run your tests plus any existing tests for the same module to avoid regressions.
 
@@ -193,7 +195,7 @@ After fixing, re-run your tests plus any existing tests for the same module to a
 - **Snapshot testing the implementation** — Don't assert on whatever it returns today. That tests nothing.
 - **Testing private methods directly** — Test the public interface.
 - **Mocking the unit under test** — Mock its dependencies, not the function you're testing.
-- **Ignoring async** — If the function is `async`, use `@pytest.mark.asyncio`.
+- **Ignoring async configuration** — Use the project's configured async plugin, markers/mode and fixtures; a universal asyncio marker can select the wrong runner.
 - **Hardcoding flaky values** — Don't use `datetime.utcnow()` in assertions.
 
 ## Related skills

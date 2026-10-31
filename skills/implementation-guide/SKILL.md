@@ -7,17 +7,19 @@ description: Guides production-quality code implementation following SOLID princ
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 You are a senior developer implementing tasks from a Task Breakdown against an Architecture Proposal. Your code is production-grade — maintainable, testable, and readable by the next developer.
 
 ## Hard Gates
 
+Apply test creation/execution gates only when the user requested testing or verification and host instructions permit it. Do not treat an implementation or review request alone as permission to add/run tests; report the resulting evidence limits. User/host instructions supersede the default TDD workflow.
+
 Stop and satisfy these **before** writing implementation code or declaring work done:
 
 1. **Bug fix with unknown root cause** — Do not patch symptoms. Stop and use `~/.wonsky-agents/skills/systematic-debugging/SKILL.md` until you understand the root cause.
 2. **Task changes behavior** — Invoke `~/.wonsky-agents/skills/test-driven-development/SKILL.md`: write or update a **failing** test that encodes the desired behavior, then implement until it passes.
-3. **Before claiming the task is complete** — Run the task’s verification command **fresh** (not from memory). Follow `~/.wonsky-agents/skills/verification-before-completion/SKILL.md`: run the command, capture output, and report it.
+3. **Before claiming the task is complete** — Use applicable current verification evidence; rerun when the tested inputs changed or the user requests it. Follow `~/.wonsky-agents/skills/verification-before-completion/SKILL.md`: run the command, capture output, and report it.
 
 ## Before You Begin
 
@@ -28,11 +30,11 @@ Stop and satisfy these **before** writing implementation code or declaring work 
 
 ## Code Structure Rules
 
-Apply these as defaults only where relevant to the task and the approved project architecture. Repository-specific guidance governs existing boundaries and conventions. A small change does not authorize introducing unrelated layers, patterns or file splits.
+For Python work, first read [references/python-structure.md](references/python-structure.md) and carry its concrete ownership/import rules through implementation and review. Respect user instructions and surface conflicts with existing repository guidance. Small changes still obey separation; they do not authorize unrelated refactoring, speculative layers or silent public-API breaks.
 
 ### One Concern Per File
 
-Each class, strategy, repository, or schema gets its own file. No 500-line god-files.
+Group code by responsibility. A short module can still mix unrelated concerns; class count or line count does not prove cohesion. For Python ownership and layout, apply the shared reference above.
 
 ```
 # GOOD — each concern isolated
@@ -64,7 +66,7 @@ class OrderService:
         self._pricing = get_global_config()
 ```
 
-Wire concrete implementations at the **composition root** (app startup / DI container).
+Assign composition and resource lifecycle a deliberate owner outside business behavior. Apply the Python reference for its concrete placement and entry-point boundaries.
 
 ### Layered Dependency Direction
 
@@ -82,7 +84,7 @@ No layer imports from a layer above it.
 
 - Order: standard library → third-party → local / application (one blank line between groups).
 - Follow the project’s convention for absolute vs relative imports; stay consistent within a module.
-- Avoid wildcard imports except where the project standard allows them.
+- Apply the selected language contract and preserve existing public APIs unless their migration is authorized.
 
 ### Type Everything
 
@@ -92,31 +94,7 @@ No layer imports from a layer above it.
 
 ### Circular Import Prevention
 
-- Registry must NOT import from the strategy package `__init__`.
-- Strategy `__init__.py` should be empty — side-effect imports belong in the composition root.
-
-## Directory Structure Template
-
-Adapt to complexity. Not every service needs every folder.
-
-```
-{module}/
-├── __init__.py              # Public API exports only
-├── service.py               # Orchestrator
-├── models/
-│   ├── domain.py            # Pure domain objects (no ORM, no framework)
-│   ├── db.py                # ORM models (if applicable)
-│   └── schemas.py           # API-layer DTOs
-├── repositories/
-│   ├── base.py              # Abstract interface
-│   └── {name}_repository.py
-└── strategies/              # Only if Strategy pattern is used
-    ├── base.py
-    ├── registry.py          # Only if Registry pattern is used
-    └── {name}.py            # One per strategy
-```
-
-**Scale the structure to the problem.** A module with one query doesn't need `repositories/base.py` with an abstract interface.
+Keep dependency direction explicit. Resolve cycles through responsibility boundaries rather than hidden initialization side effects. The Python structure reference owns package initialization, imports and its proportionate directory example.
 
 ## Patterns and SOLID Compliance
 
@@ -134,11 +112,12 @@ The Architecture Proposal selected specific patterns (Strategy, Registry, Reposi
 
 For each task:
 
-- [ ] **Hard gates:** Unknown-cause bug → systematic debugging first; behavior change → TDD with failing test first; completion → fresh verification with reported output
+- [ ] **Hard gates:** Unknown-cause bug → systematic debugging first; authorized test work → TDD with failing test first; completion → current scoped evidence and disclosed limits
 - [ ] Read the task's target files and understand surrounding code
 - [ ] Follow existing project patterns (naming, error handling, logging conventions)
-- [ ] One concern per file — split if a file grows beyond its responsibility
-- [ ] All dependencies injected via constructor
+- [ ] For Python, the shared structure reference was read and its implementation/review evidence recorded
+- [ ] Mechanical structure findings/errors reviewed plus semantic cohesion/dependency-direction review; tests alone are insufficient
+- [ ] Dependencies passed explicitly through constructors or focused function parameters; concrete provision has a deliberate owner
 - [ ] Public methods typed and documented (only non-obvious intent, not narration)
 - [ ] Error handling: catch specific exceptions, log with context, re-raise or return meaningful errors
 - [ ] No hardcoded values in business logic — use config objects
@@ -149,13 +128,11 @@ For each task:
 
 | Anti-Pattern | Do Instead |
 |-------------|------------|
-| God file with multiple classes | One concern per file |
-| Module-level instantiation | Constructor injection, wire at composition root |
+| Mixed responsibilities in one module | Focused owners regardless of file length; apply the selected language contract |
 | Bare `except` / `except Exception` that swallows | Catch specific exceptions, always log |
-| Helper functions floating in module scope | Static methods or private methods on the owning class |
+| Unrelated helper sprawl | Focused pure functions or methods with clear ownership; no forced wrapper classes |
 | Hardcoded config in business logic | Config objects with defaults |
 | Accessing private members (`service._repo`) | Expose public API methods |
-| Fat `__init__.py` with eager imports | Keep minimal; import explicitly where needed |
 | Fixing unknown-cause bugs directly | Investigate root cause first (`~/.wonsky-agents/skills/systematic-debugging/SKILL.md`) |
 | Declaring task done without verification | Run the verification command and report output (`~/.wonsky-agents/skills/verification-before-completion/SKILL.md`) |
 
@@ -163,4 +140,4 @@ For each task:
 
 When implementation for the scoped work is done:
 
-**"Implementation complete. Request code review if this was a major task (`~/.wonsky-agents/skills/requesting-code-review/SKILL.md`), then proceed with `~/.wonsky-agents/skills/quality-gate/SKILL.md`."**
+**"Implementation verified; report the required repository-context outcome (updated, verified-current, draft-awaiting-review, pending-approval or declined). Request code review if this was a major task (`~/.wonsky-agents/skills/requesting-code-review/SKILL.md`), then proceed with `~/.wonsky-agents/skills/quality-gate/SKILL.md`."**

@@ -163,33 +163,35 @@ Examples:
   "correlations": [
     {
       "trigger": { "lane": "hangs"|"hitches", "start_ms", "end_ms", "duration_ms",
-                   "hang_type"|"frame_duration_ms" },
+                   "hang_type"|"frame_duration_ms", "process": {"pid", "name"} },
       "time_profiler_main_thread": {
         "samples_in_window": N, "samples_on_main": M,
         "main_running_coverage_pct": 0–100,
         "hot_symbols": [ { "symbol", "samples", "weight_ms", "percent_of_main" } ]
       },
-      "swiftui_overlapping_updates": [ { "view", "duration_ms", "start_ms" } ]
+      "swiftui_overlapping_updates": [ { "view", "duration_ms", "start_ms" } ],
+      "notes": [ "explanation when process attribution is unavailable" ]
     }
   ]
 }
 ```
 
+Correlation fields are conditional: an unavailable process match omits the corresponding metrics/updates and adds a note. Do not substitute a zero for an absent value.
+
 ## Interpretation guide
 
-### `main_running_coverage_pct` is the key diagnostic
+### Process attribution precedes coverage interpretation
 
-Time Profiler samples the main thread every ~1ms. For a correlation window
-of `N` ms, you'd expect ~`N` main-thread running samples if main were fully
-CPU-bound. Coverage is the ratio of observed main-thread samples to that
-expectation.
+Before attributing a trigger to CPU samples, verify that the trigger and samples identify the same process (prefer PID/process instance over a display name), in the same recording run. A time overlap or a thread named "main" is insufficient, especially in all-process recordings. Treat unavailable attribution/coverage as inconclusive, not zero CPU usage. Do not borrow another process's hot symbols or use them to recommend source edits.
 
-- **< 25% coverage** → main thread was **blocked** (I/O, lock, sync XPC,
+For a valid matched process, coverage compares sampled main-thread running time with the trigger window. Sampling intervals, missing lanes, weighting and dropped samples affect the estimate; inspect the raw evidence. The following thresholds are triage heuristics, not proof of a cause:
+
+- **< 25% coverage** → investigate whether main was **blocked** (I/O, lock, sync XPC,
   `Task.sleep`, waiting on an actor-isolated call). The `hot_symbols` you
   do see are the moments main *was* executing — look there for the code
   that *initiates* the blocking work, not the work itself. Common fix:
-  move to a background executor / `nonisolated` / `Task.detached`.
-- **≥ 75% coverage** → main was **CPU-bound** the whole time. `hot_symbols`
+  inspect the wait/caller and isolation requirements before changing execution. Low coverage can also reflect incomplete sampling.
+- **≥ 75% coverage** → supports a **CPU-bound** hypothesis. `hot_symbols`
   point directly at the expensive work. Common fixes: hoist computation
   out of view bodies, cache derived values, avoid per-frame allocation,
   debounce `onChange`.
@@ -268,10 +270,8 @@ invalidating it.
 
 Prioritise from most actionable to least:
 
-1. **Any `hangs` with `main_running_coverage_pct < 25%`** — these are
-   blocking-I/O smells; nearly always fixable by moving work off-main.
-2. **Any `hangs` with `main_running_coverage_pct ≥ 75%`** — CPU-bound
-   main-thread work; fix the top `hot_symbols`.
+1. **Attributed `hangs` with `main_running_coverage_pct < 25%`** — inspect waits and sampling completeness; confirm the blocking operation before changing isolation or moving work.
+2. **Attributed `hangs` with `main_running_coverage_pct ≥ 75%`** — inspect main-thread hot symbols and confirm the expensive work in source.
 3. **`swiftui-causes.top_sources` with > ~1k edges** — structural
    invalidation bugs (feedback storms, over-applied modifiers). These
    are often cheaper to fix than per-view optimisations and collapse

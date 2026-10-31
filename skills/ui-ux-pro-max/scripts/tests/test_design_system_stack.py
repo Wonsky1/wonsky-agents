@@ -56,6 +56,14 @@ class TestStackFlagWithDesignSystem(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertNotIn("ignored", proc.stderr.lower())
 
+    def test_native_stack_cannot_receive_web_design_system(self):
+        for stack in ("swiftui", "winui", "flutter", "jetpack-compose", "threejs"):
+            with self.subTest(stack=stack):
+                proc = self.run_search("native desktop dashboard", "--design-system", "--stack", stack)
+                self.assertEqual(proc.returncode, 2, proc.stderr)
+                self.assertIn("generates web recommendations", proc.stderr)
+                self.assertEqual(proc.stdout, "")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

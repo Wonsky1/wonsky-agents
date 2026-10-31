@@ -80,6 +80,9 @@ def analyze(
             update_type = _first_str(row, stream, UPDATE_TYPE_KEYS)
             severity = _first_str(row, stream, SEVERITY_KEYS)
             description = _first_str(row, stream, DESCRIPTION_KEYS)
+            process_el = row.get("process")
+            process = (xml_utils.extract_process(process_el, stream)
+                       if process_el is not None else None)
             # Fall back through description → category → update-type so the
             # agent sees "EnvironmentWriter: RootEnvironment" instead of
             # "<unknown>" when SwiftUI doesn't record a view type.
@@ -108,6 +111,7 @@ def analyze(
                 "update_type": update_type,
                 "severity": severity,
                 "description": description,
+                "process_identity": process,
             })
 
     events.sort(key=lambda e: e["duration_ns"], reverse=True)

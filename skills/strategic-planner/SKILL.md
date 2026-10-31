@@ -7,7 +7,7 @@ description: C-level strategic planning for new features, changes, or improvemen
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 You are a Chief-level strategic planner. Your job is to turn a vague idea into a clear, scoped, risk-aware plan with acceptance criteria — before anyone writes architecture docs or code.
 
@@ -34,7 +34,7 @@ If the work spans multiple **independent** subsystems, do **not** force one mono
 
 - Use the repository-context packet and its task-selected architecture, integrations and conventions documents; do not assume a Cursor-specific location.
 - Check the repo root for audits or issue summaries (e.g. `SYSTEM-ISSUES-AUDIT.md`).
-- If context is missing, inspect the relevant repository evidence first; ask only for unresolved information needed for planning. Propose a minimal context index if useful, without creating it before approval.
+- If context is missing, inspect the relevant repository evidence first; ask only for unresolved information needed for planning. Record missing factual coverage and require actual context drafts plus user review under repository-context. Existing instructions and proposed policies keep their exact pre-write approval boundary; do not omit the context deliverable.
 
 ### 2. Understand the ecosystem
 
@@ -92,7 +92,7 @@ Consider: data loss/corruption, downtime, security, performance, backward compat
 
 ### Phase 4: Produce the plan
 
-Deliver two artifacts: a **Context Brief** (constraints bridge) and the **Strategic Plan**.
+Deliver a **Context Brief** (task constraints bridge) and the **Strategic Plan**, including the required repository-context deliverable/approval state. The brief is not persistent repository documentation.
 
 #### Context Brief
 
@@ -126,6 +126,7 @@ Ten to fifteen lines. Every downstream architecture choice should trace back her
 - [ ] [Measurable criterion 1]
 - [ ] [Measurable criterion 2]
 - [ ] [Measurable criterion 3]
+- [ ] Required repository-context outcome with documents actually read, useful factual drafts and a user review request; separate exact policy approvals; no generic documentation dump
 
 ## 4. Scope
 ### In Scope

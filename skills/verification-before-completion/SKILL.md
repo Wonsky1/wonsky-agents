@@ -7,7 +7,7 @@ description: Use when about to claim work is complete, fixed, or passing, before
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 ## Overview
 
@@ -23,7 +23,9 @@ Claiming work is complete without verification is dishonesty, not efficiency.
 NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 ```
 
-If you haven't run the verification command in this message, you cannot claim it passes.
+Evidence must identify the command/check, relevant source revision or working-tree inputs, environment and result. Reuse evidence already obtained in the current task when those relevant inputs are unchanged and the claim has the same scope. Rerun after a relevant change, when freshness is uncertain or when the user requests it. A new chat message alone does not invalidate evidence.
+
+Respect the user/host limits on running checks. Do not add/run tests solely because this skill was loaded; if testing was not requested or a check is unavailable, state exactly what was inspected and what remains unverified. Do not claim a check passed without its actual result.
 
 ## The Gate Function
 
@@ -31,7 +33,8 @@ If you haven't run the verification command in this message, you cannot claim it
 BEFORE claiming any status or expressing satisfaction:
 
 1. IDENTIFY: What command proves this claim?
-2. RUN: Execute the FULL command (fresh, complete)
+2. CHECK INPUTS: Is existing evidence current for this exact claim?
+   If not, run the full authorized command; otherwise reuse its recorded result
 3. READ: Full output, check exit code, count failures
 4. VERIFY: Does output confirm the claim?
    - If NO: State actual status with evidence
@@ -45,7 +48,7 @@ Skip any step = lying, not verifying
 
 | Claim | Requires | Not Sufficient |
 |-------|----------|----------------|
-| Tests pass | Test command output: 0 failures | Previous run, "should pass" |
+| Tests pass | Complete successful output for the stated tests and unchanged relevant inputs | Stale/different-scope run, "should pass" |
 | Linter clean | Linter output: 0 errors | Partial check, extrapolation |
 | Build succeeds | Build command: exit 0 | Linter passing, logs look good |
 | Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
@@ -74,7 +77,7 @@ Skip any step = lying, not verifying
 | "Linter passed" | Linter ≠ compiler |
 | "Agent said success" | Verify independently |
 | "I'm tired" | Exhaustion ≠ excuse |
-| "Partial check is enough" | Partial proves nothing |
+| "Partial check is enough" | A scoped check supports only a scoped claim; disclose unverified areas |
 | "Different words so rule doesn't apply" | Spirit over letter |
 
 ## Key Patterns
@@ -87,7 +90,8 @@ Skip any step = lying, not verifying
 
 **Regression tests (TDD Red-Green):**
 ```
-✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
+✅ Authorized test-first change: write → observe expected failure → implement → pass
+✅ Existing fix: reproduce the before-fix failure in an isolated fixture/copy, then verify the fix; preserve inherited and user-approved work
 ❌ "I've written a regression test" (without red-green verification)
 ```
 
@@ -125,8 +129,7 @@ Common consequences of skipping verification:
 - ANY expression of satisfaction
 - ANY positive statement about work state
 - Committing, PR creation, task completion
-- Moving to next task
-- Delegating to agents
+- Claiming a completed task is verified before moving on or delegating its result
 
 **Rule applies to:**
 - Exact phrases
@@ -138,6 +141,6 @@ Common consequences of skipping verification:
 
 **No shortcuts for verification.**
 
-Run the command. Read the output. THEN claim the result.
+Confirm current evidence for the exact claim. Read the complete result. State its scope and limits.
 
 This is non-negotiable.

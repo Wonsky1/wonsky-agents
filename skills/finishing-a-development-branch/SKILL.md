@@ -7,11 +7,11 @@ description: Use after work is verified and the user wants options for merge, PR
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 ## Overview
 
-After implementation is verified, the user needs a clear, safe path to integrate or discard work. This skill re-validates quality, surfaces exactly four outcomes, executes the chosen workflow, and cleans up worktrees when appropriate.
+After implementation is verified, the user needs a clear, safe path to integrate or discard work. This skill checks delivery evidence and Git state, offers integration choices when needed, executes the authorized choice and cleans up only when safe.
 
 ## When to Use
 
@@ -21,8 +21,8 @@ After implementation is verified, the user needs a clear, safe path to integrate
 
 ## Core Principle
 
-**Verify tests → Present options → Execute choice → Clean up.**  
-No merge or deletion without a green test run and explicit user confirmation where required.
+**Inspect Git state → Verify applicable evidence → Execute the authorized choice → Clean up safely.**
+Commit, push, merge and discard require explicit user intent; existing authorization is reused. A clean test run does not prove uncommitted work is included in HEAD.
 
 ## Preconditions
 
@@ -31,17 +31,19 @@ No merge or deletion without a green test run and explicit user confirmation whe
 
 ## The Process
 
-### 1. Re-verify Tests
+### 1. Inspect Git state and verification
 
-Run the project’s standard test suite from the branch/worktree that holds the work.
+Inventory the current branch/HEAD, intended base, staged changes, unstaged changes and relevant untracked files. Separate the requested delivery from pre-existing work. Inspect the exact diff that would be committed or integrated; `git push` and a PR include committed history only.
 
-- **If tests fail:** Stop. Show failures. Do **not** present merge/PR/cleanup options as safe until the user addresses failures or explicitly overrides with full awareness.
+If intended implementation is uncommitted, present its concrete commit scope and obtain commit intent before committing. Do not stage unrelated files, stash, reset, switch branches with dirty work or claim a PR includes those changes. A user may explicitly choose to publish only existing commits; state the omitted local work.
+
+Use `verification-before-completion` to assess evidence for the exact delivered revision. Reuse valid evidence when inputs are unchanged. Run tests only when requested and permitted; report unverified scope honestly. If tests fail, do not describe integration as safe without a fully informed user override.
 
 ### 2. Determine Base Branch
 
 Use `git merge-base` / team convention (e.g. `main`, `develop`) to identify the integration target. Confirm with the user if multiple long-lived branches exist.
 
-### 3. Present Options (Exactly Four)
+### 3. Use the chosen option, or offer these four when undecided
 
 1. **Merge back to base locally** — Integrate into the local base branch and continue from one checkout.
 2. **Push and create Pull Request** — Publish branch and open a PR for review.
@@ -52,14 +54,14 @@ Use `git merge-base` / team convention (e.g. `main`, `develop`) to identify the 
 
 | Option | Actions |
 |--------|---------|
-| **1 — Merge locally** | Checkout base branch, `git pull` (if remote tracking), merge feature branch, **re-run tests**, then delete the feature branch if merge succeeded and user wants it gone. |
-| **2 — PR** | `git push -u origin <branch>`; `gh pr create` (or equivalent) with **summary + test plan** in the body. |
+| **1 — Merge locally** | Require clean source and destination checkouts and the intended work in committed history. Use the confirmed base; refresh remote state if authorized. Merge, verify the integration result with applicable authorized checks, and delete the feature branch only if requested. |
+| **2 — PR** | Confirm the exact committed range and destination, then push and create the PR with summary and actual verification evidence/limits. Attach the created PR in hosts that provide artifact attachment. Keep local changes explicitly accounted for. |
 | **3 — Keep** | Report: **“Keeping branch. Worktree preserved.”** No destructive git commands. |
 | **4 — Discard** | **Confirm first:** require the user to type **`discard`** (or agreed token). Then checkout base, delete the feature branch (`git branch -d` / `-D` only after confirmation). |
 
 ### 5. Cleanup Worktree
 
-- For options **1, 2, and 4:** If work lived in a `git worktree`, remove that worktree (`git worktree remove`) when the user is done and paths are safe to delete—after merge/push/discard per workflow.
+- Remove a worktree only when the user intends cleanup, it contains no needed local work and the relevant merge/discard is complete. Opening a PR alone is not a reason to remove its worktree. Recheck staged/unstaged/untracked and ignored files before any removal; use the host's managed archive tool when available.
 - For option **3:** **Do not** remove the worktree unless the user asks.
 
 ## Quick Reference
@@ -76,7 +78,7 @@ Use `git merge-base` / team convention (e.g. `main`, `develop`) to identify the 
 **Never:**
 
 - Proceed with failing tests as if merge/PR is safe.
-- Merge without re-verifying tests on the integration result (for local merge).
+- Claim the integration result verified using evidence from a different revision or environment.
 - Delete branches or destructive discard without confirmation (option 4).
 - Force-push without an explicit user request.
 

@@ -5,6 +5,10 @@ description: Create and edit Obsidian Flavored Markdown with wikilinks, embeds, 
 
 # Obsidian Flavored Markdown Skill
 
+## Vault write preflight
+
+Before creating or editing files in an Obsidian vault, read the `Vault Source Of Truth` and `Required Discovery Before Creating Notes` sections of `../obsidian/SKILL.md`, or reuse a current preflight already established in this session. Resolve the intended vault and exact target explicitly; the current workspace or most recently focused vault is not sufficient when a user/skill target is specified. Reuse existing folders, templates and properties. For standalone format examples outside a vault, this vault preflight is unnecessary.
+
 Create and edit valid Obsidian Flavored Markdown. Obsidian extends CommonMark and GFM with wikilinks, embeds, callouts, properties, comments, and other syntax. This skill covers only Obsidian-specific extensions -- standard Markdown (headings, bold, italic, lists, quotes, code blocks, tables) is assumed knowledge.
 
 ## Workflow: Creating an Obsidian Note

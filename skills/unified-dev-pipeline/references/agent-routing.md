@@ -49,4 +49,5 @@ These are workflow skills, not agents — invoke when the situation fits:
 - Delegating to an agent does **not** skip a gate. The orchestrator still presents output for approval.
 - Never let an agent commit, push, or deploy. That remains the user's explicit decision.
 - An agent's claim of "done/passing/fixed" is not evidence. Run the Completion Verification Route yourself.
+- Pass the selected stage skill to every executor/reviewer; that stage loads its owning language contract. Delegation does not bypass it. Every delivery also carries the required repository-context outcome with actual paths/evidence and approval state.
 - Match the agent to the job; do not fan out agents for a single tightly-coupled change.

@@ -7,11 +7,11 @@ description: Use when you have an approved implementation plan to execute sequen
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 Execute an approved plan faithfully in **controlled batches** with verification and human review between batches.
 
-**Core principle:** Batch execution with checkpoints — don’t steamroll the whole plan without pausing for feedback.
+**Core principle:** Batch execution with visible checkpoints. Reuse explicit end-to-end execution authorization; pause for decisions, requested checkpoints or blockers rather than requiring another confirmation after every routine batch.
 
 **Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
@@ -39,7 +39,7 @@ For each task in the batch:
 
 1. Mark as **in_progress**
 2. Follow each step **exactly** as written (plans should be bite-sized)
-3. Run verifications as specified (tests, linters, manual checks)
+3. Perform authorized verification and retain evidence for the exact inputs; do not add/run tests unless requested and permitted
 4. Mark as **completed** only after verification passes
 
 Use `~/.wonsky-agents/skills/implementation-guide/SKILL.md` while coding. For behavior changes, follow `~/.wonsky-agents/skills/test-driven-development/SKILL.md`.
@@ -52,7 +52,7 @@ When the batch is complete:
 - Show **verification output** (commands run and key results)
 - Say: **"Ready for feedback."**
 
-Do not start the next batch until feedback is incorporated or the user confirms continue.
+If the user authorized the whole plan, continue independent in-scope batches after the update. Wait when the plan/user requires approval, an unresolved decision affects correctness or the next action is outside existing authority. Follow repository-context for factual drafts and exact policy approvals.
 
 ### Step 4: Continue
 
@@ -70,8 +70,8 @@ After all tasks are complete and verified:
 
 - Run `~/.wonsky-agents/skills/quality-gate/SKILL.md`
 - Run `~/.wonsky-agents/skills/verification-before-completion/SKILL.md`
-- Announce: "I'm using the finishing-a-development-branch skill to complete this work."
-- Use `~/.wonsky-agents/skills/finishing-a-development-branch/SKILL.md` for integration options, final checks, and wrap-up
+- Close the required repository-context outcome (updated, verified-current with evidence, draft-awaiting-review, exact policy proposal pending-approval, or user-declined). Missing factual coverage requires actual reviewable drafts under repository-context; a plan/test report is not repository context. Ask the user to review those drafts and report pending review separately.
+- Use `~/.wonsky-agents/skills/finishing-a-development-branch/SKILL.md` only when integration/cleanup is requested; otherwise report the delivered working-tree changes and evidence without committing or pushing
 
 ## When to Stop and Ask for Help
 
@@ -108,7 +108,7 @@ Pause and escalate (user or plan owner) when:
 - Follow plan steps exactly
 - Don’t skip verifications
 - Reference other skills when the plan says to
-- Between batches: report and wait
+- Between batches: report; wait only at required approvals or blockers
 - Stop when blocked; don’t guess
 
 ## Context handoff

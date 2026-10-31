@@ -7,7 +7,7 @@ description: Use when receiving code review feedback, before implementing sugges
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 **Skill type:** discipline — this governs *how* you respond to feedback, not whether you are “nice.”
 
@@ -49,10 +49,10 @@ Do **not** use these **before** you have verified the technical claim in code:
 If **any** item is ambiguous, contradictory, or depends on missing context:
 
 - **STOP.** Do not implement that item yet.
-- Do not “fix the obvious ones first” while the unclear ones linger — that produces **partial, inconsistent** states.
+- Hold that item and any dependent changes. Continue clearly authorized, independent fixes only after confirming they cannot depend on the unresolved decision; report what remains blocked.
 - Ask **targeted** questions that unblock verification (e.g. “Should X preserve behavior Y when Z? The current contract does …”).
 
-**Rule:** No implementation on unclear feedback. **Clarify first.**
+**Rule:** Clarify the ambiguous item before implementing it or dependent work. An unrelated clear item need not wait.
 
 ## Source-Specific Handling
 
@@ -80,7 +80,7 @@ Before “implementing properly” or generalizing because a reviewer suggested 
 
 ## Implementation Order
 
-1. **Clarify** all unclear items (no code changes for those yet).
+1. **Separate** unclear items and their dependencies; ask targeted clarification while continuing independent authorized work.
 2. **Blocking / Critical** issues that affect correctness, security, or data.
 3. **Simple, local fixes** with clear verification.
 4. **Complex or cross-cutting fixes** — one coherent slice at a time.
@@ -125,7 +125,7 @@ If you pushed back and later **proved yourself wrong**:
 |--------|------------------|
 | Agreeing before opening the file | Wrong fix or wrong location; wastes cycles. |
 | Implementing unclear comments “to keep momentum” | Inconsistent code; rework; merged bugs. |
-| “Fix obvious first” while ambiguity remains | Partial application; conflicting edits. |
+| Applying an apparently obvious fix that depends on an unclear item | Partial application; conflicting edits. |
 | Treating external review as **orders** | Scope creep, wrong abstractions, broken compatibility. |
 | Skipping **grep** / usage check before “proper” design | YAGNI violations; dead abstractions. |
 | Stacking many unverified edits | Harder to bisect when tests fail. |

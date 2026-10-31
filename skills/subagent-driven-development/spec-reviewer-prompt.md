@@ -4,7 +4,7 @@ Use this template to verify implementation matches the task specification.
 
 ```text
 Read `~/.wonsky-agents/skills/repository-context/SKILL.md` before repository work.
-Repository context packet: [root, task, read/write boundaries, applicable instruction/document paths, freshness evidence, unresolved conflicts, exact approved protected-document changes and authorizing user message]. Read the applicable guidance; do not infer write approval from an implementer summary or plan. Report context changes and pending proposals in your handoff.
+Repository context packet: [root, task, read/write boundaries, applicable instruction/document paths, freshness evidence, unresolved conflicts, exact approved protected-document changes and authorizing user message]. Read the applicable guidance; do not infer write approval from an implementer summary or plan. Report factual drafts, user review status and exact policy approvals in your handoff.
 
 Review this implementation against the task specification.
 
@@ -19,7 +19,7 @@ Review this implementation against the task specification.
 1. Does the implementation satisfy every requirement in the task?
 2. Is anything missing from the spec?
 3. Was anything added that the spec did not ask for?
-4. Are verification criteria met?
+4. Are verification criteria met, including the Python contract from implementation-guide/references/python-structure.md and the required repository-context outcome? Read that contract for Python work. Report pending guidance separately; do not infer approval from the implementation plan.
 
 ## Output
 

@@ -5,12 +5,14 @@
 ```md
 # {Context Name}
 
-{One or two sentence description of what this context is and why it exists.}
+Draft — awaiting user review.
+
+{Concise description of what this context is and why it exists.}
 
 ## Language
 
 **Order**:
-{A one or two sentence description of the term}
+{Concise definition with the qualifiers needed to distinguish this term}
 _Avoid_: Purchase, transaction
 
 **Invoice**:
@@ -25,7 +27,7 @@ _Avoid_: Client, buyer, account
 ## Rules
 
 - **Be opinionated.** When multiple words exist for the same concept, pick the best one and list the others under `_Avoid_`.
-- **Keep definitions tight.** One or two sentences max. Define what it IS, not what it does.
+- **Keep definitions focused.** Define the concept and include useful distinguishing qualifiers; avoid implementation narration and arbitrary sentence ceilings.
 - **Only include terms specific to this project's context.** General programming concepts (timeouts, error types, utility patterns) don't belong even if the project uses them extensively. Before adding a term, ask: is this a concept unique to this context, or a general programming concept? Only the former belongs.
 - **Group terms under subheadings** when natural clusters emerge. If all terms belong to a single cohesive area, a flat list is fine.
 
@@ -55,6 +57,6 @@ The skill infers which structure applies:
 
 - If `CONTEXT-MAP.md` exists, read it to find contexts
 - If only a root `CONTEXT.md` exists, single context
-- If neither exists, propose a root `CONTEXT.md` when a useful term is resolved; create it only after approval of the exact text and path through repository-context
+- If neither exists, create a clearly marked root `CONTEXT.md` draft when a useful term is resolved, then ask the user to review its exact content/path through repository-context; preserve established definitions and obtain exact approval before changing them
 
 When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.

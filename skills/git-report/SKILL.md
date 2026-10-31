@@ -8,50 +8,37 @@ description: Generate a management-ready summary of work from git history. Use w
 Generate a concise, management-friendly summary of the user's work from git
 history.
 
-## 1. Determine the date range
+## 1. Establish scope, identity and dates
 
-- The current date and day of the week are available in the system prompt
-  (`Today's date:`). Use them.
-- **If the user specifies a range** (e.g., "last 2 weeks", "since March 1",
-  "yesterday"), — use that range.
-- **If the user says "this week"** or gives no range — use Monday of the
-  current week through today (inclusive). For example if today is Wednesday
-  Apr 9, the range is Apr 7 – Apr 9.
-- Convert to git flags: `--since="YYYY-MM-DD"` (start) and
-  `--until="YYYY-MM-DD"` (day after end, to make the range inclusive).
+- Use the current date and timezone supplied by the user/host. If the user specifies a range, use it; otherwise use Monday through today, inclusive. Resolve ambiguous dates or timezone only when they affect the report.
+- Confirm which repository and refs the report covers: the default branch, a named branch, or all relevant refs. State the choice. `--all` is not proof of merged delivery and can include local/stash refs.
+- Resolve the user before running author-dependent queries. Prefer an explicit identity; inspect `git config user.name`, `git config user.email`, `.mailmap` and scoped author metadata as evidence. A configured account is a candidate, not proof of historical aliases. Never select the most frequent author as the user. Confirm ambiguous identities, and include verified aliases explicitly.
+- Build explicit full-day bounds in the chosen timezone: start at `YYYY-MM-DDT00:00:00±HH:MM` and inclusive end at `YYYY-MM-DDT23:59:59±HH:MM`. Compute the offset for **each boundary date**, accounting for daylight saving changes. Do not pass date-only strings to Git. If the timezone cannot be resolved, ask or state an agreed UTC range instead of silently using the host timezone.
+- Git log date limits filter commit/committer timestamps. State that basis; if the user specifically wants author-time activity, collect author timestamps and filter those explicitly instead.
 
 ## 2. Collect raw data
 
-Run **all three** commands in parallel:
+First gather scope and identity evidence. Once the refs, identities and exact bounds are resolved, run independent scoped queries in parallel. Substitute the verified revision arguments for `<REFS>` and full timestamps for the bounds:
 
 ```bash
-# All commits with authors (to identify the user's name)
-git log --all --since="<start>" --until="<day_after_end>" \
-  --format="%h %ad %an %s" --date=short
+# Commit evidence, including canonical author identity and both timestamps
+git log <REFS> --since="<start-midnight-with-offset>" \
+  --until="<end-23:59:59-with-offset>" \
+  --format="%H%x09%aN%x09%aE%x09%aI%x09%cI%x09%s"
 
-# User's commits only, excluding merges/stash entries
-git log --all --since="<start>" --until="<day_after_end>" \
-  --author="<user>" --format="%h %ad %s" --date=short \
-  | grep -v "Merge\|WIP on\|index on"
-
-# Diff stats for the user's commits
-git log --all --since="<start>" --until="<day_after_end>" \
-  --author="<user>" --shortstat --oneline
+# Change statistics for the same bounded revision set
+git log <REFS> --since="<start-midnight-with-offset>" \
+  --until="<end-23:59:59-with-offset>" --numstat \
+  --format="%H%x09%aN%x09%aE"
 ```
 
-To resolve `<user>`, pick the most-frequent non-bot author name from the first
-command, or use the name/email from `git config user.name`.
+Filter the structured author identity against the exact verified email/name aliases, then retain the matching commit hashes for statistics and enrichment. If using `--author` as a query optimization, use literal matching and still validate the returned identities; substring matches can include another person. Avoid shell interpolation of user text. Exclude merge/stash bookkeeping based on Git metadata/ref scope, not by dropping every subject containing "Merge" or "WIP".
+
+Deduplicate commit hashes across refs. Distinguish unique files from summed per-commit file touches, and state whether line totals include merges or renames. A missing remote connection or unfetched history is a coverage limit, not evidence that no work happened. Do not fetch or query unrelated repositories implicitly.
 
 ## 3. Enrich with PR context
 
-For every merged PR hash (commits ending with `(#NNN)`), fetch the full commit
-body to extract the PR description:
-
-```bash
-git log <hash> --format="%B" -1
-```
-
-Batch multiple hashes into a single shell command separated by `echo "---"`.
+A subject ending in `(#NNN)` is only a candidate reference. Read the commit body using `git show -s --format=%B <verified-hash>`; it is not necessarily a PR description or proof of merge. Fetch verified PR details through an available authenticated connector/CLI when authorized and useful. Only call work merged when base-branch/PR evidence establishes that state. Batch independent reads through the tool interface, without shell separator commands. If PR access is unavailable, report commit-based evidence and its limits.
 
 ## 4. Produce the report
 
@@ -74,16 +61,17 @@ Format the output as below. Tone: professional, factual, no fluff.
    - …
 
 ---
-Stats: ~X files touched, ~Y lines added across N merged PRs.
+Stats: <measured unique files or commit touches>, <measured line totals>, <verified PR/commit count>.
+Scope: <repository/refs>, <dates and timezone>, <committer-time or author-time basis>.
 ```
 
 ### Grouping rules
 
 | Category | What goes in |
 |----------|-------------|
-| Feature / PR | Each merged PR gets its own numbered item. Title from the PR commit message. |
+| Feature / PR | Group verified related commits or a verified merged PR; label the evidence accurately. |
 | CI / Code Quality | Commits like "fix ci", "copilot comments", "fix style" — group together. |
-| In Progress | Branches with commits but no merged PR in the period. |
+| In Progress | Work verified as unmerged on the relevant branch; absence of a fetched PR is insufficient. |
 
 ### Writing rules
 

@@ -1,13 +1,13 @@
 ---
 name: writing-skills
-description: Use when creating new skills, editing existing skills, or verifying skills work before deployment - applies TDD to process documentation by testing with subagents before writing, iterating until bulletproof against rationalization.
+description: Use when creating new skills, editing existing skills, or verifying skills work before deployment - applies TDD to process documentation by testing with subagents before writing, using bounded scenarios to check correct behavior, limits and instruction precedence.
 ---
 
 # Writing Skills
 
 ## Overview
 
-Agent skills are concise, enforceable process documents for Cursor and similar agents. This meta-skill treats **writing skills as TDD applied to documentation**: define failing scenarios first, write the minimum skill text that passes, then refactor for clarity and loophole closure.
+Agent skills are concise, enforceable process documents for Cursor and similar agents. This meta-skill treats **writing skills as TDD applied to documentation**: define failing scenarios first, write the minimum skill text that passes, then refactor for clarity. Compliance is not the only success case: verify legitimate user overrides, inapplicable rules and preservation of user work.
 
 ## When to Use
 
@@ -123,7 +123,7 @@ description: Use when tests have race conditions, timing dependencies, or pass/f
 
 ## The Iron Law
 
-**NO SKILL WITHOUT A FAILING TEST FIRST** -- same as TDD: list pressure scenarios where behavior would be wrong *without* the skill; only then write the skill so those scenarios would pass.
+Identify the reported failure and a bounded set of representative scenarios before changing instructions. Reuse reproduced audit evidence as the baseline instead of rerunning the same failing scenario for ceremony. Evaluate the revised text where scenario execution is requested and permitted; otherwise disclose the evaluation limit.
 
 ## Testing All Skill Types
 
@@ -171,46 +171,19 @@ Run test scenarios **without** the skill. Document exact agent behavior and rati
 
 Write skill addressing the **specific** baseline failures you documented. Don't add extra content for hypothetical cases -- write just enough to address actual observed failures.
 
-Run same scenarios **with** skill. Agent should now comply.
+Run the same scenarios with the skill, plus at least one legitimate user/host override or out-of-scope case. The agent should apply the rule only when appropriate.
 
 If agent still fails: skill is unclear or incomplete. Revise and re-test.
 
-### REFACTOR: Close Loopholes (Stay Green)
+### REFACTOR: Correct the specific failure
 
-Agent violated rule despite having the skill? Treat this as a regression. For each new rationalization:
+When a scenario fails, first check whether the rule was applicable, authorized and correct. A user override, conflicting higher-priority instruction or preservation of existing work can make noncompliance the right outcome. Fix a wrong or disproportionate rule instead of escalating its prohibitions.
 
-1. **Add explicit negation in rules** -- not just "don't cheat" but "don't keep as reference; don't adapt; delete means delete"
-2. **Add entry to rationalization table** -- exact excuse mapped to why it's invalid
-3. **Add to red flags list** -- absolute prohibitions aligned with scenarios
-4. **Update description** -- add symptoms of ABOUT to violate
+Add only the wording needed for an observed ambiguity or missing boundary. Keep examples and counters tied to evidence. Use a bounded evaluation pass over the affected scenario families; report remaining uncertainty rather than iterating until no imaginable objection remains. No finite scenario set proves a skill “bulletproof.”
 
-Re-test same scenarios with updated skill. Continue REFACTOR cycle until no new rationalizations appear.
+### Evaluation evidence
 
-### Meta-Testing
-
-If an agent chose wrong despite having the skill, ask: **"How could the skill have been written differently to make the right answer crystal clear?"**
-
-Three possible responses:
-
-1. **"The skill WAS clear, I chose to ignore it"** -- need stronger foundational principle (e.g. "Violating the letter is violating the spirit")
-2. **"The skill should have said X"** -- documentation gap; add the suggestion
-3. **"I didn't see section Y"** -- organization problem; make key points more prominent
-
-### When a Skill is Bulletproof
-
-1. Agent chooses correct option under maximum pressure
-2. Agent cites skill sections as justification
-3. Agent acknowledges temptation but follows rule anyway
-4. Meta-testing reveals "skill was clear, I should follow it"
-
-**Not bulletproof if:** agent finds new rationalizations, argues skill is wrong, creates "hybrid approaches," or asks permission while arguing strongly for violation.
-
-## Bulletproofing Against Rationalization
-
-- **Close loopholes:** If agents argue "spirit vs letter," add **letter**-level checks (e.g. "if X then MUST Y").
-- **Rationalization table:** list excuse -> why it's invalid -> correct action.
-- **Red flags lists:** absolute prohibitions aligned with Red phase scenarios.
-- **"Violating the letter is violating the spirit"** -- add this foundational principle early to cut off an entire class of rationalizations.
+Record the scenario, expected decision, observed result and relevant source version. Cover normal use, the reported failure and a valid exception. Check clarity and discovery separately from whether the agent cited the rule. Reuse unchanged evidence; rerun affected cases after material edits when authorized.
 
 ## Skill Creation Checklist
 
@@ -234,7 +207,7 @@ Three possible responses:
 - [ ] Explicit counters added for each loophole
 - [ ] Rationalization table built from all iterations
 - [ ] Red flags list created
-- [ ] Re-tested -- agent still complies under maximum pressure
+- [ ] Affected scenarios checked, including valid override/out-of-scope cases; limits reported
 - [ ] Meta-tested to verify clarity
 
 **Quality checks**
@@ -254,9 +227,9 @@ Three possible responses:
 |--------|---------|
 | "Skill is obviously clear" | Clear to you != clear to other agents. Test it. |
 | "It's just a reference" | References can have gaps. Test retrieval. |
-| "Testing is overkill" | Untested skills have issues. Always. 15 min testing saves hours. |
+| "The change looks obvious" | Inspect the reported failure and relevant scenarios; state what was actually evaluated. |
 | "I'll test if problems emerge" | Problems = agents can't use skill. Test BEFORE deploying. |
-| "I'm confident it's good" | Overconfidence guarantees issues. Test anyway. |
+| "I'm confident it's good" | Confidence alone is not behavioral evidence; use scoped results and disclose limits. |
 | "No time to test" | Deploying untested skill wastes more time fixing it later. |
 
 ## Discovery Workflow
@@ -270,7 +243,7 @@ How agents find your skill:
 
 **Optimize for this flow** -- put searchable terms early and often.
 
-This meta-skill applies to skills under `~/.wonsky-agents/skills/`, `.cursor/skills/`, and `~/.wonsky-agents/skills/` equally unless a product-specific rule overrides path conventions.
+Edit the canonical collection under `~/.wonsky-agents/skills/`; runtime mirrors are generated outputs. Other collections follow their declared source and approval boundaries. Exact persistent-guidance changes require repository-context approval before writes.
 
 ## Flowchart Conventions
 

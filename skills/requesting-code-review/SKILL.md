@@ -7,17 +7,19 @@ description: Use after completing a major task, batch of implementation work, co
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 Catch requirement gaps, regressions, and quality issues **before** they compound. Prefer an independent pass over self-review alone.
 
 **Related:** If review feedback looks wrong or you are unsure how to apply it, read `~/.wonsky-agents/skills/receiving-code-review/SKILL.md` before changing code.
 
+For Python review, read `~/.wonsky-agents/skills/implementation-guide/references/python-structure.md` and pass it with every delegated review task. Review its required evidence rather than duplicating its rules here.
+
 ## When to Use
 
 ### Mandatory
 
-- **After each task** when following `~/.wonsky-agents/skills/subagent-driven-development/SKILL.md` (review between tasks keeps drift contained).
+- **After each meaningful task or cohesive low-risk batch** in `~/.wonsky-agents/skills/subagent-driven-development/SKILL.md`; review both requirements and quality. One independent combined pass may cover a small batch.
 - **After a major feature** or substantial batch of implementation work tied to a plan.
 - **Before merge** (or before opening a PR if that is your integration point).
 
@@ -83,7 +85,7 @@ If no reviewer agent is available:
 
 ## Red Flags (avoid these)
 
-- **Skipping review** because the change “seems small.”
+- **Skipping both review lenses** because a change seems small; scale the review rather than omitting it.
 - **Reviewing without requirements** in hand — you cannot assess completeness.
 - **Ignoring Important findings** to save time.
 - **Treating “tests pass” as “requirements met”** — tests can be wrong or incomplete; align to the plan.

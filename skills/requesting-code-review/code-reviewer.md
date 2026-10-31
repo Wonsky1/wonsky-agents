@@ -37,7 +37,7 @@ Inspect the actual scoped changes, including staged, unstaged and relevant untra
 ## Review Checklist
 
 **Code Quality**
-- Clean separation of concerns?
+- Clean separation of concerns? For Python, first read implementation-guide/references/python-structure.md from the canonical skills: inspect the ownership and compatibility evidence required by that contract. Mechanical checks supplement semantic review, not replace it.
 - Proper error handling?
 - Avoids obvious over-engineering?
 - Edge cases handled?
@@ -54,7 +54,7 @@ Inspect the actual scoped changes, including staged, unstaged and relevant untra
 
 **Requirements**
 - All required behavior implemented?
-- No missing acceptance criteria?
+- No missing acceptance criteria? Required repository-context outcome includes actual inspected paths/evidence and separately reports draft review or policy approval pending/declined; task plans do not count as delivered context.
 - No extra unrequested features?
 
 ## Output Format

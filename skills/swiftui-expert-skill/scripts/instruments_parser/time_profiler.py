@@ -81,6 +81,7 @@ def analyze(
                 "thread_name": thread["name"],
                 "is_main": thread["is_main"],
                 "process": process_name,
+                "process_identity": thread.get("process"),
                 "leaf_symbol": leaf,
                 "frames": frames[:5],
             })

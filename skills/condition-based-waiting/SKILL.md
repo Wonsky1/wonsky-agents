@@ -1,6 +1,6 @@
 ---
 name: condition-based-waiting
-description: Use when tests have race conditions, timing dependencies, or inconsistent pass/fail behavior - replaces arbitrary timeouts with condition polling to wait for actual state changes, eliminating flaky tests from timing guesses.
+description: Use when tests have race conditions, timing dependencies, or inconsistent pass/fail behavior - replaces arbitrary timeouts with condition polling to wait for actual state changes, reducing timing-related flakes.
 ---
 
 # Condition-Based Waiting
@@ -113,7 +113,4 @@ await new Promise(r => setTimeout(r, 200));   // Then: wait for timed behavior
 
 ## Real-World Impact
 
-Condition-based waiting consistently eliminates flaky tests:
-- Pass rate improvements from ~60% → 100% are typical
-- Execution time often drops 30-40% (no wasted sleep padding)
-- Race conditions become structurally impossible when you wait for state, not time
+Condition-based waiting removes a timing guess when the observed condition is the correct synchronization point. It does not eliminate all races or guarantee a pass rate or speedup. Check the real readiness contract, timeout and state lifetime; report measurements only for the suite actually observed.

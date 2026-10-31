@@ -29,7 +29,7 @@ import argparse
 import json as json_module
 import sys
 import io
-from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, UNTRUNCATED_COLS, search, search_stack
+from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, UNTRUNCATED_COLS, WEB_STACKS, search, search_stack
 from design_system import generate_design_system
 
 # Force UTF-8 for stdout/stderr to handle emojis on Windows (cp1252 default)
@@ -120,6 +120,12 @@ if __name__ == "__main__":
 
     # Design system takes priority
     if args.design_system:
+        if args.stack and args.stack not in WEB_STACKS | {"laravel"}:
+            parser.error(
+                "--design-system generates web recommendations and does not support "
+                f"the {args.stack} stack; omit --design-system and use --stack "
+                f"{args.stack} for native/graphics guidance"
+            )
         if args.stack:
             print(
                 f"note: --stack {args.stack} is ignored in --design-system mode; "

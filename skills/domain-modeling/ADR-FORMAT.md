@@ -2,14 +2,16 @@
 
 ADRs live in `docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
 
-Propose the exact ADR lazily when one is justified. Create docs/adr/ and the ADR only after approval of its text and path through repository-context; approval of the architectural choice alone does not authorize a persistent write.
+Write a clearly marked factual ADR draft only when justified, then ask the user to review its exact content/path through repository-context. Proposed choices remain unaccepted; edits to existing historical decisions or active policies require exact approval before writing.
 
 ## Template
 
 ```md
 # {Short title of the decision}
 
-{1-3 sentences: what's the context, what did we decide, and why.}
+Draft — awaiting user review.
+
+{Confirmed context, the actual decision and its reasons. Keep unresolved alternatives explicitly proposed.}
 ```
 
 That's it. An ADR can be a single paragraph. The value is in recording *that* a decision was made and *why* — not in filling out sections.

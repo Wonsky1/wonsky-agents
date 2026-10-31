@@ -7,7 +7,7 @@ description: Use when errors occur deep in execution and you need to trace back 
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 ## Overview
 
@@ -93,10 +93,7 @@ async function gitInit(directory: string) {
 
 **Critical:** Use `console.error()` in tests (not logger - may not show)
 
-**Run and capture:**
-```bash
-npm test 2>&1 | grep 'DEBUG git init'
-```
+**Run and capture:** When test execution is authorized, use the project runner and retain its actual exit status and full output. Filter a saved log afterward if useful; a successful filter is not a successful test run. Log only approved diagnostic fields, never credential values or complete environment dumps.
 
 **Analyze stack traces:**
 - Look for test file names
@@ -107,13 +104,15 @@ npm test 2>&1 | grep 'DEBUG git init'
 
 If something appears during tests but you don't know which test:
 
-Use the bundled bisection script at `find-polluter.sh` (in this skill's directory):
+When test execution is authorized, use the bundled sequential finder with the project's actual single-file runner. Resolve it from this loaded skill directory:
 
-```bash
-./find-polluter.sh '.git' 'src/**/*.test.ts'
+```sh
+python3 "<loaded-skill-directory>/find_polluter.py" '.git' 'src/**/*.test.ts' -- npm test -- '{test}'
 ```
 
-Runs tests one-by-one, stops at first polluter. See script for usage.
+The runner above is an example: confirm how the project accepts a test-file path. The exact `{test}` argument is replaced with each discovered file, without a shell. Python 3.9+ is required; `find-polluter.sh` is a compatibility launcher. Discovery is restricted to the current working tree, supports recursive globs and spaces, and refuses escapes. Use a scoped isolated checkout when the test can mutate repository files.
+
+The helper never deletes existing pollution. It stops at the first newly observed path (exit 1); zero matches, pre-existing pollution and runner failures are incomplete (exit 2). Exit 0 means every selected test-file runner succeeded with the watched path absent; it cannot prove each framework actually selected a test or expose interaction/order-dependent pollution. Inspect the runner output and expand the investigation when the original failure is not reproduced.
 
 ## Real Example: Empty projectDir
 
@@ -146,7 +145,7 @@ digraph principle {
     "Is this the source?" [shape=diamond];
     "Fix at source" [shape=box];
     "Add validation at each layer" [shape=box];
-    "Bug impossible" [shape=doublecircle];
+    "Known cases guarded" [shape=doublecircle];
     "NEVER fix just the symptom" [shape=octagon, style=filled, fillcolor=red, fontcolor=white];
 
     "Found immediate cause" -> "Can trace one level up?";
@@ -156,7 +155,7 @@ digraph principle {
     "Is this the source?" -> "Trace backwards" [label="no - keeps going"];
     "Is this the source?" -> "Fix at source" [label="yes"];
     "Fix at source" -> "Add validation at each layer";
-    "Add validation at each layer" -> "Bug impossible";
+    "Add validation at each layer" -> "Known cases guarded";
 }
 ```
 
@@ -166,12 +165,12 @@ digraph principle {
 
 **In tests:** Use `console.error()` not logger - logger may be suppressed
 **Before operation:** Log before the dangerous operation, not after it fails
-**Include context:** Directory, cwd, environment variables, timestamps
+**Include context:** Approved paths, timestamps and redacted presence/state metadata; omit secrets and complete environment values
 **Capture stack:** `new Error().stack` shows complete call chain
 
 ## Real-World Impact
 
 Backward tracing consistently finds root causes that symptom-level fixes miss:
 - 5-level traces reveal that bugs originate far from where they manifest
-- Fixing at source + adding defense-in-depth at each layer prevents the entire bug class
-- Full test suites pass clean after a root-cause fix — symptom patches tend to break elsewhere
+- Fixing at source and guarding distinct boundaries can prevent known alternate triggers; verify the cases actually in scope
+- Run the relevant authorized checks and report their real coverage; finding a root cause alone does not establish a clean full suite

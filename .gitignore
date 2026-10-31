@@ -17,3 +17,8 @@ skills/github-pr-review/reviewer-preferences.md
 # Local scratch files
 work/
 *.log
+
+# Installer ownership records and recoverable staging backups
+.wonsky-state/
+.wonsky-backups/
+.wonsky-sync-*/

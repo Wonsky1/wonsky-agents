@@ -18,8 +18,14 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
-      - name: Installer tests (temporary homes only)
+      - name: Installer and updater tests (temporary homes only)
         run: python -B -m unittest discover -s tests -v
+      - name: Packaged UI search and invocation contracts
+        run: python -B -m unittest discover -s skills/ui-ux-pro-max/scripts/tests -v
+      - name: Python structure checker tests (temporary source fixtures only)
+        run: python -B -m unittest discover -s skills/implementation-guide/scripts/tests -v
+      - name: Python structure of maintained utilities
+        run: python -B skills/implementation-guide/scripts/check_structure.py --repo-root . install.py update.py scripts skills/implementation-guide/scripts skills/repository-context/scripts
       - name: Context helper tests
         if: runner.os != 'Windows'
         run: python -B -m unittest discover -s skills/repository-context/scripts/tests -v

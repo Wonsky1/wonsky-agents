@@ -5,6 +5,10 @@ description: Interact with Obsidian vaults using the Obsidian CLI to read, creat
 
 # Obsidian CLI
 
+## Vault write preflight
+
+Before creating or editing files in an Obsidian vault, read the `Vault Source Of Truth` and `Required Discovery Before Creating Notes` sections of `../obsidian/SKILL.md`, or reuse a current preflight already established in this session. Resolve the intended vault and exact target explicitly; the current workspace or most recently focused vault is not sufficient when a user/skill target is specified. Reuse existing folders, templates and properties. For standalone format examples outside a vault, this vault preflight is unnecessary.
+
 Use the `obsidian` CLI to interact with a running Obsidian instance. Requires Obsidian to be open.
 
 If `obsidian` is not found, do not assume the CLI is not installed until you check whether the agent shell has a reduced `PATH`. In Codex-style environments, the user's terminal may resolve `obsidian` while the agent cannot. On macOS, try the app binary directly:
@@ -44,7 +48,7 @@ Many commands accept `file` or `path` to target a file. Without either, the acti
 
 ## Vault targeting
 
-Commands target the most recently focused vault by default. Use `vault=<name>` as the first parameter to target a specific vault:
+The CLI defaults to the most recently focused vault. For task operations, verify the chosen vault and pass `vault=<name>` explicitly as the first parameter; do not let app focus silently select a different target:
 
 ```bash
 obsidian vault="My Vault" search query="test"

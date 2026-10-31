@@ -7,7 +7,7 @@ description: Use when starting feature work that needs isolation from current wo
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 ## Overview
 
@@ -38,21 +38,21 @@ Apply in **priority order**:
 
 | Location        | `.gitignore` rule |
 |----------------|-------------------|
-| **Project-local** | **MUST** verify the worktree parent (e.g. `.worktrees/`) is listed in `.gitignore` **before** creating the directory. If missing, add it immediately and commit (or include in the same change set the user approves). |
+| **Project-local** | **MUST** verify Git ignores the worktree parent (e.g. `.worktrees/`) before creation, using `git check-ignore`. Add a suitable ignore only within the authorized write scope; otherwise use an external location or ask. Never commit an ignore change without explicit commit intent. |
 | **Global**       | Not required for `.gitignore`; the tree lives outside the repo. |
 
 ## Creation Steps
 
 1. **Detect project name** — From remote URL, directory name, or `package.json` / `Cargo.toml` metadata when helpful.
 2. **Create worktree** — `git worktree add <path> -b <new-branch>` (or add existing branch per user intent).
-3. **Run project setup** (auto-detect; run what applies):
+3. **Run authorized project setup** using the documented runner and lockfile. Check available dependencies first; do not install tools or execute setup solely because a manifest exists. Examples when setup is needed and authorized:
    - `package.json` → `npm install` (or `pnpm install` / `yarn` if lockfiles indicate).
    - `Cargo.toml` → `cargo build`.
    - `requirements.txt` → `pip install -r requirements.txt`.
    - `pyproject.toml` → `poetry install` or `uv sync` per tool signals.
    - `go.mod` → `go mod download`.
-4. **Verify clean baseline** — Run the project’s standard test command; report failures or confirm ready.
-5. **Report location** — Give absolute path, branch name, and how to open the tree in Cursor.
+4. **Inspect baseline** — Record Git status and existing verification evidence. Run baseline tests only when the user requested test/verification work and host instructions permit it; otherwise report that tests were not run. Do not label an untested baseline passing.
+5. **Report location** — Give the absolute path, branch name and how to open it in the current host.
 
 ## Quick Reference
 
@@ -62,7 +62,7 @@ Apply in **priority order**:
 | Project-local     | `.gitignore` check **first** |
 | Create            | `git worktree add` + new branch |
 | Setup             | Detect manifest → install/build |
-| Baseline          | Tests → pass or surface failures |
+| Baseline          | Git state + authorized evidence; report unverified limits |
 | Handoff           | Path + branch + next step |
 
 ## Common Mistakes
@@ -77,7 +77,7 @@ Apply in **priority order**:
 **Never:**
 
 - Create a project-local worktree path without verifying `.gitignore`.
-- Skip baseline verification after setup.
+- Claim a clean/passing baseline without the Git state and applicable verification evidence.
 - Proceed with failing tests **without** telling the user and getting explicit direction.
 
 ## Integration

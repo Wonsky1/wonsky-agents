@@ -7,25 +7,19 @@ description: Draft and post approved GitHub PR review comments using the GitHub 
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 Workflow for drafting and posting GitHub pull request review comments using **pending** reviews with batched comments and code suggestions. Always batch — even under time pressure, even for a single comment.
 
 For end-to-end PR review, start with `~/.wonsky-agents/skills/pr-review-orchestrator/SKILL.md`. That orchestrator runs the strict diff review first, then returns here only for approved comments and safe GitHub posting.
 
-**Prefer the GitHub MCP server** (`user-github`) for all PR operations. Fall back to the `gh` CLI only if the MCP is unavailable.
+**Prefer an available GitHub connector** for supported PR operations. Discover its current tool names and schemas; `user-github` and the calls below are examples, not host requirements. Fall back to authenticated `gh` when the connector lacks a required operation. A supplied offline diff can still be reviewed when neither can fetch or post; state that remote head, anchors and posting remain unverified.
 
-**CRITICAL: Always get explicit user approval via the `AskQuestion` tool before posting any review.** Show exactly what will be posted (file, line, comment text, event type) and ask yes/no.
+**Always obtain explicit approval of the exact review before posting.** Show the repository/PR, reviewed head SHA, each file/line/side, exact comment text, event type and overall message. Use the host's available question tool or ask in chat, then wait for an explicit answer. Approval of a review idea alone does not authorize its wording.
 
-**ALWAYS read `reviewer-preferences.md` (sibling of this file) before drafting any review** — it captures the user's style, focus areas, severity calibration, and things to skip. Apply those preferences to every draft.
+**Read the user's private review preferences before drafting when available.** Resolve `WONSKY_AGENTS_HOME` (default `~/.wonsky-agents`) and prefer `<canonical-root>/skills/github-pr-review/reviewer-preferences.md`; a sibling runtime profile is a read-only fallback. An absent profile is normal on a fresh install: use explicit session preferences without inventing a profile. Do not publish, commit or include private profile text in review payloads.
 
-**ALSO fetch a recent sample of the user's actual review comments** on the target repo before drafting — the seeded preferences age fast and the user's real voice on recent PRs is the ground truth. Use the GitHub MCP:
-
-1. `search_pull_requests` with `query: "is:pr reviewed-by:<user> sort:updated-desc"`, `perPage: 10`.
-2. For the 5–8 most recent PRs (excluding the one you're about to review), call `pull_request_read` with `method: get_review_comments` and keep only entries where `author == <user>`.
-3. Calibrate your draft's length, formatting, tone, severity, and use of `suggestion` blocks to match those samples — not just the seeded style guide.
-
-If the sample shows the user writes 5–15-word, lowercase, plain-prose comments without markdown formatting or `suggestion` blocks, your draft must look the same. If a seeded preference and a recent sample disagree, the recent sample wins.
+**Calibrate voice proportionately.** Reuse preferences and recent examples already read in this session. Fetch a small relevant sample of the user's own comments only when preferences are missing, stale, contradictory or the user asks for calibration. Resolve the authenticated/reviewing identity first, restrict the sample to that user's comments, and exclude the PR under review. Observed examples inform tone; explicit current preferences win. Do not copy private source text into a public comment.
 
 **Repository standards win over legacy precedent.** Read the repo's `AGENTS.md` and any docs under `docs/conventions/` before drafting. If the PR adds code that follows a wrong pattern already present in the file (e.g. legacy router with inline Pydantic models, `datetime.utcnow()`, bare string literals, `await db.commit()` inside services), still flag it — explain that the existing code is non-compliant and the *new* code should follow the standard, even if the file around it does not. Never validate violations by saying "the rest of the file does this too." Suggest the correct pattern in the `suggestion` block.
 
@@ -45,11 +39,7 @@ For a full review from scratch, use `~/.wonsky-agents/skills/pr-review-orchestra
 
 ### Preferred: GitHub MCP server
 
-Check the `user-github` MCP server is enabled and connected. Tool descriptors live at:
-
-```
-/Users/vpidborsky001/.cursor/projects/.../mcps/user-github/tools/
-```
+Discover the host's connected GitHub tools and inspect their current schemas. Do not read another machine's MCP descriptor paths. The following names illustrate one server's capabilities; adapt to the actual connector.
 
 The tools you will use most:
 
@@ -68,43 +58,34 @@ If the MCP server is not connected, verify `gh` is installed and authenticated v
 gh --version && gh auth status
 ```
 
-If neither MCP nor `gh` is available, stop and tell the user:
-
-```
-Cannot review the PR — neither the GitHub MCP server nor the gh CLI is available.
-
-Options:
-- Enable the user-github MCP server in ~/.cursor/mcp.json, OR
-- Install the GitHub CLI from https://cli.github.com/ and run `gh auth login`.
-```
-
-Do not attempt to fabricate review output.
+If neither connector nor `gh` is available, explain which remote operations are unavailable. Continue an authorized read-only review from a supplied diff or local checkout when possible; label head/anchor/CI evidence that could not be checked. For posting, ask the user to connect GitHub or authenticate an installed CLI. Do not fabricate remote state or install tools without authorization.
 
 ## Core Workflow
 
 **Required steps — do not skip any:**
 
-1. **Verify access** — MCP (`get_me`) or `gh` (`gh auth status`).
-2. **Load reviewer preferences** — read `reviewer-preferences.md` (sibling file). Use it to shape what you flag, how you phrase comments, which severity to choose, and what to skip.
-3. **Fetch recent voice samples** — call `search_pull_requests` with `query: "is:pr reviewed-by:<user> sort:updated-desc"` (excluding the PR under review), then `pull_request_read get_review_comments` on the 5–8 newest, filtering to the user's own comments. Use these as the ground truth for length, formatting, severity, and `suggestion` usage. Recent samples override seeded preferences when they disagree.
-4. **Load repository standards** — read the PR's repo `AGENTS.md` (root) and any linked convention files under `docs/conventions/`. Treat these as the authoritative ruleset. New code must follow them even if surrounding legacy code does not.
-5. **Fetch PR context** — diff, changed files, latest commit SHA.
-6. **Draft the review** — line-anchored comments + optional code suggestions + chosen event type + overall message. Apply preferences AND match the recent-sample voice. When the PR follows an existing wrong pattern, flag it in the user's voice and don't cite AGENTS.md in the comment text unless the user does.
-7. **Show the user exactly what will be posted** — call `AskQuestion` with a yes/no choice.
-8. **Wait for explicit approval** — do not post on assumption.
-9. **Post as PENDING, then submit** — never post comments outside a pending review.
-10. **If the user corrects you during steps 7–9** — append the correction to `reviewer-preferences.md` per the Learning Loop section in that file. Do this **silently** (no permission needed). Then re-draft.
+1. **Establish access and identity** — discover connected tools or check `gh auth status`; for offline input, record what cannot be verified remotely.
+2. **Load preferences** — use the canonical private profile when present and explicit session preferences. Read the applicable repository guidance through the existing context packet.
+3. **Calibrate only when needed** — reuse current examples or obtain a small sample as described above.
+4. **Fetch PR context** — repository/PR identity, diff, changed files, head SHA, existing reviews and relevant CI. An offline draft remains unverified for posting until these can be checked.
+5. **Draft** — line-anchored comments, suggestions if appropriate, event and overall message. Match actual standards and user preferences; distinguish evidence from speculation.
+6. **Present the exact payload and reviewed SHA**, ask for approval and wait.
+7. **Revalidate before mutation** — refetch the head and affected diff anchors. If the head, comment text/anchors, event or message changed, show the revised package and obtain approval again.
+8. **Use a pending review, then submit** — inspect existing pending reviews first; never append to, submit or delete an unrelated draft. Keep the ID of the review created for this approved package. Confirm staged comments and overall message match the approval, then recheck the head before submission. If the connector cannot safely identify the intended pending review, use a supported alternative or stop posting and report the limitation.
+9. **Report the actual result** — include the submitted review link when available; partial staging is not a posted review. On a changed head or failed operation, retain the known state and explain it instead of retrying into a different draft.
+10. **If the user corrects the draft**, apply the preference in this session immediately, follow the persistence gate below, and obtain approval of the revised public payload.
 
 ### Approval pattern
 
 Before posting **any** review, present:
 
-- File path and line number for each comment
+- Repository/PR identity and reviewed head SHA
+- File path, line number/range and side for each comment
 - Exact comment body (including any `suggestion` block)
 - Event type (`APPROVE` / `REQUEST_CHANGES` / `COMMENT`)
 - Overall review message
 
-Then call `AskQuestion`:
+Then use the available question tool or ask in chat:
 
 - Question: "Post this review as shown?"
 - Options: `Yes, post it as shown` / `No, let me revise first`
@@ -113,27 +94,12 @@ Only proceed on explicit yes.
 
 ## Personal Preferences & Learning Loop
 
-The file `reviewer-preferences.md` (sibling of this `SKILL.md`) is the user's personal review style guide. It contains:
+The canonical private profile described above records focus areas, tone, suggestion patterns, severity, exclusions and project-specific preferences. Its absence must not block drafting. It is local user data, excluded from version control.
 
-- **Focus Areas** — things the user always wants flagged
-- **Style & Tone** — how comments should sound
-- **Suggestion Patterns** — conventions for `suggestion` blocks
-- **Severity Calibration** — when to use `APPROVE` vs `REQUEST_CHANGES` vs `COMMENT`
-- **Things to Skip** — areas to never comment on (e.g. lockfiles)
-- **Project-Specific Conventions** — rules tied to the user's projects
-- **Corrections log** — chronological record of pushbacks
-
-### Required behavior
-
-1. **Read the file at step 2 of every review**, before drafting anything. Apply every relevant section to the draft.
-2. **When the user corrects, rejects, or refines a drafted comment**, append a new entry to the appropriate section of `reviewer-preferences.md`:
-   - Use the existing section headers; only add a new section if no existing one fits.
-   - Append silently — do not ask permission.
-   - Keep entries to 1–2 lines.
-   - Don't duplicate existing entries — re-read the section first.
-3. **Then re-draft** the review with the new preference applied, and run the approval step again.
-
-The intent: every review converges closer to how the user would have written it themselves.
+1. Read relevant existing preferences without exposing them publicly.
+2. Apply a correction to the active draft immediately. For a lasting profile change, reread the relevant section, remove duplication, and present the canonical path and exact 1–2-line change. Follow the `repository-context` approval gate, unless an explicit standing user instruction already authorizes this particular correction log and operation. Do not interpret permission to post a review as permission to change lasting instructions.
+3. Apply only approved profile changes at the canonical source, never to a generated runtime copy. If the source or approval is unavailable, keep the preference in session and report persistence as pending. Use the installer for any later synchronization and preserve destination conflicts.
+4. Re-draft and request approval of the exact public review again. A private learning change never grants authority to post.
 
 ## Preferred Workflow — GitHub MCP
 
@@ -166,7 +132,7 @@ Call `pull_request_review_write` with:
 }
 ```
 
-**Omit `event`** — that's what makes it pending. The response includes the review ID (not needed for follow-up calls; the MCP scopes by "current user's pending review").
+**Omit `event`** to create a pending review. Retain the returned review ID and verify it belongs to this package. Some connectors scope follow-up calls to the current user's pending review rather than an ID; inspect that draft before calling them, and do not use them if ownership cannot be established safely.
 
 ### Step 3 — Add comments to the pending review
 
@@ -222,7 +188,7 @@ Get thread IDs from `pull_request_read` with `method=get_review_comments`.
 
 ### Bonus: Cancel a pending review
 
-If the user revokes approval after a pending review was created, call:
+If the user revokes approval after this workflow created a pending review, first verify its ID and contents. Delete only that draft, leaving any pre-existing draft untouched. With a connector whose verified schema uses the following call:
 
 ```json
 { "method": "delete_pending", "owner": "<owner>", "repo": "<repo>", "pullNumber": <number> }
@@ -232,33 +198,23 @@ If the user revokes approval after a pending review was created, call:
 
 Only use if the MCP is unavailable. Run via the Shell tool.
 
+Prepare a UTF-8 JSON file with the **approved** `commit_id` and `comments` array (`path`, `line`, `side`, `body`, and range fields when needed). Use a file-writing API or a safely quoted literal heredoc so comment bodies cannot execute as shell code. Preserve real newlines in JSON strings through a JSON serializer.
+
 ```bash
-# Get the latest commit SHA on the PR
-gh pr view <PR_NUMBER> --json commits --jq '.commits[-1].oid'
-
-# Create the PENDING review with all comments (no event field = pending)
-gh api repos/:owner/:repo/pulls/<PR_NUMBER>/reviews \
-  -X POST \
-  -f commit_id="<COMMIT_SHA>" \
-  -f 'comments[][path]=path/to/file.ts' \
-  -F 'comments[][line]=42' \
-  -f 'comments[][side]=RIGHT' \
-  -f 'comments[][body]=Comment body with optional suggestion block' \
-  --jq '{id, state}'
-# Returns: {"id": <REVIEW_ID>, "state": "PENDING"}
-
-# Submit the pending review with chosen event type
-gh api repos/:owner/:repo/pulls/<PR_NUMBER>/reviews/<REVIEW_ID>/events \
-  -X POST \
-  -f event="COMMENT" \
-  -f body="Overall review message"
+gh pr view <PR_NUMBER> --repo <OWNER/REPO> --json headRefOid
+gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/reviews
+gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/reviews \
+  --method POST --input "approved-review.json"
 ```
 
-### `gh` syntax rules
+Omit `event` from the creation payload to keep it pending. Record the returned review ID and validate its comments against the approval. After the head and anchors are rechecked, prepare an approved submit JSON file containing `event` and `body`:
 
-- Use **single quotes** around any parameter with `[]`: `'comments[][path]=...'`
-- Use `-f` for **string** values, `-F` for **numeric** values (line numbers especially)
-- `gh` auto-detects `owner/repo` when run inside the repo working directory
+```bash
+gh api repos/<OWNER>/<REPO>/pulls/<PR_NUMBER>/reviews/<REVIEW_ID>/events \
+  --method POST --input "approved-submit.json"
+```
+
+Use explicit owner/repository identity throughout. Never let a different current working directory select the target. Read the installed CLI help/API response for supported fields rather than guessing.
 
 ## Event Types
 
@@ -311,7 +267,7 @@ const example = "nested fenced code";
 | Mixing up `-f` and `-F` in `gh`                        | `-F` for numbers (line numbers), `-f` for strings                         |
 | Skipping the commit SHA lookup                         | Required for `gh`; for MCP, get via `pull_request_read` method `get`      |
 | Wrong event type                                       | Bugs/security → `REQUEST_CHANGES`; style/optional → `APPROVE`; questions → `COMMENT` |
-| Posting without user approval                          | Always use `AskQuestion` first — review comments are public and permanent |
+| Posting without user approval                          | Present exact payload and wait for approval — reviews are external writes |
 
 ## Red Flags — Stop If You're Thinking…
 
@@ -323,7 +279,7 @@ const example = "nested fenced code";
 - "I'll check MCP/gh later — let me draft first"
 - "The MCP is probably connected, no need to verify"
 
-**All of these mean: STOP. Verify access first, draft, get explicit approval via `AskQuestion`, then post as PENDING and submit.**
+**All of these mean: check access and actual draft state, present the exact payload, wait for approval, then post through a verified pending review.**
 
 ### Why pending reviews?
 
@@ -350,7 +306,7 @@ pull_request_read(method="get", owner="acme", repo="api", pullNumber=123)
 pull_request_read(method="get_diff", owner="acme", repo="api", pullNumber=123)
 ```
 
-### Step 2 — Draft and ask via `AskQuestion`
+### Step 2 — Present the draft and ask for approval
 
 Present the user with:
 
@@ -376,12 +332,12 @@ Event: REQUEST_CHANGES
 Overall: "Found 3 issues that should be addressed before merging."
 ```
 
-Call `AskQuestion`:
+Use the available question tool or ask in chat:
 
 - Question: "Post this review as shown?"
 - Options: `Yes, post it` / `No, let me revise`
 
-### Step 3 — After explicit "Yes", post via MCP
+### Step 3 — After explicit "Yes", revalidate head/anchors and pending-review ownership, then post via MCP
 
 ```
 # Create pending

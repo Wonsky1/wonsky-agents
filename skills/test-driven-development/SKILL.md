@@ -7,9 +7,11 @@ description: Use when implementing any feature or bugfix, before writing impleme
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 ## Overview
+
+User and host instructions take precedence. Apply test creation/execution only when the user requested it and it is permitted. If testing was not requested, preserve the implementation scope, report what is unverified and do not claim TDD. Reuse an explicit user exception rather than repeatedly requesting permission. Never delete inherited, user-authored or already approved implementation to satisfy this workflow.
 
 Write the test first. Watch it fail. Write minimal code to pass.
 
@@ -25,7 +27,7 @@ Write the test first. Watch it fail. Write minimal code to pass.
 - Refactoring
 - Behavior changes
 
-**Exceptions (ask the user):**
+**Possible exceptions (follow existing user/host direction; clarify only when needed):**
 - Throwaway prototypes
 - Generated code
 - Configuration files
@@ -38,15 +40,9 @@ Thinking "skip TDD just this once"? Stop. That's rationalization.
 NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 ```
 
-Write code before the test? Delete it. Start over.
+For new authorized work, start with the failing test. If implementation already exists, preserve it and the current diff. Reproduce the original failure in a safe fixture or isolated before-fix copy, then verify the desired behavior. Report this as retrospective regression verification rather than pretending the implementation was test-first.
 
-**No exceptions:**
-- Don't keep it as "reference"
-- Don't "adapt" it while writing tests
-- Don't look at it
-- Delete means delete
-
-Implement fresh from tests. Period.
+A restart is appropriate only for your own disposable experiment when deleting it is within the user's authority and cannot remove other work. Do not reset, discard or rewrite inherited/approved changes as a process ritual.
 
 ## Red-Green-Refactor
 
@@ -231,11 +227,7 @@ Automated tests are systematic. They run the same way every time.
 
 **"Deleting X hours of work is wasteful"**
 
-Sunk cost fallacy. The time is already gone. Your choice now:
-- Delete and rewrite with TDD (X more hours, high confidence)
-- Keep it and add tests after (30 min, low confidence, likely bugs)
-
-The "waste" is keeping code you can't trust. Working code without real tests is technical debt.
+Preserve existing work and establish evidence. For authorized new work, test-first avoids anchoring on the implementation. For existing work, a targeted regression that fails against a safe before-fix reproduction can still demonstrate value; do not erase user work or invent confidence percentages.
 
 **"TDD is dogmatic, being pragmatic means adapting"**
 
@@ -265,8 +257,8 @@ Tests-first force edge case discovery before implementing. Tests-after verify yo
 | "I'll test after" | Tests passing immediately prove nothing. |
 | "Tests after achieve same goals" | Tests-after = "what does this do?" Tests-first = "what should this do?" |
 | "Already manually tested" | Ad-hoc ≠ systematic. No record, can't re-run. |
-| "Deleting X hours is wasteful" | Sunk cost fallacy. Keeping unverified code is technical debt. |
-| "Keep as reference, write tests first" | You'll adapt it. That's testing after. Delete means delete. |
+| "Implementation already exists" | Preserve it; verify the failure and fix in a safe isolated setup, and report the actual test order. |
+| "Existing implementation means this was TDD" | Be honest: retrospective regression coverage is useful, but is not test-first development. |
 | "Need to explore first" | Fine. Throw away exploration, start with TDD. |
 | "Test hard = design unclear" | Listen to test. Hard to test = hard to use. |
 | "TDD will slow me down" | TDD faster than debugging. Pragmatic = test-first. |
@@ -289,7 +281,7 @@ Tests-first force edge case discovery before implementing. Tests-after verify yo
 - "TDD is dogmatic, I'm being pragmatic"
 - "This is different because..."
 
-**All of these mean: Delete code. Start over with TDD.**
+**These signal a test-first process gap.** Stop adding unverified behavior, preserve existing work and establish the authorized failure/fix evidence. Restart only disposable work that is safe and authorized to discard.
 
 ## Bug Fix Example (RED → Verify RED → GREEN → Verify GREEN → REFACTOR)
 
@@ -341,7 +333,7 @@ Before marking work complete:
 - [ ] Tests use real code (mocks only if unavoidable)
 - [ ] Edge cases and errors covered
 
-Can't check all boxes? You skipped TDD. Start over.
+If a box is unmet, report the exact gap; do not claim full TDD or discard existing work to manufacture compliance.
 
 ## When Stuck
 
@@ -356,7 +348,7 @@ Can't check all boxes? You skipped TDD. Start over.
 
 Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix and prevents regression.
 
-Never fix bugs without a test.
+When testing is requested and permitted, prefer a regression that demonstrates the original failure. Otherwise respect the instruction and report the verification limit.
 
 ## Testing Anti-Patterns
 
@@ -372,4 +364,4 @@ Production code → test exists and failed first
 Otherwise → not TDD
 ```
 
-No exceptions without the user's permission.
+User/host instructions and explicitly approved exceptions apply; preserve inherited and approved work.

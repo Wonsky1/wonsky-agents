@@ -23,6 +23,7 @@ def build(lanes: dict[str, dict], top_hitches: int = 5, top_symbols: int = 5) ->
 
     tp_index = _build_time_profile_index(tp)
     sui_events = (swiftui or {}).get("_events") if swiftui and swiftui.get("available") else None
+    sui_index = _process_indexes(sui_events, "start_ns") if sui_events is not None else None
 
     correlations: list[dict] = []
 
@@ -33,9 +34,10 @@ def build(lanes: dict[str, dict], top_hitches: int = 5, top_symbols: int = 5) ->
                     trigger_lane="hangs",
                     start_ns=h["start_ns"],
                     end_ns=h["end_ns"],
+                    process=(h.get("thread") or {}).get("process"),
                     extra={"hang_type": h["hang_type"]},
                     tp_index=tp_index,
-                    sui_events=sui_events,
+                    sui_index=sui_index,
                     top_symbols=top_symbols,
                 )
             )
@@ -48,12 +50,13 @@ def build(lanes: dict[str, dict], top_hitches: int = 5, top_symbols: int = 5) ->
                     trigger_lane="hitches",
                     start_ns=hi["start_ns"],
                     end_ns=hi["end_ns"],
+                    process=hi.get("process_identity") or {"name": hi.get("process")},
                     extra={
                         "frame_duration_ms": hi["frame_duration_ms"],
                         "hitch_duration_ms": hi["hitch_duration_ms"],
                     },
                     tp_index=tp_index,
-                    sui_events=sui_events,
+                    sui_index=sui_index,
                     top_symbols=top_symbols,
                 )
             )
@@ -69,18 +72,52 @@ def _build_time_profile_index(tp: dict | None):
     samples = tp.get("_samples") or []
     if not samples:
         return None
-    # Samples are already sorted by time in time_profiler.analyze.
-    times = [s["time_ns"] for s in samples]
-    return {"times": times, "samples": samples}
+    return _process_indexes(samples, "time_ns")
+
+
+def _process_indexes(events: list[dict], time_key: str) -> dict:
+    by_pid: dict[int, list] = defaultdict(list)
+    by_name: dict[str, list] = defaultdict(list)
+    for event in events:
+        identity = event.get("process_identity") or {"name": event.get("process")}
+        if identity.get("pid") is not None:
+            by_pid[identity["pid"]].append(event)
+        if identity.get("name"):
+            by_name[identity["name"]].append(event)
+    def index(rows):
+        rows = sorted(rows, key=lambda row: row[time_key])
+        return {"times": [row[time_key] for row in rows], "samples": rows}
+    return {"by_pid": {key: index(rows) for key, rows in by_pid.items()},
+            "by_name": {key: index(rows) for key, rows in by_name.items()}}
+
+
+def _select_process(indexes: dict, process: dict | None):
+    """Never infer the trigger's process from whichever samples happen to overlap."""
+    process = process or {}
+    if process.get("pid") is not None:
+        index = indexes["by_pid"].get(process["pid"])
+    elif process.get("name"):
+        index = indexes["by_name"].get(process["name"])
+        if index:
+            pids = {(row.get("process_identity") or {}).get("pid")
+                    for row in index["samples"]}
+            if len(pids) > 1:
+                return None, "process name maps to multiple or unidentified process instances"
+    else:
+        return None, "trigger process identity is unavailable"
+    if index is None:
+        return None, "no samples with a matching process identity are available"
+    return index, None
 
 
 def _correlate_event(
     trigger_lane: str,
     start_ns: int,
     end_ns: int,
+    process: dict | None,
     extra: dict,
     tp_index: dict | None,
-    sui_events: list[dict] | None,
+    sui_index: dict | None,
     top_symbols: int,
 ) -> dict[str, Any]:
     entry: dict[str, Any] = {
@@ -90,29 +127,41 @@ def _correlate_event(
             "end_ms": round(end_ns / 1_000_000, 2),
             "duration_ms": round((end_ns - start_ns) / 1_000_000, 2),
             **extra,
+            "process": process,
         },
     }
 
-    if tp_index is not None:
+    notes = []
+    selected_index, reason = (_select_process(tp_index, process)
+                              if tp_index is not None else (None, None))
+    if selected_index is not None:
         tp = _time_profile_hot_symbols(
-            tp_index, start_ns, end_ns, top_symbols
+            selected_index, start_ns, end_ns, top_symbols
         )
         duration_ns = end_ns - start_ns
-        # Sample rate is 1ms/sample on standard Time Profiler. If the window
-        # is N ms long we'd expect ~N main-thread samples if main was fully
-        # running; fewer means main was blocked (I/O, lock, etc.).
+        # Estimate using a 1ms/sample interval. The recording may use another
+        # interval or omit samples; low coverage alone does not prove blocking.
         expected_if_running = max(1, duration_ns // 1_000_000)
         coverage_pct = min(100.0, 100.0 * tp["samples_main"] / expected_if_running)
         entry["time_profiler_main_thread"] = {
             "samples_in_window": tp["samples_total"],
             "samples_on_main": tp["samples_main"],
             "main_running_coverage_pct": round(coverage_pct, 1),
+            "coverage_assumption": "1ms/sample; sampling coverage alone does not establish blocking",
             "hot_symbols": tp["hot_symbols"],
         }
+    elif reason:
+        notes.append(f"Time Profiler correlation unavailable: {reason}.")
 
-    if sui_events is not None:
-        sui_overlap = _swiftui_overlaps(sui_events, start_ns, end_ns)
-        entry["swiftui_overlapping_updates"] = sui_overlap
+    if sui_index is not None:
+        selected_sui, reason = _select_process(sui_index, process)
+        if selected_sui is not None:
+            entry["swiftui_overlapping_updates"] = _swiftui_overlaps(
+                selected_sui["samples"], start_ns, end_ns)
+        else:
+            notes.append(f"SwiftUI correlation unavailable: {reason}.")
+    if notes:
+        entry["notes"] = notes
 
     return entry
 
@@ -124,9 +173,8 @@ def _time_profile_hot_symbols(
 
     Hang/hitch/SwiftUI correlations are all main-thread responsiveness
     problems, so worker-thread symbols are noise. We also return a coverage
-    metric — when main was blocked on I/O or a lock, the window will have
-    far fewer samples than its duration would predict, and that signal is
-    what tells the agent "this was blocked, not CPU-bound".
+    metric. Sparse samples may warrant inspecting waits, recording settings
+    or dropped data; they cannot by themselves distinguish those causes.
     """
     times = tp_index["times"]
     samples = tp_index["samples"]

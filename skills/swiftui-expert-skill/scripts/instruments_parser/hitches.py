@@ -75,6 +75,7 @@ def analyze(
             "frame_duration_ms": None,
             "start_ms": round(start_ns / 1_000_000, 2),
             "process": (process or {}).get("name"),
+            "process_identity": process,
             "narrative": narrative,
             "is_system": bool(is_system) if is_system is not None else None,
         })

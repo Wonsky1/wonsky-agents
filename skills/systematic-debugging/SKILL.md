@@ -7,7 +7,7 @@ description: Use when encountering any bug, test failure, or unexpected behavior
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 ## Overview
 
@@ -49,6 +49,8 @@ Use for ANY technical issue:
 
 ## The Four Phases
 
+Apply test creation/execution only when the user requested it and host instructions permit it. Prefer the smallest authorized reproduction; report unavailable evidence rather than running unrequested checks or claiming a verified fix.
+
 You MUST complete each phase before proceeding to the next.
 
 ### Phase 1: Root Cause Investigation
@@ -80,8 +82,8 @@ You MUST complete each phase before proceeding to the next.
    **BEFORE proposing fixes, add diagnostic instrumentation:**
    ```
    For EACH component boundary:
-     - Log what data enters component
-     - Log what data exits component
+     - Log safe metadata about inputs/outputs (types, counts, redacted identifiers)
+     - Never print secrets, tokens or full environment values; avoid shell tracing around sensitive commands
      - Verify environment/config propagation
      - Check state at each layer
 
@@ -94,19 +96,28 @@ You MUST complete each phase before proceeding to the next.
    ```bash
    # Layer 1: Workflow
    echo "=== Secrets available in workflow: ==="
-   echo "IDENTITY: ${IDENTITY:+SET}${IDENTITY:-UNSET}"
+   if [ -n "${IDENTITY:-}" ]; then
+     echo "IDENTITY: SET"
+   else
+     echo "IDENTITY: UNSET_OR_EMPTY"
+   fi
 
    # Layer 2: Build script
    echo "=== Env vars in build script: ==="
-   env | grep IDENTITY || echo "IDENTITY not in environment"
+   if [ -n "${IDENTITY:-}" ]; then
+     echo "IDENTITY: SET"
+   else
+     echo "IDENTITY: UNSET_OR_EMPTY"
+   fi
 
    # Layer 3: Signing script
    echo "=== Keychain state: ==="
    security list-keychains
-   security find-identity -v
+   # Inspect identity details locally only when authorized; redact shared output.
 
    # Layer 4: Actual signing
-   codesign --sign "$IDENTITY" --verbose=4 "$APP"
+   # Run the project's signing command only when authorized.
+   # Report its exit status and redacted error category, not signing arguments.
    ```
 
    **This reveals:** Which layer fails (secrets → workflow ✓, workflow → build ✗)
@@ -277,7 +288,7 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 3. Implement appropriate handling (retry, timeout, error message)
 4. Add monitoring/logging for future investigation
 
-**But:** 95% of "no root cause" cases are incomplete investigation.
+An unresolved cause remains uncertain. Report the evidence and investigation limits; do not substitute an unsupported success rate for diagnosis.
 
 ## Integration with Other Skills
 
@@ -287,10 +298,6 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 - **`~/.wonsky-agents/skills/condition-based-waiting/SKILL.md`** — **Complementary** when failures or flakes come from arbitrary sleeps/timeouts in tests.
 - **`~/.wonsky-agents/skills/verification-before-completion/SKILL.md`** — **Complementary**; verify the fix with evidence before claiming success.
 
-## Real-World Impact
+## Evidence and limits
 
-From debugging sessions:
-- Systematic approach: 15-30 minutes to fix
-- Random fixes approach: 2-3 hours of thrashing
-- First-time fix rate: 95% vs 40%
-- New bugs introduced: Near zero vs common
+Report reproduction steps, observations, the confirmed cause and the checks actually performed. This procedure reduces guesswork; it does not guarantee a fix time, success rate or absence of regressions.

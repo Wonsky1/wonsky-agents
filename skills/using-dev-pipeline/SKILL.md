@@ -7,7 +7,7 @@ description: Use when starting any conversation about code, software, debugging,
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 <SUBAGENT-STOP>
 If you were dispatched as a subagent, skip routing again; retain the inherited scope/context packet and follow repository-context for your assigned targets.
@@ -95,12 +95,7 @@ Before responding to ANY user message:
 
 ## Skills with Checklists
 
-If a skill has a checklist, YOU MUST create TodoWrite todos for EACH item.
-
-- Work through checklist mentally → wrong
-- Skip creating todos "to save time" → wrong
-- Batch multiple items into one todo → wrong
-- Mark complete without doing them → wrong
+Use the host's available plan/task-list tool for meaningful multi-step work; if none exists, keep a concise checklist in the conversation or working notes. TodoWrite is an example, not a required tool name. Group small related checks when every requirement remains accounted for. Never mark a task complete without its evidence; do not inflate a simple task into a checklist item per sentence.
 
 ## Announcing Skill Usage
 

@@ -36,10 +36,10 @@ For the full rule list per category (all 119 UX guidelines with rationale), read
 
 ## Running the search tool
 
-The search script lives inside this skill's own directory, not the project directory. Always invoke it by its full path — do not assume a particular working directory:
+Resolve `SKILL_DIR` to the absolute directory containing this loaded `SKILL.md` and verify `scripts/search.py` exists there. It is an example variable, not a preinstalled environment variable. The ordinary copied skill works without a plugin root. Invoke the script by its full path; do not assume a working directory. Shell examples below use POSIX variable syntax; in PowerShell pass the resolved path or use `$SkillDir`.
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "<query>" --domain <domain>
+python "${SKILL_DIR}/scripts/search.py" "<query>" --domain <domain>
 ```
 
 If `python` is not found, try `python3`, then `py -3`. Requires Python 3.x, no external dependencies (see README for install instructions if Python is missing).
@@ -50,7 +50,7 @@ If `python` is not found, try `python3`, then `py -3`. Requires Python 3.x, no e
 
 Choose the smallest search mode that fits the request:
 
-1. **New project/page or system-wide visual direction** → use `--design-system`.
+1. **New web project/page or web-wide visual direction** → use `--design-system` when it fits. **Native mobile/desktop** → query the detected native `--stack` and relevant domain; follow platform-specific guidance. The web generator is not a native design-system generator.
 2. **Targeted concern or component bug** → use one explicit `--domain`.
 3. **Known implementation stack** → use `--stack`; add a separate domain search only for a distinct design concern.
 
@@ -70,27 +70,29 @@ Extract from the user request:
 - **Style keywords**: playful, vibrant, minimal, dark mode, content-first, immersive, etc.
 - **Stack**: detect from the project — check `package.json` deps (react/next/vue/svelte/nuxt/@angular), `pubspec.yaml` (Flutter), `*.xcodeproj`/`Package.swift` (SwiftUI), `composer.json` (Laravel), or React Native markers (`app.json` + `react-native` dep). If nothing is detectable and stack guidance matters, ask the user. **Never assume a stack** — a hardcoded default silently misroutes every recommendation.
 
-### Step 2: Generate Design System (REQUIRED for new pages/projects)
+### Step 2: Generate a web design system when appropriate
 
-Use `--design-system` when the task needs a coherent product-wide visual direction:
+`--design-system` generates web-oriented patterns, CSS/typography and landing-page recommendations; it does not adapt its output to `--stack`. Native/graphics stack combinations are rejected; use a separate `--stack` query for implementation guidance even for web stacks. Use it for a web product needing coherent visual direction. For native SwiftUI/AppKit work, load `swiftui-expert-skill` and `macos-design-guidelines` as applicable, query `--stack swiftui` and only relevant platform-appropriate domains. Other native stacks use their matching stack guidance. Do not require hero sections, web fonts, CSS or GSAP for a native app.
+
+For an applicable web task:
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "<product_type> <industry> <keywords>" --design-system [-p "Project Name"]
+python "${SKILL_DIR}/scripts/search.py" "<product_type> <industry> <keywords>" --design-system [-p "Project Name"]
 ```
 
 This aggregates product/style/color/landing/typography matches, applies reasoning rules from `ui-reasoning.csv`, and returns pattern, style, colors, typography, effects, and anti-patterns to avoid.
 
 **Example:**
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "beauty spa wellness service" --design-system -p "Serenity Spa"
+python "${SKILL_DIR}/scripts/search.py" "beauty spa wellness service" --design-system -p "Serenity Spa"
 ```
 
 ### Step 2b: Persist Design System (Master + Overrides Pattern)
 
-To save the design system for retrieval across sessions, add `--persist` **and always pass `--output-dir` pointed at the project root** — without it, files are written relative to whatever directory the tool happens to run from:
+Persist only a verified web design proposal that the user has authorized. If the files serve as lasting repository guidance, present the exact generated text/diff and obtain approval through `repository-context` before writing; preview without `--persist` first. Then add `--persist` **and pass `--output-dir` pointed at the approved project root** — otherwise files follow the current working directory:
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "<query>" --design-system --persist -p "Project Name" --output-dir "<project-root>"
+python "${SKILL_DIR}/scripts/search.py" "<query>" --design-system --persist -p "Project Name" --output-dir "<project-root>"
 ```
 
 This creates:
@@ -113,7 +115,7 @@ Read an existing `MASTER.md` before deciding whether `--force` is justified. Nev
 Three optional 1-10 sliders that tune `--design-system` output without changing your query. Add any combination of them to the same command:
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "<query>" --design-system --variance <1-10> --motion <1-10> --density <1-10>
+python "${SKILL_DIR}/scripts/search.py" "<query>" --design-system --variance <1-10> --motion <1-10> --density <1-10>
 ```
 
 | Dial | Low (1-3) | Mid (4-7) | High (8-10) |
@@ -128,13 +130,13 @@ python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "<
 
 **Example:**
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "internal analytics dashboard" --design-system --variance 8 --motion 7 --density 8 -p "Ops Console"
+python "${SKILL_DIR}/scripts/search.py" "internal analytics dashboard" --design-system --variance 8 --motion 7 --density 8 -p "Ops Console"
 ```
 
 ### Step 3: Supplement with Detailed Searches (as needed)
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "<keyword>" --domain <domain> [-n <max_results>]
+python "${SKILL_DIR}/scripts/search.py" "<keyword>" --domain <domain> [-n <max_results>]
 ```
 
 | Need | Domain | Example |
@@ -157,7 +159,7 @@ Domain is auto-detected from the query if `--domain` is omitted — but auto-det
 ### Step 4: Stack Guidelines
 
 ```bash
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "<keyword>" --stack <stack>
+python "${SKILL_DIR}/scripts/search.py" "<keyword>" --stack <stack>
 ```
 
 **Available stacks:** `react`, `nextjs`, `vue`, `svelte`, `astro`, `nuxtjs`, `nuxt-ui`, `angular`, `laravel`, `swiftui`, `react-native`, `flutter`, `jetpack-compose`, `html-tailwind`, `shadcn`, `threejs`, `javafx`, `wpf`, `winui`, `avalonia`, `uno`, `uwp`. Use the stack detected in Step 1.
@@ -177,13 +179,13 @@ Do not fabricate output. Instead:
 
 ```bash
 # Step 2: design system
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "AI search tool modern minimal" --design-system -p "AI Search"
+python "${SKILL_DIR}/scripts/search.py" "AI search tool modern minimal" --design-system -p "AI Search"
 
 # Step 3: supplement
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "keyboard focus modal" --domain ux
+python "${SKILL_DIR}/scripts/search.py" "keyboard focus modal" --domain ux
 
 # Step 4: stack guidelines
-python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "suspense streaming bundle" --stack nextjs
+python "${SKILL_DIR}/scripts/search.py" "suspense streaming bundle" --stack nextjs
 ```
 
 Then synthesize the design system + detailed searches and implement.
@@ -196,12 +198,12 @@ Then synthesize the design system + detailed searches and implement.
 
 - Keep one dominant intent and 2–5 meaningful terms per query: `"keyboard focus modal"`, not a full audit checklist
 - Retry once with a narrower phrase or explicit domain/stack; do not cycle through unrelated keywords
-- Use `--design-system` for a new project/page and `--domain` for a focused concern
+- Use `--design-system` for applicable web visual direction; use native stack/platform guidance for native apps and `--domain` for a focused concern
 - Pass the detected stack explicitly for implementation-specific guidance
 
 | Problem | What to Do |
 |---------|------------|
-| Can't decide on style/color | Re-run `--design-system` with different keywords |
+| Can't decide on style/color | Narrow the applicable web generator query, or use a native stack/domain query; inspect fit before adopting |
 | Dark mode contrast issues | `references/quick-reference.md` §6: `color-dark-mode` + `color-accessible-pairs` |
 | Animations feel unnatural | `references/quick-reference.md` §7: `spring-physics` + `easing` + `exit-faster-than-enter` |
 | Form UX is poor | `references/quick-reference.md` §8: `inline-validation` + `error-clarity` + `focus-management` |

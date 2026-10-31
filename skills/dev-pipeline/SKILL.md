@@ -7,7 +7,7 @@ description: Preferred entry point for nearly all Python software engineering wo
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 This is the **Python specialization** of the unified pipeline. It is the preferred entry point for Python work and behaves identically to `unified-dev-pipeline`, with the Language Adapter pre-pinned to the Python toolchain.
 
@@ -17,7 +17,7 @@ This is the **Python specialization** of the unified pipeline. It is the preferr
 2. **Pin the Language Adapter to Python** (below) instead of detecting the language.
 3. **Use the Agent Delegation Layer** from unified when specialist agents are available; otherwise use the skill fallbacks. The pipeline works fully without agents.
 
-Everything in `unified-dev-pipeline` applies here. This file only fixes the toolchain.
+Everything in `unified-dev-pipeline` applies here. Stage skills own their implementation and review procedures.
 
 ## Python Language Adapter (pinned)
 
@@ -34,10 +34,10 @@ Confirm against the project's own config (`pyproject.toml`, `tox.ini`, `Makefile
 
 ## Python-specific gate notes
 
-- **Phase 4 (Implementation):** follow `~/.wonsky-agents/skills/implementation-guide/SKILL.md` with Python conventions (type hints, dependency injection, no monolithic modules, PEP 8 via ruff).
+- **Phase 4 (Implementation):** route to `~/.wonsky-agents/skills/implementation-guide/SKILL.md`.
 - **Phase 5 (Quality Gate):** `~/.wonsky-agents/skills/quality-gate/SKILL.md` detects the framework and delegates testing to `~/.wonsky-agents/skills/testing-pytest/SKILL.md`. Run `pytest`, `ruff check`, and `mypy` as the proof commands.
 - **Completion Verification:** the proving command is almost always `pytest` (optionally scoped to the changed module) plus `ruff check` and `mypy`.
 
 ## Reminder
 
-Do NOT commit, push, or deploy. The pipeline ends at quality verification — integration is always the user's explicit decision. For any non-Python project, switch to `~/.wonsky-agents/skills/unified-dev-pipeline/SKILL.md`.
+Do NOT commit, push, or deploy. The pipeline ends after verification, structural review and the required repository-context outcome; context review/approval remains explicit. Integration is always the user's explicit decision. For any non-Python project, switch to `~/.wonsky-agents/skills/unified-dev-pipeline/SKILL.md`.

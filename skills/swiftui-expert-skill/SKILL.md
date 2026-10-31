@@ -7,6 +7,8 @@ description: Use when writing, reviewing, or refactoring SwiftUI code for iOS or
 
 ## Operating Rules
 
+Resolve `SKILL_DIR` to the absolute directory containing this loaded `SKILL.md` before using helper examples. It is not guaranteed to exist as an environment variable.
+
 - Treat each `View` type as an invalidation boundary: give it only the data it reads and keep frequently changing dependencies close to the smallest affected subtree
 - Search `references/latest-apis.md` when writing, reviewing, or migrating API usage; look up only the APIs relevant to the task
 - Replace hard-deprecated APIs with modern equivalents. During feature work, flag soft-deprecated APIs and leave them in place (see `references/soft-deprecation.md`)
@@ -50,14 +52,14 @@ Trigger when the user asks to "record a trace", "profile the app", "capture a se
    python3 "${SKILL_DIR}/scripts/record_trace.py" --list-devices
    ```
 2. **Pick a template based on target kind** — the `SwiftUI` template populates the SwiftUI lane on any **real device**: a physical iOS/iPadOS device **or the host Mac**. The only exception is the **iOS Simulator**, where the SwiftUI lane comes back empty — switch to `--template "Time Profiler"` in that case (still gives Time Profiler + Hangs + Animation Hitches). Always check `--list-devices`: `simulators` kind → `Time Profiler`; `devices` kind (real devices and the host Mac) → default `SwiftUI`. Full decision table in `references/trace-recording.md`.
-3. **Start the recording**. For agent-driven sessions where the user says "I'll tell you when I'm done", start in the background and use a stop-file:
+3. **Start the recording**. For an agent-driven session, allocate a new session directory in the operating system's temporary area and choose a not-yet-existing marker inside it. Retain the exact path across tool calls; do not reuse a global marker or delete a marker from another session.
    ```bash
    python3 "${SKILL_DIR}/scripts/record_trace.py" \
        --device "<name|udid>" --attach "<AppName>" \
-       --stop-file /tmp/stop-trace --output ~/Desktop/session.trace
+       --stop-file "<session-directory>/stop" --output "<new-output-path>.trace"
    ```
-   For interactive sessions, just tell the user to press Ctrl+C when done.
-4. **Signal stop** — when the user says they've finished exercising the app, `touch /tmp/stop-trace`. The script cleanly SIGINTs xctrace and waits up to 60s for finalisation.
+   Use the host's background-process facility. For interactive sessions, the user can press Ctrl+C.
+4. **Signal stop** — when the user has finished exercising the app, create that session's marker. The script sends SIGINT to xctrace and waits for finalisation. After the recorder exits, remove only the temporary marker/directory created for this session; preserve the trace output.
 5. **Analyse** the resulting trace (flow into the "Trace-driven improvement" workflow below).
 
 ### Trace-driven improvement (Instruments `.trace` provided)
@@ -84,7 +86,7 @@ Full reference: `references/trace-analysis.md`. Summary of the composition patte
        --json-only --top 10 [--window START_MS:END_MS]
    ```
 4. **Interpret with `references/trace-analysis.md`** — key diagnostics:
-   - `main_running_coverage_pct` inside each correlation (<25% = blocked; ≥75% = CPU-bound).
+   - Check correlation process identity and attribution status first. Interpret `main_running_coverage_pct` only when samples belong to the trigger's process and coverage is available; unknown/mixed-process attribution is inconclusive. Low/high coverage supports a blocking/CPU hypothesis, not a diagnosis by itself.
    - `swiftui-causes.top_sources` reveals *why* updates keep happening — high-edge-count sources like `UserDefaultObserver.send()` or wide `EnvironmentWriter` entries are structural invalidation bugs. Fixing one often collapses many downstream hot views.
 5. **When a specific view shows as expensive, ask who's invalidating it.** Use `--fanin-for "<view name>"` to get the ranked list of source nodes driving the updates.
 6. **Optionally ground in source.** If the user pointed at a file, read it and match view names / user-code symbols against identifiers there. If not, recommend which files to open based on the view names SwiftUI reported.

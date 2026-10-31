@@ -12,6 +12,14 @@ from scripts.skill_files import check_overlap, install_collection, sync_skill, v
 from scripts.target_picker import pick_targets
 
 
+def report_result(label, result):
+    print('  {}: {}'.format(label, result.status))
+    for name in result.conflicts:
+        print('    conflict (kept): {}'.format(name))
+    for name in result.preserved:
+        print('    existing instructions preserved: {}'.format(name))
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description='Install and sync Wonsky Agents using Python 3.9+ standard library only.')
     mode = parser.add_mutually_exclusive_group()
@@ -21,7 +29,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument('--list', action='store_true', help='list detected and available targets without writing files')
     parser.add_argument('--terminal', action='store_true', help='use terminal selection instead of optional graphical checkboxes')
     parser.add_argument('--sync-only', action='store_true', help='sync the existing canonical collection without installing it')
-    parser.add_argument('--update', action='store_true', help='replace collection files in an existing canonical installation from this download')
+    parser.add_argument('--update', action='store_true', help='update an existing canonical installation while preserving local edits')
+    parser.add_argument('--baseline', type=Path, help='previous trusted collection folder; recognize legacy copies only when file bytes match')
     args = parser.parse_args(argv)
     try:
         system = platform.system()
@@ -29,8 +38,11 @@ def main(argv: Optional[List[str]] = None) -> int:
             raise ValueError('Supported operating systems: macOS, Linux and Windows (detected {}).'.format(system))
         home = Path.home()
         package = Path(__file__).resolve().parents[1]
-        canonical = Path(os.environ.get('WONSKY_AGENTS_HOME') or home / '.wonsky-agents').expanduser().resolve()
+        canonical = Path(os.environ.get('WONSKY_AGENTS_HOME') or home / '.wonsky-agents').expanduser().absolute()
         source = canonical if args.sync_only else package
+        baseline = args.baseline.expanduser().resolve() if args.baseline else None
+        if baseline is not None and not (baseline / 'skills').is_dir():
+            raise ValueError('--baseline must contain the previous collection skills/ folder')
         skills_root = source / 'skills'
         if not skills_root.is_dir():
             raise ValueError('Canonical skills directory not found: {}'.format(skills_root))
@@ -58,24 +70,38 @@ def main(argv: Optional[List[str]] = None) -> int:
             check_overlap(skills_root, target.path)
             for skill in skills:
                 check_overlap(skill, target.path / skill.name)
+        preview_canonical = None
         if not args.sync_only:
             same = check_overlap(package, canonical)
-            if not same and canonical.exists() and any(canonical.iterdir()) and not args.update:
-                raise ValueError('Canonical directory already exists: {}. Run its installer or pass --update.'.format(canonical))
             if not same:
-                print('{} collection: {} -> {}'.format('Would install' if args.dry_run else 'Installing', package, canonical))
-                if not args.dry_run:
-                    install_collection(package, canonical, update=args.update)
+                print('{} collection: {} -> {}'.format('Previewing' if args.dry_run else 'Installing', package, canonical))
+                result = install_collection(package, canonical, update=args.update,
+                                            baseline=baseline, dry_run=args.dry_run)
+                report_result('collection', result)
+                if result.status == 'conflict':
+                    print('Collection unchanged. Resolve the reported files before updating or syncing this download.')
+                    return 2
+                if args.dry_run:
+                    preview_canonical = canonical
+                else:
                     skills_root = canonical / 'skills'
                     skills = [skills_root / skill.name for skill in skills]
+        counts = {'added': 0, 'updated': 0, 'unchanged': 0, 'conflict': 0}
         for target in selected:
-            print('{} {} skills -> {} ({})'.format('Would sync' if args.dry_run else 'Syncing', len(skills), target.path, target.label))
-            if not args.dry_run:
-                for skill in skills:
-                    preserve = ('reviewer-preferences.md',) if skill.name == 'github-pr-review' else ()
-                    sync_skill(skill, target.path / skill.name, preserve=preserve)
-        print('{}: {} skills x {} destinations.{}'.format('Dry run complete' if args.dry_run else 'Synced',
-              len(skills), len(selected), ' No files changed.' if args.dry_run else ''))
+            print('{} {} skills -> {} ({})'.format('Previewing' if args.dry_run else 'Syncing', len(skills), target.path, target.label))
+            for skill in skills:
+                previous = baseline / 'skills' / skill.name if baseline else None
+                result = sync_skill(skill, target.path / skill.name, baseline=previous, dry_run=args.dry_run,
+                                    retained_source=preview_canonical / 'skills' / skill.name if preview_canonical else None)
+                counts[result.status] += 1
+                if result.status == 'conflict' or result.preserved:
+                    report_result(str(target.path / skill.name), result)
+        print('{}: added {}, updated {}, unchanged {}, conflicts {}.{}'.format(
+              'Preview' if args.dry_run else 'Finished', counts['added'], counts['updated'],
+              counts['unchanged'], counts['conflict'], ' No files changed.' if args.dry_run else ''))
+        if counts['conflict']:
+            print('Conflicting skill folders were left untouched. No user files were overwritten or deleted.')
+            return 2
         return 0
     except (ValueError, OSError, EOFError) as error:
         print('error: {}'.format(error), file=sys.stderr)

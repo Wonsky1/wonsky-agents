@@ -52,24 +52,15 @@ Useful for diagnosing cold-start hitches and view-creation cost.
 
 ### C) Agent-driven: start in background, stop via stop-file
 
-When you (the agent) are running non-interactively — e.g. via
-`Bash run_in_background` — use a stop-file so you can signal the
-recording to end cleanly:
+Use the host's background-process tool and a unique session marker. Before starting, create a new directory in the OS temporary area (for example with Python's `tempfile.mkdtemp`) and choose its `stop` child without creating that file. Retain the actual path in session state so a later tool call signals the same recording.
 
 ```bash
-# Start recording (background)
 python3 "${SKILL_DIR}/scripts/record_trace.py" \
-  --attach Helm --stop-file /tmp/stop-trace \
-  --output ~/Desktop/session.trace
-
-# ...user does their thing...
-
-# Stop cleanly (from another shell or tool call)
-touch /tmp/stop-trace
+  --attach Helm --stop-file "<new-session-directory>/stop" \
+  --output "<new-output-path>.trace"
 ```
 
-The script polls every 0.5s for the stop-file, sends SIGINT to xctrace
-when it appears, and waits up to 60s for the trace to finalise.
+When the user finishes, create exactly that marker with a file tool. A marker that already exists is stale input: allocate a new session path instead of deleting an unknown marker. The script polls for the marker and sends SIGINT to xctrace when it appears. Wait for recorder completion before analysing the output; remove only this session's marker/directory afterwards. Do not reuse a fixed `/tmp/stop-trace` path across recordings.
 
 ### D) Time-boxed recording
 
@@ -131,15 +122,14 @@ python3 "${SKILL_DIR}/scripts/record_trace.py" \
 
 ## Chaining into analysis
 
-The recording script prints `trace written: <path>` on exit. Feed that
-path straight into `analyze_trace.py`:
+Keep the explicit output path and recorder exit status rather than extracting a filename from combined log text. After a successful exit, verify the trace bundle exists and analyse that exact path:
 
 ```bash
-TRACE=$(python3 "${SKILL_DIR}/scripts/record_trace.py" \
-    --attach Helm --stop-file /tmp/stop-trace --output ~/Desktop/session.trace \
-    2>&1 | awk '/trace written:/ {print $NF}')
-python3 "${SKILL_DIR}/scripts/analyze_trace.py" --trace "$TRACE" --json-only
+python3 "${SKILL_DIR}/scripts/analyze_trace.py" \
+  --trace "<verified-output-path>.trace" --json-only
 ```
+
+A log message alone is not success evidence. If recording fails, report its status and preserve diagnostic output; do not analyse a stale bundle from an earlier session.
 
 If the user wanted a specific scope, combine with `--list-logs` /
 `--list-signposts` / `--window` from `references/trace-analysis.md`.
@@ -148,8 +138,8 @@ If the user wanted a specific scope, combine with `--list-logs` /
 
 - **Device offline** — `--list-devices` shows it in `devices offline`.
   Ask the user to connect/unlock the device and retry.
-- **Output path exists** — the script refuses to overwrite. Either pick
-  a new `--output` or delete the existing bundle.
+- **Output path exists** — preserve the existing bundle and choose a new output path; deletion requires applicable user intent.
+- **Stop marker already exists** — choose a fresh session directory/marker; do not remove a marker whose recording you do not own.
 - **App not running (for `--attach`)** — xctrace exits with an error;
   fall back to `--launch` or tell the user to open the app first.
 - **Signing / trust on device** — iOS requires a development build

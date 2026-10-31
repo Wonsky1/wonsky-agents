@@ -1,18 +1,11 @@
 """Known agent destinations and installation evidence on each desktop OS."""
 
-from dataclasses import dataclass
 import os
 from pathlib import Path
 import shutil
 from typing import Callable, List, Mapping, Optional, Sequence
 
-
-@dataclass(frozen=True)
-class Target:
-    key: str
-    label: str
-    path: Path
-    detected: bool
+from scripts.models.target import Target
 
 
 def detect_targets(home: Path, system: str, environ: Mapping[str, str],

@@ -7,7 +7,7 @@ description: Breaks an architecture proposal into ordered, atomic implementation
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 You are an engineering manager. Your input is an Architecture Proposal. Your output is an ordered task list that a developer can execute sequentially without ambiguity.
 
@@ -16,7 +16,7 @@ You do NOT write code or make architecture decisions. You break decisions into e
 ## Before You Begin
 
 1. **Read the Architecture Proposal.** If none exists, ask the user for the design or suggest running `~/.wonsky-agents/skills/solution-architect/SKILL.md` first.
-2. **Read project context.** Use the repository-context packet to understand the relevant codebase structure. Mark any persistent guidance changes as approval-dependent tasks with exact proposed text/diffs.
+2. **Read project context.** Use the repository-context packet to understand the relevant codebase structure. Include factual context draft creation and explicit user review as tasks; keep existing rule/policy changes separately approval-dependent with exact text/diffs.
 3. **Scan the codebase.** Identify existing files that will be modified vs new files that need creation.
 
 ## Decomposition Process
@@ -35,12 +35,14 @@ Apply this ordering principle:
 4. **Business logic/service layer** — Core logic using repositories and models.
 5. **API/endpoint layer** — Routers, handlers exposing the service.
 6. **Client updates** — Other services consuming the new API.
-7. **Integration wiring** — Dependency injection, composition root, config.
-8. **Tests** — Unit tests per component, then integration tests.
+7. **Integration wiring** — Use the actual composition/lifecycle owner selected by architecture and the language contract.
+8. **Verification and context closure** — Behavior tests follow TDD within each task. Include structure verification and a final required repository-context outcome, with factual drafts reviewed by the user and policy changes explicitly approval-dependent.
 
 This mirrors the **layered dependency direction** from architecture: inner layers first, outer layers last.
 
 ### Step 3: Make Tasks Atomic
+
+For Python, read `~/.wonsky-agents/skills/implementation-guide/references/python-structure.md`. Record the actual ownership evidence required by that shared contract. A task touching only one file is not atomic if it collapses separate responsibilities into that file.
 
 Each task must be:
 
@@ -80,6 +82,10 @@ Each task must be:
 ### Stream B: [service-name]
 [...]
 
+## Required final check
+- Verify behavior and structure against the applicable shared language contract.
+- Close repository context: write useful factual drafts, ask for user review, and report the actual outcome. Reuse verified-current coverage when sufficient; keep exact policy approval pending separately.
+
 ## Execution Order
 1. Task A1 → Task A2 → Task A3
 2. Task B1 (can start in parallel with A1)
@@ -106,7 +112,7 @@ Each task builds on the layer below. If you skip ahead (e.g. write the API handl
 **Pattern alignment:** If the Architecture Proposal selected patterns (Strategy, Registry, Repository, etc.), decompose them in this order:
 1. Define the interface / protocol / base class
 2. Implement the first concrete instance
-3. Wire it at the composition root
+3. Assemble it through the named composition owner under the applicable language contract
 4. Add subsequent instances (each is a small, parallel-safe task)
 
 This prevents the common mistake of building all strategies before confirming the pattern works end-to-end with one.

@@ -5,6 +5,10 @@ description: Create and edit JSON Canvas files (.canvas) with nodes, edges, grou
 
 # JSON Canvas Skill
 
+## Vault write preflight
+
+Before creating or editing files in an Obsidian vault, read the `Vault Source Of Truth` and `Required Discovery Before Creating Notes` sections of `../obsidian/SKILL.md`, or reuse a current preflight already established in this session. Resolve the intended vault and exact target explicitly; the current workspace or most recently focused vault is not sufficient when a user/skill target is specified. Reuse existing folders, templates and properties. For standalone format examples outside a vault, this vault preflight is unnecessary.
+
 ## File Structure
 
 A canvas file (`.canvas`) contains two top-level arrays following the [JSON Canvas Spec 1.0](https://jsoncanvas.org/spec/1.0/):

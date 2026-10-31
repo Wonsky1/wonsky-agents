@@ -7,11 +7,11 @@ description: Use when design is complete and you need detailed implementation ta
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Persistent repository instructions/context may change only under that skill's concrete-proposal approval gate.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
 
 ## Overview
 
-Produce an implementation plan as **bite-sized tasks** for someone who is a **strong developer** but has **almost no context** for this repository or domain. Document files to touch, code and tests, commands, and expected outcomes. Prefer **DRY**, **YAGNI**, **TDD**, and **small frequent commits**.
+Produce an implementation plan as **bite-sized tasks** for someone who is a **strong developer** but has **almost no context** for this repository or domain. Document files to touch, code and tests, commands, and expected outcomes. Prefer **DRY**, **YAGNI**, and **TDD** when test work is authorized. A plan does not authorize commits, pushes or deployment.
 
 **Announce at the start:** you are using the writing-plans skill to build the plan.
 
@@ -32,7 +32,9 @@ Before tasks, map **create / modify** files and each file’s single responsibil
 - Clear boundaries and interfaces; one main responsibility per file.
 - Prefer focused files over kitchen-sink modules.
 - **Co-location:** things that change together should live together; split by responsibility, not by ceremonial layers.
-- In existing repos, **follow established patterns**. If a file you touch is unwieldy, the plan may include a justified split — not a drive-by restructure.
+- In existing repos, preserve useful boundaries. For Python, first read `~/.wonsky-agents/skills/implementation-guide/references/python-structure.md`; record the actual ownership and review evidence required by that contract. Do not copy a legacy violation or break a published API without authorized migration.
+- If a file you touch is unwieldy, include only a justified in-scope split. Focused functions are valid; do not invent layers or wrapper classes.
+- Identify existing repository-context entry/index/topic paths and the required completion outcome. Missing factual coverage needs draft-writing and user-review tasks; changes to existing rules or proposed policies keep their exact approval gate.
 
 ## Task granularity
 
@@ -42,7 +44,7 @@ Treat each atomic step as **~2–5 minutes** of work, for example:
 2. Run it — confirm it fails for the right reason  
 3. Implement the minimum to pass  
 4. Run tests — confirm green  
-5. Commit  
+5. Review the scoped diff and record verification evidence
 
 ## Plan document header
 
@@ -57,14 +59,20 @@ Treat each atomic step as **~2–5 minutes** of work, for example:
 
 **Architecture:** [2–3 sentences on approach and boundaries]
 
-**Tech Stack:** [Languages, frameworks, key libraries, test runner]
+**Tech Stack:** [Languages, frameworks, key libraries, actual project test runner]
+
+**Authority:** [Write scope; whether test creation/execution is requested; explicit Git intent]
+
+**Context:** [Entry/index/topics actually read; factual drafts to write and ask the user to review; separate exact policy approvals]
+
+**Python ownership (when applicable):** [Model/provider/behavior owner files, or why a responsibility is absent; shared structure-contract reference]
 
 ---
 ```
 
 ## Task template
 
-Use this shape for every task. Adjust language to the project (Python, TS, Go, etc.).
+Use this shape for every task. Adjust language and commands to the actual project. Include test creation/execution only when the user requested it and host instructions permit it; otherwise state the verification limit. Do not add a commit step unless the user explicitly requested commits.
 
 ````markdown
 ### Task N: [Component or behavior]
@@ -99,12 +107,9 @@ def function_under_test(input):
 Run: `pytest tests/path/test_file.py::test_specific_behavior -v`  
 Expected: **PASS**
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Review structure and delivery evidence**
 
-```bash
-git add tests/path/test_file.py src/path/file.py
-git commit -m "feat: describe the behavior"
-```
+For Python, confirm the evidence required by the shared structure contract. Inspect the scoped diff and retain the actual verification result. Carry the actual context outcome, including draft-awaiting-review when factual drafts await the user and pending-approval for exact policy proposals.
 ````
 
 ## Quality bar for the document
@@ -120,7 +125,7 @@ If the team uses plan review, run it **after** the full plan exists, with a fres
 
 ## Execution handoff
 
-After saving the plan, offer:
+After saving the plan, use an execution mode already authorized by the user. If the choice remains open, offer:
 
 ---
 

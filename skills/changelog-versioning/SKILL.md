@@ -16,9 +16,9 @@ Guide for creating consistent, well-formatted changelog entries that separate us
 
 ## Process
 
-### 1. Determine the Version Number
+### 1. Read the release contract
 
-Follow [Semantic Versioning](https://semver.org/):
+Inspect the existing changelog, version source and release workflow. Keep an established Unreleased section and category/date conventions. Do not assign a new release number or date merely because implementation finished; bump only when the user requested release/version work. If the project uses Semantic Versioning, use this mapping:
 
 | Change type | Bump | Example |
 |-------------|------|---------|
@@ -32,18 +32,18 @@ When in doubt, use **minor** for features, **patch** for fixes.
 
 Every change goes into exactly one category:
 
-**User-facing** (shown to end users on the frontend):
+**User-facing** (intended for end users):
 - `Added` — new capability or feature
 - `Improved` — enhancement to existing functionality
 - `Fixed` — bug fix
 - `Removed` — removed capability
 
-**Developer-only** (hidden from frontend, visible in the file):
+**Developer-focused** (visibility depends on the actual publishing/rendering pipeline):
 - `Internal` — new endpoints, refactors, CI changes, config updates, dependency upgrades
 
 ### 3. Write the Entry
 
-Add a new section at the **top** of `CHANGELOG.md`, below the file header:
+Follow the existing format. Add to Unreleased when that is the project convention; for an authorized release, create the dated version section in the established position:
 
 ```markdown
 ## [X.Y.Z] - YYYY-MM-DD
@@ -75,13 +75,13 @@ Add a new section at the **top** of `CHANGELOG.md`, below the file header:
 ### 5. Verify
 
 - Entry is at the top (newest first)
-- Date is today's date
+- Release date/version matches the authorized release; Unreleased remains undated when that is the established format
 - Only applicable category headers are present (omit empty ones)
 - No duplicate information between user-facing and internal sections
 
 ## Frontend Behavior
 
-The frontend strips `### Internal` sections automatically using a regex before rendering. Users only see `Added`, `Improved`, `Fixed`, and `Removed` entries. The file header (title + intro paragraph) is also stripped — rendering starts from the first `## [` heading.
+Do not assume Internal sections or headers are hidden. Inspect the real renderer/publishing workflow before promising visibility behavior. If no such renderer exists, treat the entire changelog as readable by its audience and omit private or sensitive details.
 
 ## Example
 

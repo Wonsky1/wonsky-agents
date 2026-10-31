@@ -195,14 +195,17 @@ def _render_correlations(lines: list[str], correlations: list[dict]) -> None:
         if t.get("hang_type"):
             head += f" — {t['hang_type']}"
         lines.append(head)
+        for note in c.get("notes", []):
+            lines.append(f"  - {note}")
 
         tp = c.get("time_profiler_main_thread")
         if tp is not None:
             cov = tp["main_running_coverage_pct"]
             lines.append(
                 f"  - Main thread: {tp['samples_on_main']} running samples "
-                f"({cov:.0f}% coverage — "
-                f"{'blocked' if cov < 25 else 'mostly running'})"
+                f"({cov:.0f}% estimated coverage assuming 1ms/sample — "
+                f"{'low sampled coverage' if cov < 25 else 'higher sampled coverage'}; "
+                "sampling alone does not establish blocking)"
             )
             for s in tp["hot_symbols"][:3]:
                 lines.append(

@@ -75,9 +75,9 @@ editMenu.addItem(redoItem)
 editMenu.addItem(.separator())
 ```
 
-### Rule 1.2 — Keyboard Shortcuts for All Menu Items
+### Rule 1.2 — Standard Shortcuts and Frequent Commands
 
-Every menu item that performs an action must have a keyboard shortcut. Use standard shortcuts for standard actions (Cmd+C, Cmd+V, Cmd+Z, etc.). Custom shortcuts should use Cmd plus a letter. Reserve Cmd+Shift, Cmd+Option, and Cmd+Ctrl combos for secondary actions.
+Preserve standard shortcuts for standard actions. Add custom shortcuts for frequently used app-specific commands; every menu item does not need its own shortcut. Keep remaining commands reachable through keyboard navigation and Full Keyboard Access. Prefer Command, add Shift for related variants, use Option sparingly, and avoid inventing Control combinations that conflict with system behavior. See [Apple keyboard guidance](https://developer.apple.com/design/human-interface-guidelines/keyboards).
 
 **Standard Shortcut Reference:**
 
@@ -445,11 +445,11 @@ Label("Inbox", systemImage: "tray")
 
 ## 5. Keyboard (CRITICAL)
 
-Mac users rely on keyboard shortcuts more than any other platform. An app without comprehensive keyboard support is a broken Mac app.
+Support efficient keyboard use and accessible navigation throughout the Mac interface. Shortcut count is not a measure of accessibility.
 
-### Rule 5.1 — Cmd Shortcuts for Everything
+### Rule 5.1 — Reachability and Selective Shortcuts
 
-Every action reachable by mouse must have a keyboard equivalent. Primary actions use Cmd+letter. Secondary actions use Cmd+Shift or Cmd+Option. Tertiary actions use Cmd+Ctrl.
+Keep actions reachable through standard keyboard navigation and Full Keyboard Access. Reuse standard shortcuts, and add dedicated custom shortcuts for frequent commands only. Check system, text-editing and localization conflicts before assigning modifiers; do not create a shortcut for every action. Follow Rule 1.2 and the linked Apple guidance.
 
 **Keyboard Shortcut Conventions:**
 
@@ -458,7 +458,7 @@ Every action reachable by mouse must have a keyboard equivalent. Primary actions
 | Cmd+letter | Primary actions (New, Open, Save, etc.) |
 | Cmd+Shift+letter | Variant of primary (Save As, Find Previous) |
 | Cmd+Option+letter | Alternative mode (Paste and Match Style) |
-| Cmd+Ctrl+letter | Window/view controls (Fullscreen, Sidebar) |
+| Cmd+Ctrl+letter | Preserve established system/app conventions such as fullscreen; avoid new Control combinations |
 | Ctrl+letter | Emacs-style text navigation (acceptable) |
 | Fn+key | System functions (F11 Show Desktop, etc.) |
 
@@ -1034,7 +1034,7 @@ Before shipping a Mac app, verify:
 
 ### Menu Bar
 - [ ] App has a complete menu bar with standard menus
-- [ ] All actions have keyboard shortcuts
+- [ ] Standard shortcuts are preserved; frequent commands have appropriate custom shortcuts and remaining actions are keyboard-reachable
 - [ ] Menu items dynamically update (enable/disable, title changes)
 - [ ] Context menus on all interactive elements
 - [ ] App menu has About, Settings, Hide, Quit

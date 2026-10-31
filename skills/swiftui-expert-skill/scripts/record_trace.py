@@ -111,6 +111,13 @@ def main(argv: list[str] | None = None) -> int:
     if output.exists():
         print(f"error: output already exists: {output}", file=sys.stderr)
         return 2
+    if args.stop_file and os.path.lexists(args.stop_file):
+        print(
+            f"error: stop-file already exists: {args.stop_file}; use a fresh path "
+            "for this recording. No recording was started.",
+            file=sys.stderr,
+        )
+        return 2
 
     cmd = _build_xctrace_cmd(args, output)
 

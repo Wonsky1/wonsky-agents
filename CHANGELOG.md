@@ -4,6 +4,32 @@
 
 ### Added
 
+- Read-only standard-library Python structure checker with explicit file scope, JSON findings and regression tests.
+- Thin repository instructions and a modular context index with architecture and development notes.
+- Reviewed Python updater and chat entry skill, with original/local/new diffs, Keep/Use New choices, persistent backups and legacy-baseline handling.
+
+### Improved
+
+- Made repository context an explicit completion outcome across planning, implementation, delegated work and review, writing factual drafts for user review and retaining exact approval for active instructions and policies.
+- Defined shared Python ownership rules for models and grouped dependency providers, direct imports and empty or documentation-only package initializers.
+- Removed conflicting wildcard-import, initializer-export and app-startup wiring guidance, and replaced class-count rules with responsibility boundaries.
+- Moved the installer's destination data model to its own models module and updated imports.
+- Kept pipeline routers thin and loaded Python standards through their owning implementation reference at the relevant stage.
+- Removed context size quotas while preserving topic ownership, important confirmed facts and user review.
+
+### Fixed
+
+- Kept private profiles/environment data and existing user instructions intact during reviewed updates; rejected stale decisions, overlapping destinations and unsafe report paths.
+- Made installation additive: preserve conflicting skills, local edits/deletions, extra files and existing AGENTS.md; record hashes for safe managed updates and report conflicts accurately.
+- Reject symlink-obstructed destinations and incomplete source scans instead of writing through links or reporting incomplete copies as successful.
+- Require an explicit test runner for pollution tracing and distinguish clean, polluted and incomplete runs without deleting existing paths.
+- Attribute trace samples and overlapping updates to the trigger process; reject stale recording stop markers and label sampled coverage as a heuristic.
+- Restrict web design-system generation to suitable stacks, correct persisted page references, and adapt packaged checks to the shipped skill layout.
+
+## 2026-10-22 — Installer portability
+
+### Added
+
 - Python-only installation from an extracted ZIP on Windows, macOS and Linux; Git is optional.
 - Native launchers that locate Python, optional graphical checkboxes and a terminal selection fallback.
 - Configuration, command and platform application detection, plus explicit targets for clean machines.
