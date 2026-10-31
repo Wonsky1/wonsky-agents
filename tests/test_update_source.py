@@ -30,7 +30,15 @@ def make_zip(entries):
     output = io.BytesIO()
     with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
         for name, contents in entries.items():
-            archive.writestr(name, contents)
+            if isinstance(name, str):
+                member = zipfile.ZipInfo(name)
+                # Keep deliberately invalid fixture names exact: ZipInfo normally
+                # normalizes Windows separators before writing archive headers.
+                member.filename = member.orig_filename = name
+                member.compress_type = zipfile.ZIP_DEFLATED
+            else:
+                member = name
+            archive.writestr(member, contents)
     return output.getvalue()
 
 
@@ -182,20 +190,25 @@ class ArchiveValidationTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
 
-    def extract(self, entries):
+    def extract(self, entries, destination=None):
         archive = self.root / 'source.zip'
         archive.write_bytes(make_zip(entries))
-        return update_source._extract(archive, self.root / 'out')
+        return update_source._extract(archive, destination or self.root / 'out')
 
     def test_traversal_absolute_windows_and_ambiguous_paths_are_rejected(self):
-        for path in ('../outside', '/absolute', 'repo/../outside', 'repo/./same',
+        with mock.patch.object(zipfile.os, 'sep', '\\'):
+            fixture = make_zip({'repo\\escape': 'bad'})
+            with zipfile.ZipFile(io.BytesIO(fixture)) as archive:
+                self.assertEqual(archive.infolist()[0].orig_filename, 'repo\\escape')
+        for index, path in enumerate(('../outside', '/absolute', 'repo/../outside', 'repo/./same',
                      'repo//same', 'repo\\escape', 'C:/escape', 'repo/a:stream',
                      'repo/CON.txt', 'repo/LPT9', 'repo/trailing.', 'repo/trailing ',
-                     'repo/COM\u00b9', 'repo/CON .txt', 'repo/question?'):
+                     'repo/COM\u00b9', 'repo/CON .txt', 'repo/question?')):
             with self.subTest(path=path):
+                destination = self.root / 'out-{}'.format(index)
                 with self.assertRaises(ValueError):
-                    self.extract({path: 'bad'})
-                self.assertFalse((self.root / 'out').exists())
+                    self.extract({path: 'bad'}, destination)
+                self.assertFalse(destination.exists())
 
     def test_duplicate_archive_entries_are_rejected(self):
         output = io.BytesIO()
