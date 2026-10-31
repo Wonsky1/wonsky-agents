@@ -46,8 +46,8 @@ class PolluterTests(unittest.TestCase):
             root = self.prepare(tmp)
             result = self.invoke(tmp, "import sys; print('FILE=' + sys.argv[1])")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("FILE=src/first.test.ts", result.stdout)
-        self.assertIn("FILE=src/nested dir/second test.test.ts", result.stdout)
+        self.assertIn("FILE=" + str(Path("src/first.test.ts")), result.stdout)
+        self.assertIn("FILE=" + str(Path("src/nested dir/second test.test.ts")), result.stdout)
         self.assertIn("2 successful test-file runs", result.stdout)
 
     def test_no_matches_is_incomplete(self):
@@ -103,7 +103,7 @@ class PolluterTests(unittest.TestCase):
             result = self.invoke(tmp, "from pathlib import Path; Path('pollution').touch()")
             self.assertTrue((root / "pollution").exists())
         self.assertEqual(result.returncode, 1)
-        self.assertIn("while running src/first.test.ts", result.stdout)
+        self.assertIn("while running " + str(Path("src/first.test.ts")), result.stdout)
         self.assertNotIn("[2/2]", result.stdout)
 
     def test_runner_is_mandatory_and_pattern_cannot_escape(self):
@@ -237,8 +237,8 @@ class DesignPathTests(unittest.TestCase):
                 master = Path(result["master_file"])
                 page = master.parent / "pages/settings.md"
                 self.assertTrue(page.is_file())
-                self.assertIn("`pages/[page-name].md` relative to this Master file", master.read_text())
-                self.assertIn("`../MASTER.md`, relative to this page file", page.read_text())
+                self.assertIn("`pages/[page-name].md` relative to this Master file", master.read_text(encoding="utf-8"))
+                self.assertIn("`../MASTER.md`, relative to this page file", page.read_text(encoding="utf-8"))
                 self.assertEqual((page.parent / "../MASTER.md").resolve(), master.resolve())
         finally:
             sys.path.remove(str(UI_SCRIPTS))
