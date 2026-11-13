@@ -1,0 +1,6 @@
+interface:
+  display_name: "Remote Server"
+  short_description: "Work on an explicitly selected SSH server"
+  default_prompt: "Use $remote-server to work on the SSH server I select."
+policy:
+  allow_implicit_invocation: false

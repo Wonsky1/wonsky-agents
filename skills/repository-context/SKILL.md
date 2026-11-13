@@ -57,6 +57,8 @@ Use an in-session packet; no new state file is required. Carry:
 
 A fresh agent must read the applicable instructions and selected docs, or receive their complete current contents as trusted task context; a list of paths or a prior agent's summary is not a read. At handoff/resume, scope expansion, a context edit or evidence of external changes, check freshness and reread changed relevant documents. Recompute the instruction chain for newly affected paths. If a proposal's base changed, invalidate its applicability until reviewed. Do not reload unchanged documents on every command. A handoff grants no additional permissions.
 
+When the task uses a session ledger, carry its path and ID, relevant decisions, evidence freshness and exact proposal/approval references in the handoff. The ledger supplements this context packet; it does not replace repository documentation or authorize instruction changes.
+
 ## Required context outcome
 
 Every repository engineering delivery reports a context outcome, including small fixes, delegated work and execution of an existing plan. At intake, name the entry guidance, context map and topics actually read. Missing coverage requires useful factual drafts; existing accurate coverage needs no cosmetic update. Do not generate context for unrelated repositories or fabricate lessons to satisfy the process.

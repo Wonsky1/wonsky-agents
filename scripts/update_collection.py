@@ -1,11 +1,13 @@
 """Construct canonical and runtime review units without changing installed files."""
 
+from dataclasses import replace
 from pathlib import Path
 from typing import Mapping, Optional
 
 from scripts.managed_files import digest, read_original, read_state, regular_files, symlink_in_chain
 from scripts.models.update import UpdatePlan
 from scripts.skill_files import check_overlap, collection_files, validate_skill
+from scripts.skill_distribution import distribution_issue
 from scripts.update_plan import build_plan, effective_files
 
 
@@ -74,11 +76,29 @@ def runtime_plans(plans: list, choices: Mapping[str, str], targets: list,
     for plan in plans[1:]:
         name = plan.destination.name
         choice = choices[plan.id]
-        # Keeping a canonical skill means the offered update is skipped for that skill.
-        if choice == 'keep':
-            continue
-        source = public_files(effective_files(plan, choice))
+        source = None
         for target in targets:
+            destination = target.path / name
+            exists = destination.exists() or destination.is_symlink()
+            issue = distribution_issue(name, target.key, exists)
+            if issue:
+                message = '{}. Attach {} explicitly to use it.'.format(issue, plan.destination / 'SKILL.md')
+                if exists:
+                    if symlink_in_chain(destination) is not None or not destination.is_dir():
+                        raise ValueError('{}: {}'.format(destination, message))
+                    blocked = build_plan({}, destination, target.path / '.wonsky-state' / (name + '.json'),
+                                         label=target.label + ' / ' + name)
+                    result.append(replace(blocked, status='blocked', blocked=(message,),
+                                          upstream_changes=(), replacement_changes=()))
+                else:
+                    print('{} / {}: {}'.format(target.label, name, message))
+                continue
+            # Keeping a canonical skill skips its offered runtime update, but an
+            # existing unsupported manual-only copy must still be reported above.
+            if choice == 'keep':
+                continue
+            if source is None:
+                source = public_files(effective_files(plan, choice))
             previous = baseline / 'skills' / name if baseline else None
             prior = public_files(regular_files(previous)) if previous and previous.is_dir() else None
             result.append(build_plan(source, target.path / name,

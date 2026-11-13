@@ -1,9 +1,11 @@
 # Skill catalog
 
-This collection contains 52 skills. Each entry links to the canonical instructions and any supporting resources. Invocation and discovery depend on the host application.
+This collection contains 54 skills. Each entry links to the canonical instructions and any supporting resources. Invocation and discovery depend on the host application.
 
 | Skill | Purpose |
 |---|---|
+| [remote-server](../skills/remote-server/SKILL.md) | Manually invoked SSH work on a user-selected server; excluded from hosts without verified manual-only discovery. |
+| [session-ledger](../skills/session-ledger/SKILL.md) | Compact task decisions, verification evidence, running jobs and pending items with explicit identity recovery. |
 | [batch-grill-me](../skills/batch-grill-me/SKILL.md) | A relentless interview that asks every frontier question at once, round by round. |
 | [brainstorming](../skills/brainstorming/SKILL.md) | Use when creating or developing, before writing code or implementation plans - refines rough ideas into fully-formed designs through collaborative questioning, alternative exploration, and incremental validation. |
 | [changelog-versioning](../skills/changelog-versioning/SKILL.md) | Create and update changelog entries when implementing features, fixes, or improvements. |

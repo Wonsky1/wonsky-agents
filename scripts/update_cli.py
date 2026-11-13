@@ -11,10 +11,11 @@ from typing import Optional
 from scripts.agent_targets import detect_targets, select_keys
 from scripts.managed_files import symlink_in_chain
 from scripts.skill_files import check_overlap
+from scripts.recovery_setup import apply_recovery, plan_recovery, recovery_review, show_recovery, validate_recovery
 from scripts.target_picker import pick_targets
 from scripts.update_apply import apply_plan
 from scripts.update_collection import canonical_plans, runtime_plans
-from scripts.update_plan import validate_plan
+from scripts.update_plan import effective_files, validate_plan
 from scripts.update_review import (choose, confirm, default_choice, describe, load_decisions,
                                    report_data, reviewed_choices)
 from scripts.update_source import open_update_source
@@ -68,6 +69,7 @@ def main(argv=None) -> int:
     parser.add_argument('--report', type=Path, help='save complete review evidence and choices as local JSON outside the installation')
     parser.add_argument('--decisions', type=Path, help='use choices/tokens from an inspected report; stale or incomplete approvals are rejected')
     parser.add_argument('--yes', action='store_true', help='apply safe updates or exact reviewed decisions without a final prompt; never blindly replace local edits')
+    parser.add_argument('--no-session-hooks', action='store_true', help='skip automatic recovery hook setup')
     args = parser.parse_args(argv)
     try:
         system = platform.system()
@@ -114,9 +116,25 @@ def main(argv=None) -> int:
                 if plan.status != 'unchanged' or plan.local_changes:
                     print(describe(plan))
                 print('{}: {}'.format(plan.label, choices[plan.id]))
+            recovery = []
+            for plan in canonical_units[1:]:
+                if plan.destination.name == 'session-ledger' and canonical_choices[plan.id] != 'keep' and not args.no_session_hooks:
+                    helper = effective_files(plan, canonical_choices[plan.id]).get('scripts/ledger.py')
+                    eligible = [target for target in selected if choices.get(str(target.path / 'session-ledger')) != 'keep']
+                    recovery = plan_recovery(eligible, canonical, helper, system)
+            show_recovery(recovery)
             data = report_data(plans, choices, source.revision)
+            data['recovery_hooks'] = recovery_review(recovery)
+            if args.decisions and not args.dry_run:
+                reviewed = json.loads(args.decisions.read_text(encoding='utf-8')).get('recovery_hooks', [])
+                if reviewed != data['recovery_hooks']:
+                    raise ValueError('Recovery hooks changed or were not reviewed; regenerate the preview.')
             if args.report:
-                _write_report(args.report, data, plans, [canonical, source.root, *(target.path for target in available)])
+                hook_paths = [path for target in available for path in (
+                    target.path.parent / ('settings.json' if target.key == 'claude' else 'hooks.json'),
+                    target.path.parent / '.wonsky-state')]
+                _write_report(args.report, data, plans,
+                              [canonical, source.root, *(target.path for target in available), *hook_paths])
             kept = sum(choice == 'keep' for choice in choices.values())
             changed = sum(bool(plan.replacement_changes) and choices[plan.id] != 'keep' for plan in plans)
             print('Plan: {} units change content; {} units kept.'.format(changed, kept))
@@ -126,6 +144,7 @@ def main(argv=None) -> int:
             if not args.yes and not confirm(args.terminal):
                 print('Cancelled. Installed files and state unchanged.')
                 return 0
+            validate_recovery(recovery)
             # Validate every approval before starting the first unit, then recheck per apply.
             for plan in plans:
                 validate_plan(plan)
@@ -136,8 +155,11 @@ def main(argv=None) -> int:
                 counts[result.result.status] = counts.get(result.result.status, 0) + 1
                 if result.backup:
                     print('Backup retained: {}'.format(result.backup))
+            apply_recovery(recovery, canonical)
             print('Finished: {}'.format(', '.join('{} {}'.format(number, status) for status, number in sorted(counts.items()))))
             print('Existing AGENTS.md and personal extra files were preserved. No Git commit, reset or push was performed.')
+            if recovery:
+                print('Recovery hook setup completed for supported selected hosts. Codex still requires host hook trust.')
             return 2 if kept else 0
     except (OSError, ValueError, EOFError) as error:
         print('error: {}'.format(error), file=sys.stderr)

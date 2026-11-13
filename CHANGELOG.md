@@ -2,8 +2,14 @@
 
 ## Unreleased
 
+## 2026-11-12 — Automatic recovery and reviewed updates
+
 ### Added
 
+- Session ledger with host-qualified identities, recovery by stable ID and native hooks installed automatically for Claude, Codex, Cursor and Antigravity.
+- Generic, manually invoked remote-server skill using existing SSH configuration, with no embedded server details.
+- Automatic recovery hook setup during installation, synchronization and updates, including upgrades of older collections; preview, status, removal and `--no-session-hooks` remain available.
+- Recovery setup preserves unrelated settings, backs up changed configuration and rejects edited hooks or stale update reviews.
 - Read-only standard-library Python structure checker with explicit file scope, JSON findings and regression tests.
 - Thin repository instructions and a modular context index with architecture and development notes.
 - Reviewed Python updater and chat entry skill, with original/local/new diffs, Keep/Use New choices, persistent backups and legacy-baseline handling.
@@ -19,6 +25,8 @@
 
 ### Fixed
 
+- Reject ambiguous ledger bindings, unsafe storage paths, unverified Git exclusions and invalid session identities; preserve existing ignore files.
+- Keep remote-server out of automatic discovery in unsupported runtime destinations during both install and reviewed updates.
 - Kept private profiles/environment data and existing user instructions intact during reviewed updates; rejected stale decisions, overlapping destinations and unsafe report paths.
 - Made installation additive: preserve conflicting skills, local edits/deletions, extra files and existing AGENTS.md; record hashes for safe managed updates and report conflicts accurately.
 - Reject symlink-obstructed destinations and incomplete source scans instead of writing through links or reporting incomplete copies as successful.

@@ -7,7 +7,7 @@ description: Use when starting any conversation about code, software, debugging,
 
 ## Repository context preflight
 
-Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed.
+Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed. For multi-step repository work, use `~/.wonsky-agents/skills/session-ledger/SKILL.md`; reuse the current task's ledger and recover it after resume or compaction. Delegated workers receive relevant decisions and report updates to the parent.
 
 <SUBAGENT-STOP>
 If you were dispatched as a subagent, skip routing again; retain the inherited scope/context packet and follow repository-context for your assigned targets.

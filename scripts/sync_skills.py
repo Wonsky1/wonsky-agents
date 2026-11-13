@@ -1,6 +1,7 @@
 """Cross-platform install/sync entry point; no third-party Python packages."""
 
 import argparse
+import json
 import os
 from pathlib import Path
 import platform
@@ -8,6 +9,10 @@ import sys
 from typing import List, Optional
 
 from scripts.agent_targets import detect_targets, select_keys
+from scripts.hook_files import apply_hook_plan
+from scripts.session_hooks import plan_hook
+from scripts.recovery_setup import apply_recovery, plan_recovery, show_recovery, validate_recovery
+from scripts.skill_distribution import distribution_issue
 from scripts.skill_files import check_overlap, install_collection, sync_skill, validate_skill
 from scripts.target_picker import pick_targets
 
@@ -31,6 +36,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument('--sync-only', action='store_true', help='sync the existing canonical collection without installing it')
     parser.add_argument('--update', action='store_true', help='update an existing canonical installation while preserving local edits')
     parser.add_argument('--baseline', type=Path, help='previous trusted collection folder; recognize legacy copies only when file bytes match')
+    hooks = parser.add_mutually_exclusive_group()
+    hooks.add_argument('--session-hooks', choices=('install', 'remove', 'status'),
+                       help='manage only recovery hooks for selected hosts')
+    hooks.add_argument('--no-session-hooks', action='store_true', help='skip automatic recovery hook setup')
     args = parser.parse_args(argv)
     try:
         system = platform.system()
@@ -63,6 +72,22 @@ def main(argv: Optional[List[str]] = None) -> int:
             print('No targets selected. On a clean machine, use --targets codex (or another target).')
             return 0
         selected = [target for target in targets if target.key in keys]
+        if args.session_hooks:
+            # This mode is independent of skill copying, including removal after
+            # a user has removed or edited a runtime skill.
+            plans = [plan_hook(target, canonical, Path(sys.executable), system, args.session_hooks)
+                     for target in selected]
+            for plan in plans:
+                print('{}: {} -> {}. {}'.format(plan.target, plan.status, plan.config, plan.message))
+                if args.session_hooks == 'install' and plan.status not in ('unsupported', 'conflict'):
+                    print('  Recovery hook: ' + json.dumps(plan.entry, ensure_ascii=False))
+            if any(plan.status == 'conflict' for plan in plans):
+                print('Hook configuration preserved. Resolve reported ownership conflicts before retrying.')
+                return 2
+            if not args.dry_run and args.session_hooks != 'status':
+                for plan in plans:
+                    apply_hook_plan(plan)
+            return 0
         # Validate the whole plan before any destination is modified.
         for skill in skills:
             validate_skill(skill)
@@ -70,6 +95,10 @@ def main(argv: Optional[List[str]] = None) -> int:
             check_overlap(skills_root, target.path)
             for skill in skills:
                 check_overlap(skill, target.path / skill.name)
+        recovery = [] if args.no_session_hooks else plan_recovery(
+            selected, canonical, source / 'skills/session-ledger/scripts/ledger.py', system)
+        show_recovery(recovery)
+        validate_recovery(recovery)
         preview_canonical = None
         if not args.sync_only:
             same = check_overlap(package, canonical)
@@ -90,6 +119,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         for target in selected:
             print('{} {} skills -> {} ({})'.format('Previewing' if args.dry_run else 'Syncing', len(skills), target.path, target.label))
             for skill in skills:
+                destination = target.path / skill.name
+                exists = destination.exists() or destination.is_symlink()
+                issue = distribution_issue(skill.name, target.key, exists)
+                if issue:
+                    print('  {}: {}. Attach {} explicitly to use it.'.format(
+                        destination, issue, skills_root / skill.name / 'SKILL.md'))
+                    if exists:
+                        counts['conflict'] += 1
+                    continue
                 previous = baseline / 'skills' / skill.name if baseline else None
                 result = sync_skill(skill, target.path / skill.name, baseline=previous, dry_run=args.dry_run,
                                     retained_source=preview_canonical / 'skills' / skill.name if preview_canonical else None)
@@ -102,6 +140,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         if counts['conflict']:
             print('Conflicting skill folders were left untouched. No user files were overwritten or deleted.')
             return 2
+        if not args.dry_run:
+            apply_recovery(recovery, canonical)
         return 0
     except (ValueError, OSError, EOFError) as error:
         print('error: {}'.format(error), file=sys.stderr)

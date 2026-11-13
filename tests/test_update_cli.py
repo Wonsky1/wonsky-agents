@@ -79,6 +79,85 @@ class UpdateCliTests(unittest.TestCase):
         self.assertTrue((self.canonical / '.wonsky-state/objects' /
                          state['files']['skills/sample/SKILL.md']).is_file())
 
+    def test_new_recovery_skill_update_configures_hooks_automatically(self):
+        shutil.copytree(ROOT / 'skills/session-ledger', self.offer / 'skills/session-ledger')
+        shutil.copytree(ROOT / 'skills/remote-server', self.offer / 'skills/remote-server')
+        result = self.update('--yes')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue((self.runtime_root / 'session-ledger/scripts/ledger.py').is_file())
+        self.assertTrue((self.runtime_root / 'remote-server/agents/openai.yaml').is_file())
+        self.assertIn('Recovery hook', result.stdout)
+        self.assertTrue((self.runtime_root.parent / 'hooks.json').is_file())
+        installed_helper = self.runtime_root / 'session-ledger/scripts/ledger.py'
+        checked = subprocess.run([sys.executable, '-B', str(installed_helper), '--help'],
+                                 env=self.environment, text=True, capture_output=True)
+        self.assertEqual(checked.returncode, 0, checked.stderr)
+
+    def test_recovery_preview_is_write_free_and_reviewed_plan_installs_hook(self):
+        shutil.copytree(ROOT / 'skills/session-ledger', self.offer / 'skills/session-ledger')
+        config = self.runtime_root.parent / 'hooks.json'
+        config.write_text('{"personal":"SYNTHETIC_PRIVATE_SETTING"}')
+        before = snapshot(self.root / 'home')
+        report, data = self.preview()
+        self.assertEqual(snapshot(self.root / 'home'), before)
+        self.assertEqual(data['recovery_hooks'][0]['target'], 'codex')
+        self.assertNotIn('SYNTHETIC_PRIVATE_SETTING', report.read_text())
+        result = self.update('--decisions', report, '--yes')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        document = json.loads(config.read_text())
+        self.assertEqual(document['personal'], 'SYNTHETIC_PRIVATE_SETTING')
+        self.assertEqual(len(document['hooks']['SessionStart']), 1)
+
+    def test_hook_edit_after_review_invalidates_update_before_any_skill_write(self):
+        shutil.copytree(ROOT / 'skills/session-ledger', self.offer / 'skills/session-ledger')
+        report, _ = self.preview()
+        config = self.runtime_root.parent / 'hooks.json'
+        config.write_text('{"personal":"changed after review"}')
+        before = snapshot(self.root / 'home')
+        result = self.update('--decisions', report, '--yes')
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn('Recovery hooks changed', result.stderr)
+        self.assertEqual(snapshot(self.root / 'home'), before)
+
+    def test_keep_new_ledger_skips_helper_distribution_and_hook_setup(self):
+        shutil.copytree(ROOT / 'skills/session-ledger', self.offer / 'skills/session-ledger')
+        report, data = self.preview()
+        data['choices'][str(self.canonical / 'skills/session-ledger')]['choice'] = 'keep'
+        report.write_text(json.dumps(data))
+        final = self.root / 'final.json'
+        preview = self.update('--decisions', report, '--dry-run', '--report', final)
+        self.assertEqual(preview.returncode, 2, preview.stderr)
+        self.assertEqual(json.loads(final.read_text())['recovery_hooks'], [])
+        result = self.update('--decisions', final, '--yes')
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertFalse((self.canonical / 'skills/session-ledger').exists())
+        self.assertFalse((self.runtime_root.parent / 'hooks.json').exists())
+
+    def test_update_opt_out_keeps_existing_settings_unchanged(self):
+        shutil.copytree(ROOT / 'skills/session-ledger', self.offer / 'skills/session-ledger')
+        config = self.runtime_root.parent / 'hooks.json'
+        config.write_text('{"personal":"untouched"}')
+        before = config.read_bytes()
+        result = self.update('--yes', '--no-session-hooks')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(config.read_bytes(), before)
+        self.assertTrue((self.runtime_root / 'session-ledger/scripts/ledger.py').is_file())
+
+    def test_edited_owned_hook_blocks_automatic_update_without_overwriting_it(self):
+        shutil.copytree(ROOT / 'skills/session-ledger', self.offer / 'skills/session-ledger')
+        result = self.update('--yes')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        config = self.runtime_root.parent / 'hooks.json'
+        document = json.loads(config.read_text())
+        document['hooks']['SessionStart'][0]['hooks'][0]['command'] = 'personal customization'
+        config.write_text(json.dumps(document))
+        self.put(self.offer, 'skills/sample/SKILL.md', 'another offered revision\n')
+        before = snapshot(self.root / 'home')
+        result = self.update('--yes')
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn('--no-session-hooks', result.stderr)
+        self.assertEqual(snapshot(self.root / 'home'), before)
+
     def test_preview_covers_canonical_and_runtime_without_installed_writes(self):
         before = self.installed()
         report, data = self.preview()
@@ -149,6 +228,15 @@ class UpdateCliTests(unittest.TestCase):
         result = self.update('--dry-run', '--report', instructions)
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertEqual(instructions.read_text(), 'my global instructions\n')
+
+    def test_report_cannot_create_or_replace_hook_configuration_or_state(self):
+        for path in (self.runtime_root.parent / 'hooks.json',
+                     self.runtime_root.parent / '.wonsky-state/session-ledger-hook.json'):
+            with self.subTest(path=path):
+                self.assertFalse(path.exists())
+                result = self.update('--dry-run', '--no-session-hooks', '--report', path)
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertFalse(path.exists())
 
     def test_report_cannot_overwrite_an_existing_unrelated_user_file(self):
         user_file = self.put(self.root, 'my-notes.json', 'my personal data\n')

@@ -1,6 +1,6 @@
 # Wonsky Agents
 
-A personal collection of 52 agent skills, development workflows, and small utilities for Cursor, Claude Code, Codex, and Antigravity.
+A personal collection of 54 agent skills, development workflows, and small utilities for Cursor, Claude Code, Codex, and Antigravity.
 
 The canonical source is `~/.wonsky-agents/skills/`. New runtime skill directories receive copies including scripts, references, templates, and assets. Later synchronization preserves user changes and extra files. Edit the canonical files, then sync them.
 
@@ -117,6 +117,49 @@ python3 install.py --sync-only --targets codex --baseline /path/to/previous/wons
 Only files whose installed bytes match that trusted baseline qualify for an update; user edits still conflict. Without a baseline, differing same-name copies stay untouched. Review conflicts and merge the intended changes yourself; the installer has no force-overwrite option. Baseline folders are read only and need a `skills/` directory. A canonical ZIP update uses `--update --baseline /path/to/previous/wonsky-agents` under the same checks.
 
 Multiple discovery roots can produce duplicate entries in an agent that reads both `~/.agents/skills/` and its own skills directory; choose the destinations you need. Existing local `~/.cursor/sync-skills.sh` wrappers still delegate to the compatible entry point; a fresh install does not create a Cursor wrapper.
+
+## Session recovery setup
+
+Draft — awaiting user review: automatic installation and upgrade behavior below supersedes the earlier optional setup.
+
+The `session-ledger` skill keeps task decisions, verification evidence, running jobs and pending items in `.agent-ledger/`. Its helper uses Python 3.9+ standard library only. Git is needed to verify exclusion inside a repository; a plain directory requires explicit `--repo` and reports that exclusion is unverified. Ignored files are not confidential storage and can disappear with a removed worktree.
+
+Normal installation, synchronization and reviewed updates configure recovery hooks automatically for the selected supported hosts once the session-ledger helper is accepted and installed. Dry runs show the proposed entries without writing configuration. Use `--no-session-hooks` on an installation or update to skip setup for that run. The independent commands remain available for inspection, repair and removal:
+
+```sh
+python3 install.py --session-hooks status --targets claude,codex,cursor,antigravity
+python3 install.py --session-hooks install --targets claude,codex,cursor,antigravity --dry-run
+python3 install.py --session-hooks install --targets claude,codex,cursor,antigravity
+python3 install.py --session-hooks remove --targets claude,codex,cursor,antigravity
+```
+
+On Windows use `py -3` or `python`. Commands retain the setup interpreter and canonical helper's absolute paths. Claude uses direct executable arguments; other Windows hosts use a native PowerShell encoded command to preserve literal paths. Windows command generation is tested with fixtures; native Windows hook execution remains unverified. Moving Python or the collection requires setup again. App detection alone does not establish compatible hook support.
+
+| Host | Configuration | Integration |
+|---|---|---|
+| Claude | `~/.claude/settings.json` | `SessionStart`, including resume/compact |
+| Codex | `$CODEX_HOME/hooks.json`, default `~/.codex/hooks.json` | `SessionStart`, including resume/compact; host trust required |
+| Cursor | `~/.cursor/hooks.json` | `sessionStart`; no promise of post-compaction reinjection |
+| Antigravity | `~/.gemini/config/hooks.json` | `SessionStart`; no promise of post-compaction reinjection |
+| Shared `.agents` | None | A skill directory is not a hook runtime |
+
+Setup previews only our proposed entry, preserves unrelated settings/hooks, records ownership and backs up changed configuration under the host's `.wonsky-state/hook-backups/`. Repeated setup is idempotent. Edited, deleted or duplicated owned entries become conflicts; removal deletes only the unchanged owned entry. Invalid/duplicate-key JSON and symlink-obstructed configuration are rejected. JSON formatting may change. Writes are guarded per target, not one transaction across hosts; concurrent setup is unsupported.
+
+`status` checks configuration, not execution. Codex requires review/trust of the exact hook through `/hooks`; setup does not bypass this. Hooks are lazy and create no ledger until the workflow asks. They provide explicit host/session identities and commands, without writing shell exports. Without a hook identity, retain the ledger ID from creation and recover with `path --id ID --repo PATH`. Ambiguous identity, tracked ledgers and unsafe storage are rejected; user ignore files are preserved.
+
+An agent can complete installation, updates and recovery setup without hand-editing JSON or requesting a separate hook opt-in. Update reports include the proposed hook entries and review tokens bound to the existing configuration; edits after review invalidate the plan before skills are changed. Unrelated settings are omitted from reports. Keeping the canonical session-ledger skill skips its new hook setup, and keeping a host’s runtime ledger skips setup for that host. Conflicting hook ownership blocks apply before file changes; `--no-session-hooks` allows a skill-only update. A failure during later writes can still leave earlier units applied, as described in the update section.
+
+For the first upgrade from an older updater, use `update.py` from a trusted new download with `--from /path/to/that/download` to review the existing installation. This runs the new manual-only distribution rules and automatic hook setup from the first pass. An agent can handle that migration. A running old updater cannot acquire new behavior halfway through its own process. If using it, Keep canonical `remote-server` and any runtime units while accepting the reviewed support changes, regenerate the final report and apply; then restart the new updater and accept the remaining changes. Complete recovery setup with the installed `install.py --session-hooks install --targets <selected-hosts>` if the old updater performed the final apply. The prior two-pass path was tested in a temporary installation; the new default install/update path has regression coverage.
+
+Sources: [Claude](https://code.claude.com/docs/en/hooks), [Codex](https://learn.chatgpt.com/docs/hooks), [Cursor](https://cursor.com/docs/hooks), [Antigravity](https://antigravity.google/docs/hooks).
+
+## Explicit remote-server use
+
+Invoke `$remote-server` in Codex or `/remote-server` in Claude/Cursor, name an existing SSH alias and describe the task. Example: “Use remote-server on my staging alias to check the application service status.” The agent uses existing OpenSSH configuration/authentication and the task's authorization. The skill stores no server identity, password, key or fixed agent socket; setup never connects to a server.
+
+Codex's `allow_implicit_invocation: false` and Claude/Cursor's `disable-model-invocation: true` control manual invocation. No pipeline or SSH-error trigger loads it. Because an equivalent control has not been verified for Antigravity or every `.agents` consumer, install/update skip those discoverable copies. Explicitly attach the canonical `skills/remote-server/SKILL.md` there. Existing unsupported copies are preserved and reported for removal from discovery, never silently deleted.
+
+Sources: [Codex skills](https://learn.chatgpt.com/docs/build-skills), [Claude invocation controls](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill), [Cursor invocation controls](https://cursor.com/docs/skills#disabling-automatic-invocation).
 
 ## Version-aware macOS guidance
 
