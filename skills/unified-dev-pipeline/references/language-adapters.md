@@ -23,7 +23,7 @@ If multiple markers exist (polyglot repo), resolve per directory/target, not glo
 
 ### Python
 - **Deps/env:** `uv` or `poetry` or `python -m venv` + `pip install -e .`
-- **Test:** `pytest` (use the `testing-pytest` skill)
+- **Test:** `pytest` (use the `wa-testing-pytest` skill)
 - **Lint:** `ruff check` · **Format:** `ruff format` (or `black`)
 - **Type-check:** `mypy` or `pyright`
 - **Run:** `python -m <pkg>` / project entry point

@@ -1,5 +1,5 @@
 ---
-name: obsidian-bases
+name: wa-obsidian-bases
 description: Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the user mentions Bases, table views, card views, filters, or formulas in Obsidian.
 ---
 
@@ -7,7 +7,7 @@ description: Create and edit Obsidian Bases (.base files) with views, filters, f
 
 ## Vault write preflight
 
-Before creating or editing files in an Obsidian vault, read the `Vault Source Of Truth` and `Required Discovery Before Creating Notes` sections of `../obsidian/SKILL.md`, or reuse a current preflight already established in this session. Resolve the intended vault and exact target explicitly; the current workspace or most recently focused vault is not sufficient when a user/skill target is specified. Reuse existing folders, templates and properties. For standalone format examples outside a vault, this vault preflight is unnecessary.
+Before creating or editing files in an Obsidian vault, read the `Vault Source Of Truth` and `Required Discovery Before Creating Notes` sections of `~/.wonsky-agents/skills/obsidian/SKILL.md`, or reuse a current preflight already established in this session. Resolve the intended vault and exact target explicitly; the current workspace or most recently focused vault is not sufficient when a user/skill target is specified. Reuse existing folders, templates and properties. For standalone format examples outside a vault, this vault preflight is unnecessary.
 
 ## Workflow
 

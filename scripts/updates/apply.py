@@ -9,10 +9,10 @@ import tempfile
 from typing import Optional
 import uuid
 
-from scripts.managed_files import blocked_path, symlink_in_chain, write_state
-from scripts.models.sync_result import SyncResult
-from scripts.models.update import ApplyResult, UpdatePlan
-from scripts.update_plan import validate_plan
+from scripts.filesystem.managed import blocked_path, symlink_in_chain, write_state
+from scripts.filesystem.models.sync_result import SyncResult
+from scripts.updates.models.plan import ApplyResult, UpdatePlan
+from scripts.updates.plan import validate_plan
 
 
 def _backup(plan: UpdatePlan, choice: str, backup_root: Path) -> Path:

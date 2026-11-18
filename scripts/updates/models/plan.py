@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Mapping, Optional, Tuple
 
-from scripts.models.sync_result import SyncResult
+from scripts.filesystem.models.sync_result import SyncResult
 
 
 @dataclass(frozen=True)

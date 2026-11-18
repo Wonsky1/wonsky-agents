@@ -1,5 +1,5 @@
 ---
-name: git-report
+name: wa-git-report
 description: Generate a management-ready summary of work from git history. Use when the user asks for a report, weekly report, summary, status update, what they did this week, what was done, standup notes, or work log. Supports custom date ranges or defaults to the current week.
 ---
 

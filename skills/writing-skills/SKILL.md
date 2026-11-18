@@ -1,5 +1,5 @@
 ---
-name: writing-skills
+name: wa-writing-skills
 description: Use when creating new skills, editing existing skills, or verifying skills work before deployment - applies TDD to process documentation by testing with subagents before writing, using bounded scenarios to check correct behavior, limits and instruction precedence.
 ---
 
@@ -108,9 +108,9 @@ description: Use when tests have race conditions, timing dependencies, or pass/f
 
 ## Naming Conventions
 
-- **Active voice**, **verb-first** or **gerund-for-process** names: `using-git-worktrees`, `finishing-a-development-branch`, `writing-skills`.
+- **Active voice**, **verb-first** or **gerund-for-process** names: `wa-using-git-worktrees`, `wa-finishing-a-development-branch`, `wa-writing-skills`.
 - Match the `name` in frontmatter to the folder name.
-- Name by **what you do** or the **core insight**: `condition-based-waiting` > `async-test-helpers`; `root-cause-tracing` > `debugging-techniques`.
+- Name by **what you do** or the **core insight**: `wa-condition-based-waiting` > `async-test-helpers`; `wa-root-cause-tracing` > `debugging-techniques`.
 
 ## Cross-Referencing
 
@@ -243,7 +243,7 @@ How agents find your skill:
 
 **Optimize for this flow** -- put searchable terms early and often.
 
-Edit the canonical collection under `~/.wonsky-agents/skills/`; runtime mirrors are generated outputs. Other collections follow their declared source and approval boundaries. Exact persistent-guidance changes require repository-context approval before writes.
+Edit the canonical collection under `~/.wonsky-agents/skills/`; runtime mirrors are generated outputs. Other collections follow their declared source and approval boundaries. Exact persistent-guidance changes require wa-repository-context approval before writes.
 
 ## Flowchart Conventions
 

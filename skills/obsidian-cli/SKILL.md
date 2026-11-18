@@ -1,5 +1,5 @@
 ---
-name: obsidian-cli
+name: wa-obsidian-cli
 description: Interact with Obsidian vaults using the Obsidian CLI to read, create, search, and manage notes, tasks, properties, and more. Also supports plugin and theme development with commands to reload plugins, run JavaScript, capture errors, take screenshots, and inspect the DOM. Use when the user asks to interact with their Obsidian vault, manage notes, search vault content, perform vault operations from the command line, or develop and debug Obsidian plugins and themes.
 ---
 
@@ -7,7 +7,7 @@ description: Interact with Obsidian vaults using the Obsidian CLI to read, creat
 
 ## Vault write preflight
 
-Before creating or editing files in an Obsidian vault, read the `Vault Source Of Truth` and `Required Discovery Before Creating Notes` sections of `../obsidian/SKILL.md`, or reuse a current preflight already established in this session. Resolve the intended vault and exact target explicitly; the current workspace or most recently focused vault is not sufficient when a user/skill target is specified. Reuse existing folders, templates and properties. For standalone format examples outside a vault, this vault preflight is unnecessary.
+Before creating or editing files in an Obsidian vault, read the `Vault Source Of Truth` and `Required Discovery Before Creating Notes` sections of `~/.wonsky-agents/skills/obsidian/SKILL.md`, or reuse a current preflight already established in this session. Resolve the intended vault and exact target explicitly; the current workspace or most recently focused vault is not sufficient when a user/skill target is specified. Reuse existing folders, templates and properties. For standalone format examples outside a vault, this vault preflight is unnecessary.
 
 Use the `obsidian` CLI to interact with a running Obsidian instance. Requires Obsidian to be open.
 

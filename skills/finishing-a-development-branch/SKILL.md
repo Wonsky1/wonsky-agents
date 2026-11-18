@@ -1,5 +1,5 @@
 ---
-name: finishing-a-development-branch
+name: wa-finishing-a-development-branch
 description: Use after work is verified and the user wants options for merge, PR, branch retention, or cleanup - guides completion by presenting structured options and handling chosen workflow.
 ---
 
@@ -37,7 +37,7 @@ Inventory the current branch/HEAD, intended base, staged changes, unstaged chang
 
 If intended implementation is uncommitted, present its concrete commit scope and obtain commit intent before committing. Do not stage unrelated files, stash, reset, switch branches with dirty work or claim a PR includes those changes. A user may explicitly choose to publish only existing commits; state the omitted local work.
 
-Use `verification-before-completion` to assess evidence for the exact delivered revision. Reuse valid evidence when inputs are unchanged. Run tests only when requested and permitted; report unverified scope honestly. If tests fail, do not describe integration as safe without a fully informed user override.
+Use `wa-verification-before-completion` to assess evidence for the exact delivered revision. Reuse valid evidence when inputs are unchanged. Run tests only when requested and permitted; report unverified scope honestly. If tests fail, do not describe integration as safe without a fully informed user override.
 
 ### 2. Determine Base Branch
 
@@ -84,5 +84,5 @@ Use `git merge-base` / team convention (e.g. `main`, `develop`) to identify the 
 
 ## Integration
 
-- **Called by:** `subagent-driven-development` and `executing-plans` when work is complete and integration is the next step.
+- **Called by:** `wa-subagent-driven-development` and `wa-executing-plans` when work is complete and integration is the next step.
 - **Pairs with:** `~/.wonsky-agents/skills/using-git-worktrees/SKILL.md` for creating and retiring isolated trees consistently.

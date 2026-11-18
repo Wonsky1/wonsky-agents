@@ -8,7 +8,7 @@ if sys.version_info < (3, 9):
 
 sys.dont_write_bytecode = True
 
-from scripts.sync_skills import main
+from scripts.installation.cli import main
 
 if __name__ == '__main__':
     sys.exit(main())

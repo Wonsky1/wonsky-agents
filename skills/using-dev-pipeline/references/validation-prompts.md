@@ -1,6 +1,6 @@
 # Validation Prompts
 
-Use these prompts to check whether the local workflow tends to route through `using-dev-pipeline` and `dev-pipeline` instead of bypassing them.
+Use these prompts to check whether the local workflow tends to route through `wa-using-dev-pipeline` and `wa-dev-pipeline` instead of bypassing them.
 
 ## Entry-point prompts
 
@@ -17,11 +17,11 @@ Use these prompts to check whether the local workflow tends to route through `us
 
 ## Expected first route
 
-- planning / design / refactor / implementation → `using-dev-pipeline` then `dev-pipeline`
-- bug / failure / regression → `using-dev-pipeline` then `systematic-debugging`
-- review → `using-dev-pipeline` then `requesting-code-review`
-- completion claim → `using-dev-pipeline` then `verification-before-completion`
-- creative work → `using-dev-pipeline` then `brainstorming`
+- planning / design / refactor / implementation → `wa-using-dev-pipeline` then `wa-dev-pipeline`
+- bug / failure / regression → `wa-using-dev-pipeline` then `wa-systematic-debugging`
+- review → `wa-using-dev-pipeline` then `wa-requesting-code-review`
+- completion claim → `wa-using-dev-pipeline` then `wa-verification-before-completion`
+- creative work → `wa-using-dev-pipeline` then `wa-brainstorming`
 
 ## What counts as a miss
 

@@ -25,16 +25,18 @@ class AutomaticHookTests(unittest.TestCase):
         self.home = self.root / 'home'
         self.canonical = self.home / '.wonsky-agents'
         self.env = dict(os.environ, HOME=str(self.home), USERPROFILE=str(self.home),
-                        CODEX_HOME=str(self.home / '.codex'), WONSKY_AGENTS_HOME=str(self.canonical))
+                        CODEX_HOME=str(self.home / '.codex'), COPILOT_HOME=str(self.home / '.copilot'),
+                        WONSKY_AGENTS_HOME=str(self.canonical))
 
     def install(self, *args):
         return subprocess.run([sys.executable, '-B', str(self.package / 'install.py'),
-                               '--targets', 'claude,codex,cursor,antigravity,agents', *args],
+                               '--targets', 'claude,codex,cursor,antigravity,agents,copilot', *args],
                               env=self.env, capture_output=True, text=True, timeout=30)
 
     def configs(self):
         return [self.home / name for name in ('.claude/settings.json', '.codex/hooks.json',
-                                              '.cursor/hooks.json', '.gemini/config/hooks.json')]
+                                              '.cursor/hooks.json', '.gemini/config/hooks.json',
+                                              '.copilot/hooks/wonsky-session-ledger.json')]
 
     def test_install_previews_then_configures_all_supported_hosts_idempotently(self):
         preview = self.install('--dry-run')

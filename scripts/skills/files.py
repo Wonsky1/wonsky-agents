@@ -3,8 +3,8 @@
 from pathlib import Path
 from typing import Optional
 
-from scripts.managed_files import regular_files, sync_files, symlink_in_chain
-from scripts.models.sync_result import SyncResult
+from scripts.filesystem.managed import regular_files, sync_files, symlink_in_chain
+from scripts.filesystem.models.sync_result import SyncResult
 
 
 def validate_skill(source: Path) -> None:

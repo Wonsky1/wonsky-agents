@@ -1,5 +1,5 @@
 ---
-name: brainstorming
+name: wa-brainstorming
 description: Use when creating or developing, before writing code or implementation plans - refines rough ideas into fully-formed designs through collaborative questioning, alternative exploration, and incremental validation. Don't use during clear mechanical processes.
 ---
 
@@ -75,4 +75,4 @@ If upcoming choices are inherently visual (layouts, mockups, diagram-heavy compa
 | Detailed task plan for implementers | `~/.wonsky-agents/skills/writing-plans/SKILL.md` |
 | Worktree / branch isolation | `~/.wonsky-agents/skills/using-git-worktrees/SKILL.md` |
 
-After brainstorming, the usual implementation path is **writing-plans** first, then execution skills — not ad-hoc coding in this same flow.
+After brainstorming, the usual implementation path is **wa-writing-plans** first, then execution skills — not ad-hoc coding in this same flow.

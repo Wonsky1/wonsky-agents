@@ -1,5 +1,5 @@
 ---
-name: quality-gate
+name: wa-quality-gate
 description: Comprehensive quality assurance — tests, security audit, performance review, and documentation. Detects the project's test framework and delegates to the appropriate testing skill. Checks for security issues, validates performance, and ensures documentation is complete. Use after implementation is done, or when the user asks for testing, code review, or quality checks.
 ---
 
@@ -26,7 +26,7 @@ Establish the requested mode first. **Review-only** means inspect and report; do
 
 ### 1. Testing — Detect Framework and Delegate
 
-Reuse the language/toolchain and commands already resolved by `unified-dev-pipeline` and the actual project configuration. Do not redetect Python or force a listed framework onto Swift, Go, Rust, C++ or other projects. If unresolved, inspect manifests, CI and documented commands; ask only when this remains ambiguous. Test-writing delegation applies only in the authorized test-creation mode.
+Reuse the language/toolchain and commands already resolved by `wa-unified-dev-pipeline` and the actual project configuration. Do not redetect Python or force a listed framework onto Swift, Go, Rust, C++ or other projects. If unresolved, inspect manifests, CI and documented commands; ask only when this remains ambiguous. Test-writing delegation applies only in the authorized test-creation mode.
 
 #### Detection
 
@@ -108,7 +108,7 @@ For substantial changes, large diffs, refactors, or any user-requested code revi
 
 ### 6. Documentation
 
-For every repository engineering delivery, assess the required repository-context outcome and the following relevant documentation needs. Apply ordinary documentation updates within task authority. Use repository-context to write useful factual drafts and ask the user to review them; changes to existing rules and proposed policies need exact approval before writing or activation. A documentation checklist does not grant write permission.
+For every repository engineering delivery, assess the required wa-repository-context outcome and the following relevant documentation needs. Apply ordinary documentation updates within task authority. Use wa-repository-context to write useful factual drafts and ask the user to review them; changes to existing rules and proposed policies need exact approval before writing or activation. A documentation checklist does not grant write permission.
 
 - [ ] Module-level docstring if a new module was created
 - [ ] `README.md` if user-facing behavior changed

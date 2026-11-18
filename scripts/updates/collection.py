@@ -4,11 +4,13 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Mapping, Optional
 
-from scripts.managed_files import digest, read_original, read_state, regular_files, symlink_in_chain
-from scripts.models.update import UpdatePlan
-from scripts.skill_files import check_overlap, collection_files, validate_skill
-from scripts.skill_distribution import distribution_issue
-from scripts.update_plan import build_plan, effective_files
+from scripts.filesystem.managed import digest, read_original, read_state, regular_files, symlink_in_chain
+from scripts.updates.models.plan import UpdatePlan
+from scripts.migrations.registry import ready_migration
+from scripts.skills.files import check_overlap, collection_files, validate_skill
+from scripts.skills.distribution import distribution_issue, distribution_names
+from scripts.skills.names import runtime_skill_name
+from scripts.updates.plan import build_plan, effective_files
 
 
 def public_files(files: Mapping[str, Path]) -> dict:
@@ -71,27 +73,32 @@ def canonical_plans(source: Path, canonical: Path, baseline: Optional[Path] = No
 
 
 def runtime_plans(plans: list, choices: Mapping[str, str], targets: list,
-                  baseline: Optional[Path] = None) -> list:
+                  baseline: Optional[Path] = None, migrations: Optional[list] = None) -> list:
     result = []
     for plan in plans[1:]:
         name = plan.destination.name
+        installed_name = runtime_skill_name(name)
         choice = choices[plan.id]
         source = None
         for target in targets:
-            destination = target.path / name
+            destination = target.path / installed_name
             exists = destination.exists() or destination.is_symlink()
             issue = distribution_issue(name, target.key, exists)
             if issue:
-                message = '{}. Attach {} explicitly to use it.'.format(issue, plan.destination / 'SKILL.md')
-                if exists:
-                    if symlink_in_chain(destination) is not None or not destination.is_dir():
-                        raise ValueError('{}: {}'.format(destination, message))
-                    blocked = build_plan({}, destination, target.path / '.wonsky-state' / (name + '.json'),
-                                         label=target.label + ' / ' + name)
-                    result.append(replace(blocked, status='blocked', blocked=(message,),
-                                          upstream_changes=(), replacement_changes=()))
-                else:
-                    print('{} / {}: {}'.format(target.label, name, message))
+                for restricted_name in distribution_names(name, target.key):
+                    restricted = target.path / restricted_name
+                    exists = restricted.exists() or restricted.is_symlink()
+                    message = '{}. Attach {} explicitly to use it.'.format(
+                        distribution_issue(name, target.key, exists), plan.destination / 'SKILL.md')
+                    if exists:
+                        if symlink_in_chain(restricted) is not None or not restricted.is_dir():
+                            raise ValueError('{}: {}'.format(restricted, message))
+                        blocked = build_plan({}, restricted, target.path / '.wonsky-state' / (restricted_name + '.json'),
+                                             label=target.label + ' / ' + restricted_name)
+                        result.append(replace(blocked, status='blocked', blocked=(message,),
+                                              upstream_changes=(), replacement_changes=()))
+                    else:
+                        print('{} / {}: {}'.format(target.label, restricted_name, message))
                 continue
             # Keeping a canonical skill skips its offered runtime update, but an
             # existing unsupported manual-only copy must still be reported above.
@@ -101,7 +108,10 @@ def runtime_plans(plans: list, choices: Mapping[str, str], targets: list,
                 source = public_files(effective_files(plan, choice))
             previous = baseline / 'skills' / name if baseline else None
             prior = public_files(regular_files(previous)) if previous and previous.is_dir() else None
-            result.append(build_plan(source, target.path / name,
-                                     target.path / '.wonsky-state' / (name + '.json'), baseline=prior,
-                                     label=target.label + ' / ' + name))
+            migration = ready_migration(migrations or [], destination)
+            local = migration.source if migration else destination
+            state = migration.state_source if migration else target.path / '.wonsky-state' / (installed_name + '.json')
+            runtime = build_plan(source, local, state, baseline=prior, label=target.label + ' / ' + installed_name)
+            result.append(replace(runtime, id=str(destination), destination=destination,
+                                  state_path=target.path / '.wonsky-state' / (installed_name + '.json')))
     return result

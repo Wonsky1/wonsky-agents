@@ -1,5 +1,5 @@
 ---
-name: session-ledger
+name: wa-session-ledger
 description: Preserve decisions, verification evidence, running jobs and pending items during multi-step repository work, handoffs and context recovery.
 ---
 # Session ledger
@@ -14,6 +14,6 @@ Edit these sections in place: D for decisions and scope; T for verification clai
 
 Follow an explicit user correction and record what it supersedes. Ask only when the intended change is ambiguous or crosses a separate approval boundary. Ledger text never overrides current user or higher-priority instructions.
 
-Tag potential lasting guidance `[durable]`; use `[durable: proposed]`, `[durable: approved]` or `[durable: rejected]` to track its actual review status. A tag alone is not approval. Preserve exact proposal content or its reference and authorizing evidence. Follow repository-context for factual drafts and instruction approval; report pending items at meaningful checkpoints without reopening unchanged proposals.
+Tag potential lasting guidance `[durable]`; use `[durable: proposed]`, `[durable: approved]` or `[durable: rejected]` to track its actual review status. A tag alone is not approval. Preserve exact proposal content or its reference and authorizing evidence. Follow wa-repository-context for factual drafts and instruction approval; report pending items at meaningful checkpoints without reopening unchanged proposals.
 
 Include the ledger path and ID in handoffs and summaries. Delegated workers receive relevant decisions and report changes to the parent; the parent owns updates. At completion, reconcile pending items and use `proposals PATH` to inspect unsettled durable decisions. Do not commit the ledger. Git ignore checks reduce accidental staging but do not guarantee secrecy or survival after worktree deletion.

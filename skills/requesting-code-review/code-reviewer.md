@@ -54,7 +54,7 @@ Inspect the actual scoped changes, including staged, unstaged and relevant untra
 
 **Requirements**
 - All required behavior implemented?
-- No missing acceptance criteria? Required repository-context outcome includes actual inspected paths/evidence and separately reports draft review or policy approval pending/declined; task plans do not count as delivered context.
+- No missing acceptance criteria? Required wa-repository-context outcome includes actual inspected paths/evidence and separately reports draft review or policy approval pending/declined; task plans do not count as delivered context.
 - No extra unrequested features?
 
 ## Output Format

@@ -1,5 +1,5 @@
 ---
-name: subagent-driven-development
+name: wa-subagent-driven-development
 description: Use when an approved implementation plan exists and tasks can be executed task-by-task with delegated implementation and review - dispatches fresh subagent per task with code review between tasks for fast iteration with quality gates.
 ---
 
@@ -17,7 +17,7 @@ Execute an approved plan with scoped implementation and both spec-compliance and
 
 | Situation | Prefer |
 |-----------|--------|
-| Same session, tasks mostly independent, want continuous progress with gates | **This skill** (`subagent-driven-development`) |
+| Same session, tasks mostly independent, want continuous progress with gates | **This skill** (`wa-subagent-driven-development`) |
 | Human-in-the-loop between **batches** of tasks, sequential execution in one thread | `~/.wonsky-agents/skills/executing-plans/SKILL.md` |
 | Tightly coupled tasks, heavy shared context, or plan still in flux | Manual execution; revise plan (`~/.wonsky-agents/skills/writing-plans/SKILL.md` / brainstorming) first |
 
@@ -76,7 +76,7 @@ After **all** tasks:
 - Request a **final** code review if warranted (`~/.wonsky-agents/skills/requesting-code-review/SKILL.md`)
 - Run `~/.wonsky-agents/skills/quality-gate/SKILL.md`
 - Run `~/.wonsky-agents/skills/verification-before-completion/SKILL.md`
-- Close the required repository-context outcome (updated, verified-current with evidence, draft-awaiting-review, exact policy proposal pending-approval, or user-declined). Missing factual coverage requires actual reviewable drafts under repository-context; a plan/test report is not repository context. Ask the user to review those drafts and report pending review separately.
+- Close the required wa-repository-context outcome (updated, verified-current with evidence, draft-awaiting-review, exact policy proposal pending-approval, or user-declined). Missing factual coverage requires actual reviewable drafts under wa-repository-context; a plan/test report is not repository context. Ask the user to review those drafts and report pending review separately.
 - Use `~/.wonsky-agents/skills/finishing-a-development-branch/SKILL.md` when the user requests integration/cleanup; no implicit commit or push
 
 ## Rules
@@ -95,4 +95,4 @@ After **all** tasks:
 
 ## Context handoff
 
-Pass the repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.
+Pass the wa-repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.

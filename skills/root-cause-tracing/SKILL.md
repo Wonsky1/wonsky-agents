@@ -1,5 +1,5 @@
 ---
-name: root-cause-tracing
+name: wa-root-cause-tracing
 description: Use when errors occur deep in execution and you need to trace back to find the original trigger - systematically traces bugs backward through call stack, adding instrumentation when needed, to identify source of invalid data or incorrect behavior.
 ---
 
@@ -23,12 +23,12 @@ digraph when_to_use {
     "Can trace backwards?" [shape=diamond];
     "Fix at symptom point" [shape=box];
     "Trace to original trigger" [shape=box];
-    "BETTER: Also add defense-in-depth" [shape=box];
+    "BETTER: Also add wa-defense-in-depth" [shape=box];
 
     "Bug appears deep in stack?" -> "Can trace backwards?" [label="yes"];
     "Can trace backwards?" -> "Trace to original trigger" [label="yes"];
     "Can trace backwards?" -> "Fix at symptom point" [label="no - dead end"];
-    "Trace to original trigger" -> "BETTER: Also add defense-in-depth";
+    "Trace to original trigger" -> "BETTER: Also add wa-defense-in-depth";
 }
 ```
 
@@ -129,7 +129,7 @@ The helper never deletes existing pollution. It stops at the first newly observe
 
 **Fix:** Made tempDir a getter that throws if accessed before beforeEach
 
-**Also added defense-in-depth:**
+**Also added wa-defense-in-depth:**
 - Layer 1: Project.create() validates directory
 - Layer 2: WorkspaceManager validates not empty
 - Layer 3: NODE_ENV guard refuses git init outside tmpdir

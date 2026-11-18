@@ -1,5 +1,5 @@
 ---
-name: implementation-guide
+name: wa-implementation-guide
 description: Guides production-quality code implementation following SOLID principles, clean architecture, and project conventions. Enforces non-monolithic file structure, dependency injection, and layered design. Use when implementing tasks from a task breakdown, or when the user asks to write code that should follow best practices.
 ---
 
@@ -25,7 +25,7 @@ Stop and satisfy these **before** writing implementation code or declaring work 
 
 1. **Read the Task Breakdown.** Know exactly which task you're implementing, what files to touch, and the verification criteria.
 2. **Read the Architecture Proposal.** Understand the patterns, interfaces, and layer structure decided by the architect.
-3. **Read project context.** Use the repository-context packet and selected conventions. Check ancestor guidance for newly affected files; reading shared context does not widen write scope.
+3. **Read project context.** Use the wa-repository-context packet and selected conventions. Check ancestor guidance for newly affected files; reading shared context does not widen write scope.
 4. **Read existing code.** Before writing, understand the patterns already in use. Integrate, don't reinvent.
 
 ## Code Structure Rules
@@ -140,4 +140,4 @@ For each task:
 
 When implementation for the scoped work is done:
 
-**"Implementation verified; report the required repository-context outcome (updated, verified-current, draft-awaiting-review, pending-approval or declined). Request code review if this was a major task (`~/.wonsky-agents/skills/requesting-code-review/SKILL.md`), then proceed with `~/.wonsky-agents/skills/quality-gate/SKILL.md`."**
+**"Implementation verified; report the required wa-repository-context outcome (updated, verified-current, draft-awaiting-review, pending-approval or declined). Request code review if this was a major task (`~/.wonsky-agents/skills/requesting-code-review/SKILL.md`), then proceed with `~/.wonsky-agents/skills/quality-gate/SKILL.md`."**

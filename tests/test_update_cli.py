@@ -12,9 +12,9 @@ import tempfile
 import unittest
 from unittest import mock
 
-from scripts.managed_files import snapshot
-from scripts.update_cli import main
-from scripts.update_review import default_choice
+from scripts.filesystem.managed import snapshot
+from scripts.updates.cli import main
+from scripts.updates.review import default_choice
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,7 +35,7 @@ class UpdateCliTests(unittest.TestCase):
         self.put(self.package, 'README.md', 'package documentation\n')
         self.canonical = self.root / 'home/.wonsky-agents'
         self.runtime_root = self.root / 'home/.codex/skills'
-        self.runtime = self.runtime_root / 'sample'
+        self.runtime = self.runtime_root / 'wa-sample'
         self.environment = dict(os.environ, HOME=str(self.root / 'home'),
                                 USERPROFILE=str(self.root / 'home'),
                                 CODEX_HOME=str(self.root / 'home/.codex'),
@@ -84,11 +84,11 @@ class UpdateCliTests(unittest.TestCase):
         shutil.copytree(ROOT / 'skills/remote-server', self.offer / 'skills/remote-server')
         result = self.update('--yes')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.runtime_root / 'session-ledger/scripts/ledger.py').is_file())
-        self.assertTrue((self.runtime_root / 'remote-server/agents/openai.yaml').is_file())
+        self.assertTrue((self.runtime_root / 'wa-session-ledger/scripts/ledger.py').is_file())
+        self.assertTrue((self.runtime_root / 'wa-remote-server/agents/openai.yaml').is_file())
         self.assertIn('Recovery hook', result.stdout)
         self.assertTrue((self.runtime_root.parent / 'hooks.json').is_file())
-        installed_helper = self.runtime_root / 'session-ledger/scripts/ledger.py'
+        installed_helper = self.runtime_root / 'wa-session-ledger/scripts/ledger.py'
         checked = subprocess.run([sys.executable, '-B', str(installed_helper), '--help'],
                                  env=self.environment, text=True, capture_output=True)
         self.assertEqual(checked.returncode, 0, checked.stderr)
@@ -141,7 +141,7 @@ class UpdateCliTests(unittest.TestCase):
         result = self.update('--yes', '--no-session-hooks')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(config.read_bytes(), before)
-        self.assertTrue((self.runtime_root / 'session-ledger/scripts/ledger.py').is_file())
+        self.assertTrue((self.runtime_root / 'wa-session-ledger/scripts/ledger.py').is_file())
 
     def test_edited_owned_hook_blocks_automatic_update_without_overwriting_it(self):
         shutil.copytree(ROOT / 'skills/session-ledger', self.offer / 'skills/session-ledger')
@@ -208,9 +208,9 @@ class UpdateCliTests(unittest.TestCase):
     def test_cancelling_final_confirmation_leaves_installation_unchanged(self):
         before = self.installed()
         with mock.patch.dict(os.environ, self.environment, clear=True), redirect_stdout(io.StringIO()):
-            with mock.patch('scripts.update_cli.choose', side_effect=lambda plans, terminal: {
+            with mock.patch('scripts.updates.cli.choose', side_effect=lambda plans, terminal: {
                     plan.id: default_choice(plan) for plan in plans}):
-                with mock.patch('scripts.update_cli.confirm', return_value=False):
+                with mock.patch('scripts.updates.cli.confirm', return_value=False):
                     result = main(['--from', str(self.offer), '--targets', 'codex', '--terminal'])
         self.assertEqual(result, 0)
         self.assertEqual(self.installed(), before)
@@ -299,7 +299,7 @@ class UpdateCliTests(unittest.TestCase):
         result = self.run_program('install.py', '--sync-only', '--targets', 'codex')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         state_root = self.runtime_root / '.wonsky-state'
-        state = json.loads((state_root / 'github-pr-review.json').read_text())
+        state = json.loads((state_root / 'wa-github-pr-review.json').read_text())
         self.assertIn('reviewer-preferences.md', state['files'])
         for path in state_root.rglob('*'):
             if path.is_file():

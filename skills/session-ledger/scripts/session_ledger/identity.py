@@ -4,7 +4,7 @@ from typing import Mapping, Optional
 
 from session_ledger.models.ledger import Binding, LedgerError
 
-HOSTS = ('generic', 'claude', 'codex', 'cursor', 'antigravity')
+HOSTS = ('generic', 'claude', 'codex', 'cursor', 'antigravity', 'copilot')
 SAFE_SESSION = re.compile(r'[A-Za-z0-9_.:-]{1,128}\Z')
 HOST_ENV = {'claude': 'CLAUDE_CODE_SESSION_ID', 'codex': 'CODEX_THREAD_ID'}
 

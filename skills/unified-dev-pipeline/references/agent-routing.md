@@ -1,6 +1,6 @@
 # Agent Routing Map
 
-This file maps pipeline phases and routes to specialist sub-agents that may be available in the runtime (e.g. **Claude Code** with the **oh-my-claudecode** plugin). It is read by `unified-dev-pipeline` (and therefore by `dev-pipeline`).
+This file maps pipeline phases and routes to specialist sub-agents that may be available in the runtime (e.g. **Claude Code** with the **oh-my-claudecode** plugin). It is read by `wa-unified-dev-pipeline` (and therefore by `wa-dev-pipeline`).
 
 ## When to use this map
 
@@ -13,22 +13,22 @@ This file maps pipeline phases and routes to specialist sub-agents that may be a
 
 | Pipeline phase / route | Preferred agent | What it does | Skill fallback |
 |------------------------|-----------------|--------------|----------------|
-| **Phase 1 — Strategy** | `oh-my-claudecode:analyst` (requirements, Opus), `oh-my-claudecode:planner` (interview + plan, Opus) | Crystallize scope, risks, acceptance criteria | `strategic-planner`, `brainstorming` |
-| **Phase 2 — Architecture** | `oh-my-claudecode:architect` (read-only, Opus) | Reuse scan, pattern selection, design trade-offs | `solution-architect` |
-| **Phase 3 — Decomposition** | `oh-my-claudecode:planner` | Order work into atomic tasks | `task-decomposer`, `writing-plans` |
-| **Phase 4 — Implementation** | `oh-my-claudecode:executor` (Sonnet) | Focused task execution | `implementation-guide`, `executing-plans`, `subagent-driven-development` |
-| **Parallel execution** | `ultrawork` skill / `team` | High-throughput independent work | `dispatching-parallel-agents` |
-| **Debugging** | `oh-my-claudecode:tracer` (competing hypotheses), `oh-my-claudecode:debugger` (stack traces, build errors) | Evidence-driven root cause | `systematic-debugging`, `root-cause-tracing` |
-| **Code review (own work)** | `oh-my-claudecode:code-reviewer` (severity-rated), `oh-my-claudecode:critic` (plans + code, Opus) | Find defects before merge | `requesting-code-review` |
-| **Strict / "thermo-nuclear" review** | `oh-my-claudecode:critic`, `oh-my-claudecode:code-reviewer` | Harsh maintainability/abstraction/large-file bar | `strict-code-quality-review` |
-| **GitHub PR review (others' PRs)** | `oh-my-claudecode:code-reviewer` for the analysis | 2-stage: strict diff review → post pending inline comments | `pr-review-orchestrator` → `github-pr-review` |
-| **Security** | `oh-my-claudecode:security-reviewer` (OWASP) | Vulnerability + secret detection | `quality-gate` (security section) |
-| **Work report / changelog** | (inline) | Management summary from git history; changelog/version bump | `git-report`, `changelog-versioning` |
-| **Testing** | `oh-my-claudecode:test-engineer` (strategy, e2e, flaky), `oh-my-claudecode:qa-tester` (tmux CLI) | Language-agnostic test coverage | `test-driven-development`, `testing-anti-patterns`, language test skill |
+| **Phase 1 — Strategy** | `oh-my-claudecode:analyst` (requirements, Opus), `oh-my-claudecode:planner` (interview + plan, Opus) | Crystallize scope, risks, acceptance criteria | `wa-strategic-planner`, `wa-brainstorming` |
+| **Phase 2 — Architecture** | `oh-my-claudecode:architect` (read-only, Opus) | Reuse scan, pattern selection, design trade-offs | `wa-solution-architect` |
+| **Phase 3 — Decomposition** | `oh-my-claudecode:planner` | Order work into atomic tasks | `wa-task-decomposer`, `wa-writing-plans` |
+| **Phase 4 — Implementation** | `oh-my-claudecode:executor` (Sonnet) | Focused task execution | `wa-implementation-guide`, `wa-executing-plans`, `wa-subagent-driven-development` |
+| **Parallel execution** | `ultrawork` skill / `team` | High-throughput independent work | `wa-dispatching-parallel-agents` |
+| **Debugging** | `oh-my-claudecode:tracer` (competing hypotheses), `oh-my-claudecode:debugger` (stack traces, build errors) | Evidence-driven root cause | `wa-systematic-debugging`, `wa-root-cause-tracing` |
+| **Code review (own work)** | `oh-my-claudecode:code-reviewer` (severity-rated), `oh-my-claudecode:critic` (plans + code, Opus) | Find defects before merge | `wa-requesting-code-review` |
+| **Strict / "thermo-nuclear" review** | `oh-my-claudecode:critic`, `oh-my-claudecode:code-reviewer` | Harsh maintainability/abstraction/large-file bar | `wa-strict-code-quality-review` |
+| **GitHub PR review (others' PRs)** | `oh-my-claudecode:code-reviewer` for the analysis | 2-stage: strict diff review → post pending inline comments | `wa-pr-review-orchestrator` → `wa-github-pr-review` |
+| **Security** | `oh-my-claudecode:security-reviewer` (OWASP) | Vulnerability + secret detection | `wa-quality-gate` (security section) |
+| **Work report / changelog** | (inline) | Management summary from git history; changelog/version bump | `wa-git-report`, `wa-changelog-versioning` |
+| **Testing** | `oh-my-claudecode:test-engineer` (strategy, e2e, flaky), `oh-my-claudecode:qa-tester` (tmux CLI) | Language-agnostic test coverage | `wa-test-driven-development`, `wa-testing-anti-patterns`, language test skill |
 | **Cleanup** | `oh-my-claudecode:code-simplifier` | Post-implementation simplification | (inline) |
 | **UI / UX** | `oh-my-claudecode:designer` (Sonnet) | Stunning interfaces | (inline) |
-| **Completion verification** | `oh-my-claudecode:verifier` | Evidence-based completion checks | `verification-before-completion` |
-| **Branch completion / git** | `oh-my-claudecode:git-master` | Atomic commits, rebase, history | `finishing-a-development-branch` |
+| **Completion verification** | `oh-my-claudecode:verifier` | Evidence-based completion checks | `wa-verification-before-completion` |
+| **Branch completion / git** | `oh-my-claudecode:git-master` | Atomic commits, rebase, history | `wa-finishing-a-development-branch` |
 | **Codebase exploration** | `Explore` / `oh-my-claudecode:explore` | Find files & patterns fast | (inline search) |
 | **External docs** | `oh-my-claudecode:document-specialist` | Web + reference lookup | (inline / context7) |
 | **Data analysis / research** | `oh-my-claudecode:scientist` | Data analysis execution | (inline) |
@@ -49,5 +49,5 @@ These are workflow skills, not agents — invoke when the situation fits:
 - Delegating to an agent does **not** skip a gate. The orchestrator still presents output for approval.
 - Never let an agent commit, push, or deploy. That remains the user's explicit decision.
 - An agent's claim of "done/passing/fixed" is not evidence. Run the Completion Verification Route yourself.
-- Pass the selected stage skill to every executor/reviewer; that stage loads its owning language contract. Delegation does not bypass it. Every delivery also carries the required repository-context outcome with actual paths/evidence and approval state.
+- Pass the selected stage skill to every executor/reviewer; that stage loads its owning language contract. Delegation does not bypass it. Every delivery also carries the required wa-repository-context outcome with actual paths/evidence and approval state.
 - Match the agent to the job; do not fan out agents for a single tightly-coupled change.

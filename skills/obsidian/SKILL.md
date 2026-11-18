@@ -1,6 +1,6 @@
 ---
-name: obsidian
-description: Universal entrypoint for Obsidian work. Use when the user is working in an Obsidian vault and does not care which specialized Obsidian skill to choose. Prefer the obsidian CLI whenever it can do the task cheaply. Route to obsidian-template-create for creating notes from templates, obsidian-template-update for remembering concise template corrections, obsidian-cli for vault search/read/create/append/property/task/app/plugin/theme operations, obsidian-markdown for Obsidian markdown editing, obsidian-bases for .base files, json-canvas for .canvas files, and defuddle for web-page-to-markdown imports.
+name: wa-obsidian
+description: Universal entrypoint for Obsidian work. Use when the user is working in an Obsidian vault and does not care which specialized Obsidian skill to choose. Prefer the obsidian CLI whenever it can do the task cheaply. Route to wa-obsidian-template-create for creating notes from templates, wa-obsidian-template-update for remembering concise template corrections, wa-obsidian-cli for vault search/read/create/append/property/task/app/plugin/theme operations, wa-obsidian-markdown for Obsidian markdown editing, wa-obsidian-bases for .base files, wa-json-canvas for .canvas files, and wa-defuddle for web-page-to-markdown imports.
 ---
 
 # Obsidian Router
@@ -62,40 +62,40 @@ If a template exists, inspect which user-provided fields it expects. When the us
 
 Choose the best match:
 
-- `obsidian-markdown`: editing or creating Obsidian notes, wikilinks, embeds, callouts, frontmatter, tags, note cleanup, note structure, templates, or general `.md` work inside a vault
-- `obsidian-bases`: creating or editing `.base` files, views, filters, formulas, dashboards, and database-like note views
-- `json-canvas`: creating or editing `.canvas` files, mind maps, diagrams, concept maps, node layouts, and canvas connections
-- `obsidian-cli`: interacting with a running Obsidian app via the `obsidian` CLI, vault search, note operations, tasks, properties, plugin development, theme development, screenshots, DOM inspection, and debugging
-- `obsidian-template-create`: creating notes or vault records from existing Obsidian templates
-- `obsidian-template-update`: updating concise per-template creation instructions after user feedback
-- `defuddle`: extracting a normal web page into clean markdown before saving or importing it into the vault
+- `wa-obsidian-markdown`: editing or creating Obsidian notes, wikilinks, embeds, callouts, frontmatter, tags, note cleanup, note structure, templates, or general `.md` work inside a vault
+- `wa-obsidian-bases`: creating or editing `.base` files, views, filters, formulas, dashboards, and database-like note views
+- `wa-json-canvas`: creating or editing `.canvas` files, mind maps, diagrams, concept maps, node layouts, and canvas connections
+- `wa-obsidian-cli`: interacting with a running Obsidian app via the `obsidian` CLI, vault search, note operations, tasks, properties, plugin development, theme development, screenshots, DOM inspection, and debugging
+- `wa-obsidian-template-create`: creating notes or vault records from existing Obsidian templates
+- `wa-obsidian-template-update`: updating concise per-template creation instructions after user feedback
+- `wa-defuddle`: extracting a normal web page into clean markdown before saving or importing it into the vault
 
 ## Selection Rules
 
 1. If the user explicitly names one of the specialized skills, use it.
-2. If the task can be done cleanly through `obsidian`, use `obsidian-cli` or a template skill that uses the CLI.
-3. If the user asks to create a note/item from a template, use `obsidian-template-create` after first confirming the template exists in the current vault.
-4. If the user says what was wrong with a previous template-created note, use `obsidian-template-update`.
+2. If the task can be done cleanly through `obsidian`, use `wa-obsidian-cli` or a template skill that uses the CLI.
+3. If the user asks to create a note/item from a template, use `wa-obsidian-template-create` after first confirming the template exists in the current vault.
+4. If the user says what was wrong with a previous template-created note, use `wa-obsidian-template-update`.
 5. If the request mentions a file extension, route by file type:
-   - `.md` -> `obsidian-markdown`
-   - `.base` -> `obsidian-bases`
-   - `.canvas` -> `json-canvas`
-6. If the request is about searching, automation, plugin or theme work, or controlling a running Obsidian app, use `obsidian-cli`.
-7. If the request starts from a URL or article and the goal is to bring it into the vault as readable markdown, use `defuddle` first, then `obsidian-template-create` or `obsidian-markdown` if further note formatting is needed.
+   - `.md` -> `wa-obsidian-markdown`
+   - `.base` -> `wa-obsidian-bases`
+   - `.canvas` -> `wa-json-canvas`
+6. If the request is about searching, automation, plugin or theme work, or controlling a running Obsidian app, use `wa-obsidian-cli`.
+7. If the request starts from a URL or article and the goal is to bring it into the vault as readable markdown, use `wa-defuddle` first, then `wa-obsidian-template-create` or `wa-obsidian-markdown` if further note formatting is needed.
 8. If the request mixes formats, use the smallest set of skills needed, in sequence.
 
 ## Common Sequences
 
-- Web article -> `defuddle` -> `obsidian-markdown`
-- New note or record -> inspect vault structure/templates first -> identify all missing user-provided fields -> ask for them in one concise batch if needed -> `obsidian-template-create` if a real template exists, otherwise `obsidian-markdown` plus a brief clarification for missing schema
-- Template correction feedback -> `obsidian-template-update`
-- Notes dashboard -> `obsidian-bases` and optionally `obsidian-markdown`
-- Brainstorm to visual map -> `json-canvas`
-- Plugin or theme change -> `obsidian-cli`
+- Web article -> `wa-defuddle` -> `wa-obsidian-markdown`
+- New note or record -> inspect vault structure/templates first -> identify all missing user-provided fields -> ask for them in one concise batch if needed -> `wa-obsidian-template-create` if a real template exists, otherwise `wa-obsidian-markdown` plus a brief clarification for missing schema
+- Template correction feedback -> `wa-obsidian-template-update`
+- Notes dashboard -> `wa-obsidian-bases` and optionally `wa-obsidian-markdown`
+- Brainstorm to visual map -> `wa-json-canvas`
+- Plugin or theme change -> `wa-obsidian-cli`
 
 ## Fallback
 
-If the request is clearly Obsidian-related but ambiguous, start with `obsidian-cli` to inspect or act cheaply. Fall back to `obsidian-markdown` only when content-level markdown editing is the main task.
+If the request is clearly Obsidian-related but ambiguous, start with `wa-obsidian-cli` to inspect or act cheaply. Fall back to `wa-obsidian-markdown` only when content-level markdown editing is the main task.
 
 Never assume note location, frontmatter keys, or template fields from the task description alone when the user's vault can be inspected directly.
 Never treat obviously meaningful empty fields such as store, price, buy-again flags, ratings, or notes as acceptable final output unless the user explicitly wants a partial draft.

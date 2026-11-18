@@ -9,10 +9,10 @@ import subprocess
 import sys
 import unittest
 
-from scripts.models.target import Target
-from scripts.update_apply import apply_plan
-from scripts.update_collection import canonical_plans, runtime_plans
-from scripts.update_review import default_choice
+from scripts.installation.models.target import Target
+from scripts.updates.apply import apply_plan
+from scripts.updates.collection import canonical_plans, runtime_plans
+from scripts.updates.review import default_choice
 
 
 class ManualSkillDistributionTests(unittest.TestCase):
@@ -42,20 +42,44 @@ class ManualSkillDistributionTests(unittest.TestCase):
                 self.assertIn(str(self.canonical / 'skills/remote-server/SKILL.md'), output.getvalue())
 
     def test_supported_runtimes_receive_skill(self):
-        for key in ('codex', 'claude', 'cursor'):
+        for key in ('codex', 'claude', 'cursor', 'copilot'):
             with self.subTest(key=key):
                 target = self.target(key)
                 plans = runtime_plans(self.plans, self.choices, [target])
                 self.assertEqual(len(plans), 1)
-                self.assertEqual(plans[0].destination, target.path / 'remote-server')
+                self.assertEqual(plans[0].destination, target.path / 'wa-remote-server')
                 self.assertFalse(plans[0].blocked)
+
+    def test_legacy_unsupported_copy_is_still_blocked_and_reported(self):
+        target = self.target('agents')
+        legacy = target.path / 'remote-server/SKILL.md'
+        legacy.parent.mkdir(parents=True)
+        legacy.write_text('legacy manual skill', encoding='utf-8')
+        plans = runtime_plans(self.plans, self.choices, [target])
+        self.assertEqual(len(plans), 1)
+        self.assertEqual(plans[0].destination, legacy.parent)
+        self.assertTrue(plans[0].blocked)
+        self.assertEqual(legacy.read_text(), 'legacy manual skill')
+
+        repo = Path(__file__).resolve().parents[1]
+        environment = dict(os.environ, HOME=str(self.root), USERPROFILE=str(self.root),
+                           WONSKY_AGENTS_HOME=str(self.source))
+        legacy = self.root / '.agents/skills/remote-server/SKILL.md'
+        legacy.parent.mkdir(parents=True)
+        legacy.write_text('legacy manual skill', encoding='utf-8')
+        result = subprocess.run([sys.executable, '-B', str(repo / 'install.py'),
+                                 '--sync-only', '--dry-run', '--targets', 'agents', '--no-session-hooks'],
+                                env=environment, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn(str(legacy.parent), result.stdout)
+        self.assertEqual(legacy.read_text(), 'legacy manual skill')
 
     def test_existing_unsupported_copy_is_blocked_and_preserved_even_when_canonical_kept(self):
         for key in ('antigravity', 'agents'):
             for choice in ('keep', 'update'):
                 with self.subTest(key=key, choice=choice):
                     target = self.target(key)
-                    destination = target.path / 'remote-server'
+                    destination = target.path / 'wa-remote-server'
                     destination.mkdir(parents=True, exist_ok=True)
                     manifest = destination / 'SKILL.md'
                     manifest.write_text('personal previous skill\n')
@@ -76,7 +100,7 @@ class ManualSkillDistributionTests(unittest.TestCase):
         outside.mkdir()
         sentinel = outside / 'SKILL.md'
         sentinel.write_text('unrelated file\n')
-        destination = target.path / 'remote-server'
+        destination = target.path / 'wa-remote-server'
         try:
             destination.symlink_to(outside, target_is_directory=True)
         except OSError:
@@ -93,9 +117,9 @@ class ManualSkillDistributionTests(unittest.TestCase):
         result = subprocess.run([sys.executable, '-B', str(repo / 'install.py'), '--sync-only',
                                  '--targets', 'codex,agents,antigravity'], env=env, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue((self.root / '.codex/skills/remote-server/SKILL.md').is_file())
-        self.assertFalse((self.root / '.agents/skills/remote-server').exists())
-        self.assertFalse((self.root / '.gemini/config/skills/remote-server').exists())
+        self.assertTrue((self.root / '.codex/skills/wa-remote-server/SKILL.md').is_file())
+        self.assertFalse((self.root / '.agents/skills/wa-remote-server').exists())
+        self.assertFalse((self.root / '.gemini/config/skills/wa-remote-server').exists())
         self.assertIn('manual-only', result.stdout)
 
 

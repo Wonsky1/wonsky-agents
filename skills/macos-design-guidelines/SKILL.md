@@ -1,5 +1,5 @@
 ---
-name: macos-design-guidelines
+name: wa-macos-design-guidelines
 description: Apple Human Interface Guidelines for Mac. Use when building macOS apps with SwiftUI or AppKit, implementing menu bars, toolbars, window management, or keyboard shortcuts. Triggers on tasks involving Mac UI, desktop apps, or Mac Catalyst.
 license: MIT
 metadata:
@@ -25,7 +25,7 @@ Before applying examples, establish the project's minimum macOS deployment targe
 
 The matrix identifies API milestones, not complete version profiles. Check every API used, including window and toolbar modifiers. Use #available or @available with functional fallbacks for APIs newer than the deployment target. Runtime checks do not make unknown symbols compile against an older SDK; avoid those symbols or use verified compile-time conditions. Do not raise the deployment target or migrate unrelated code without user intent. Accessibility, keyboard support and native window behavior apply across versions.
 
-Keep one portable skill containing all supported branches. Select guidance when working on a project; installation must not rewrite the skill for the installing computer. For SwiftUI work also read ../swiftui-expert-skill/SKILL.md.
+Keep one portable skill containing all supported branches. Select guidance when working on a project; installation must not rewrite the skill for the installing computer. For SwiftUI work also read ~/.wonsky-agents/skills/swiftui-expert-skill/SKILL.md.
 
 Sources: [Apple navigation compatibility](https://developer.apple.com/documentation/technotes/tn3154-adopting-swiftui-navigation-split-view), [Apple Observation migration](https://developer.apple.com/documentation/swiftui/migrating-from-the-observable-object-protocol-to-the-observable-macro), [SwiftUI new design in macOS 26](https://developer.apple.com/videos/play/wwdc2025/323/), [SDK-dependent standard control appearance](https://developer.apple.com/videos/play/wwdc2025/102/), [AppKit changes in macOS 27](https://developer.apple.com/videos/play/wwdc2026/289/).
 

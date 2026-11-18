@@ -1,5 +1,5 @@
 ---
-name: repository-context
+name: wa-repository-context
 description: Use before repository planning, implementation, debugging or review; when handing work to another agent; or when proposing changes to AGENTS.md, repository rules, context, domain glossaries or architecture decisions. Establish task scope, load relevant documentation, write useful factual context drafts for user review and obtain approval before changing existing instructions or policies.
 ---
 

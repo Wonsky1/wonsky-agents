@@ -9,7 +9,7 @@ import shutil
 import tempfile
 from typing import Dict, Mapping, Optional
 
-from scripts.models.sync_result import SyncResult
+from scripts.filesystem.models.sync_result import SyncResult
 
 
 STATE_VERSION = 2
@@ -249,3 +249,9 @@ def sync_files(files: Mapping[str, Path], destination: Path, state_path: Path,
             raise OSError('Replacement failed; original retained at {}'.format(backup))
         shutil.rmtree(staging)
     return result
+
+
+def file_bytes(path: Path) -> Optional[bytes]:
+    if symlink_in_chain(path) is not None:
+        raise ValueError('Symlinked file path; preserved: {}'.format(path))
+    return path.read_bytes() if path.exists() else None

@@ -1,0 +1,4 @@
+interface:
+  display_name: "wa-explain"
+  short_description: "Explain simply through one concrete example"
+  default_prompt: "Use $wa-explain to explain how this works in simple words, following one concrete example and showing intermediate data where helpful."

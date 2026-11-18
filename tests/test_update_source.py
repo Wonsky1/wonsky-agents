@@ -11,8 +11,8 @@ from unittest import mock
 from urllib.error import HTTPError, URLError
 import zipfile
 
-from scripts import update_source
-from scripts.update_source import open_update_source
+import scripts.updates.source as update_source
+from scripts.updates.source import open_update_source
 
 
 REVISION = 'a' * 40

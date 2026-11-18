@@ -8,13 +8,17 @@ import platform
 import sys
 from typing import List, Optional
 
-from scripts.agent_targets import detect_targets, select_keys
-from scripts.hook_files import apply_hook_plan
-from scripts.session_hooks import plan_hook
-from scripts.recovery_setup import apply_recovery, plan_recovery, show_recovery, validate_recovery
-from scripts.skill_distribution import distribution_issue
-from scripts.skill_files import check_overlap, install_collection, sync_skill, validate_skill
-from scripts.target_picker import pick_targets
+from scripts.installation.targets import detect_targets, select_keys
+from scripts.hooks.files import apply_hook_plan
+from scripts.migrations.apply import apply_migration, validate_migration
+from scripts.migrations.registry import plan_migrations, ready_migration
+from scripts.migrations.review import show_migrations
+from scripts.hooks.setup import plan_hook
+from scripts.hooks.recovery import apply_recovery, plan_recovery, show_recovery, validate_recovery
+from scripts.skills.distribution import distribution_issue, distribution_names
+from scripts.skills.files import check_overlap, install_collection, sync_skill, validate_skill
+from scripts.skills.names import runtime_skill_name
+from scripts.installation.picker import pick_targets
 
 
 def report_result(label, result):
@@ -29,7 +33,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description='Install and sync Wonsky Agents using Python 3.9+ standard library only.')
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument('--all', action='store_true', help='sync every detected agent')
-    mode.add_argument('--targets', help='comma-separated targets: cursor,claude,codex,antigravity,agents; detection not required')
+    mode.add_argument('--targets', help='comma-separated targets: cursor,claude,codex,antigravity,agents,copilot; detection not required')
     parser.add_argument('--dry-run', action='store_true', help='preview without creating, replacing or deleting files')
     parser.add_argument('--list', action='store_true', help='list detected and available targets without writing files')
     parser.add_argument('--terminal', action='store_true', help='use terminal selection instead of optional graphical checkboxes')
@@ -46,7 +50,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         if system not in ('Darwin', 'Linux', 'Windows'):
             raise ValueError('Supported operating systems: macOS, Linux and Windows (detected {}).'.format(system))
         home = Path.home()
-        package = Path(__file__).resolve().parents[1]
+        package = Path(__file__).resolve().parents[2]
         canonical = Path(os.environ.get('WONSKY_AGENTS_HOME') or home / '.wonsky-agents').expanduser().absolute()
         source = canonical if args.sync_only else package
         baseline = args.baseline.expanduser().resolve() if args.baseline else None
@@ -94,11 +98,19 @@ def main(argv: Optional[List[str]] = None) -> int:
         for target in selected:
             check_overlap(skills_root, target.path)
             for skill in skills:
-                check_overlap(skill, target.path / skill.name)
+                check_overlap(skill, target.path / runtime_skill_name(skill.name))
         recovery = [] if args.no_session_hooks else plan_recovery(
             selected, canonical, source / 'skills/session-ledger/scripts/ledger.py', system)
         show_recovery(recovery)
         validate_recovery(recovery)
+        migrations = plan_migrations(skills, selected, baseline)
+        show_migrations(migrations)
+        if any(plan.status == 'blocked' for plan in migrations):
+            print('Migration conflicts preserved. Review the reported legacy and prefixed folders before retrying.')
+            return 2
+        for plan in migrations:
+            if plan.status == 'ready':
+                validate_migration(plan)
         preview_canonical = None
         if not args.sync_only:
             same = check_overlap(package, canonical)
@@ -115,25 +127,35 @@ def main(argv: Optional[List[str]] = None) -> int:
                 else:
                     skills_root = canonical / 'skills'
                     skills = [skills_root / skill.name for skill in skills]
+        if not args.dry_run:
+            for plan in migrations:
+                if plan.status == 'ready':
+                    print('Migration backup retained: {}'.format(apply_migration(plan)))
         counts = {'added': 0, 'updated': 0, 'unchanged': 0, 'conflict': 0}
         for target in selected:
             print('{} {} skills -> {} ({})'.format('Previewing' if args.dry_run else 'Syncing', len(skills), target.path, target.label))
             for skill in skills:
-                destination = target.path / skill.name
+                destination = target.path / runtime_skill_name(skill.name)
                 exists = destination.exists() or destination.is_symlink()
                 issue = distribution_issue(skill.name, target.key, exists)
                 if issue:
-                    print('  {}: {}. Attach {} explicitly to use it.'.format(
-                        destination, issue, skills_root / skill.name / 'SKILL.md'))
-                    if exists:
-                        counts['conflict'] += 1
+                    for restricted_name in distribution_names(skill.name, target.key):
+                        restricted = target.path / restricted_name
+                        exists = restricted.exists() or restricted.is_symlink()
+                        print('  {}: {}. Attach {} explicitly to use it.'.format(
+                            restricted, distribution_issue(skill.name, target.key, exists),
+                            skills_root / skill.name / 'SKILL.md'))
+                        if exists:
+                            counts['conflict'] += 1
                     continue
                 previous = baseline / 'skills' / skill.name if baseline else None
-                result = sync_skill(skill, target.path / skill.name, baseline=previous, dry_run=args.dry_run,
+                migration = ready_migration(migrations, destination)
+                preview_destination = migration.source if args.dry_run and migration else destination
+                result = sync_skill(skill, preview_destination, baseline=previous, dry_run=args.dry_run,
                                     retained_source=preview_canonical / 'skills' / skill.name if preview_canonical else None)
                 counts[result.status] += 1
                 if result.status == 'conflict' or result.preserved:
-                    report_result(str(target.path / skill.name), result)
+                    report_result(str(destination), result)
         print('{}: added {}, updated {}, unchanged {}, conflicts {}.{}'.format(
               'Preview' if args.dry_run else 'Finished', counts['added'], counts['updated'],
               counts['unchanged'], counts['conflict'], ' No files changed.' if args.dry_run else ''))

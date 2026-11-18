@@ -1,6 +1,6 @@
 # Wonsky Agents
 
-A personal collection of 54 agent skills, development workflows, and small utilities for Cursor, Claude Code, Codex, and Antigravity.
+A personal collection of 55 agent skills, development workflows, and small utilities for Cursor, Claude Code, Codex, GitHub Copilot, and Antigravity.
 
 The canonical source is `~/.wonsky-agents/skills/`. New runtime skill directories receive copies including scripts, references, templates, and assets. Later synchronization preserves user changes and extra files. Edit the canonical files, then sync them.
 
@@ -9,15 +9,24 @@ The canonical source is `~/.wonsky-agents/skills/`. New runtime skill directorie
 - **Development pipeline:** routing, planning, architecture, task decomposition, implementation, debugging, review, and verification.
 - **Repository context:** explicit task/read/write scope, selective documentation loading, factual drafts written for user review, and approval before changing existing instructions or policies.
 - **Specialist skills:** SwiftUI, macOS design, UI/UX, Obsidian, domain modeling, and more.
+- **Plain-language explanations:** `wa-explain` follows one concrete example through a system, with short overviews and detailed follow-ups that show intermediate data and calculations. It works independently of the development pipeline.
 - **Installation and updates:** OS/runtime detection, destination selection, original/local/new comparisons, reviewed whole-skill choices and backups.
 
 See the [complete skill catalog](docs/skills.md).
+
+## Skill names
+
+Every skill in this collection uses the `wa-` prefix, for example `$wa-dev-pipeline` or `$wa-brainstorming`. Installation and reviewed updates use matching runtime folders such as `~/.codex/skills/wa-dev-pipeline/`, alongside other collections' skills. The prefix uses portable filename characters on macOS, Linux and Windows.
+
+Canonical source folders keep their existing slugs, such as `skills/dev-pipeline/`. Cross-skill file links and recovery helper paths remain stable. Edit those canonical files, then synchronize; runtime folder names are mapped by `scripts/skills/names.py`.
+
+Installation and updates automatically migrate verified older Wonsky copies to prefixed folders, including their ownership records and local extra files. Unverified personal folders with the same original name stay alongside the new skills. New updates manage the prefixed folders and their matching `.wonsky-state/wa-<slug>.json` records. See [automatic migrations](#automatic-migrations) for previews, conflicts and backups.
 
 ## Install on macOS, Linux or Windows
 
 The installer requires **Python 3.9+ only**, using its standard library. No `rsync`, Bash, Git, package manager, administrator rights, virtual environment or `pip install` is needed. If Python is missing, install it from [python.org](https://www.python.org/downloads/) first; Python is not assumed to be bundled with a clean operating system.
 
-Python provides the same file copying, runtime detection, path handling and selection logic on all three systems. It also runs the optional read-only repository-context helper. The skills themselves are Markdown; an agent can read them without Python. Some specialist skills have separate requirements, such as Xcode for building a Mac app or the Obsidian CLI for interacting with a vault.
+Python provides the same file copying, runtime detection, path handling and selection logic on all three systems. It also runs the optional read-only wa-repository-context helper. The skills themselves are Markdown; an agent can read them without Python. Some specialist skills have separate requirements, such as Xcode for building a Mac app or the Obsidian CLI for interacting with a vault.
 
 ### Without Git
 
@@ -55,7 +64,7 @@ On Windows, run `py -3 install.py` from the cloned folder. SSH cloning needs you
 
 An existing nonempty canonical folder requires `--update` when installing from another extracted download. This enables a preserving update, not forced replacement. Run the installer already inside the canonical folder for normal synchronization.
 
-Cross-skill instructions use `~/.wonsky-agents/skills/`. `WONSKY_AGENTS_HOME` changes the install/sync root but does not rewrite those references, so the default location is recommended. `CODEX_HOME`, if set, controls the Codex destination.
+Cross-skill instructions use `~/.wonsky-agents/skills/`. `WONSKY_AGENTS_HOME` changes the install/sync root but does not rewrite those references, so the default location is recommended. `CODEX_HOME`, if set, controls the Codex destination. `COPILOT_HOME` controls the Copilot CLI destination; VS Code normally uses `~/.copilot/skills/` independently of that CLI override.
 
 This is a personal configuration. Some Obsidian skills include the owner's local vault path and should be adapted for another machine or user.
 
@@ -80,7 +89,7 @@ The default selector shows real checkboxes when Python's optional Tk interface a
 Explicit selection also works on a clean machine, even before the agent creates a configuration folder:
 
 ```sh
-python3 install.py --targets cursor,claude,codex,antigravity,agents
+python3 install.py --targets cursor,claude,codex,antigravity,agents,copilot
 python3 install.py --all
 python3 install.py --dry-run --targets codex
 python3 install.py --sync-only --targets codex
@@ -95,6 +104,7 @@ python3 install.py --sync-only --targets codex
 | `codex` | `~/.codex/skills/` | Config directory, `codex` command or known app location; honors `CODEX_HOME` |
 | `antigravity` | `~/.gemini/config/skills/` | Config directory, `antigravity`/`agy` command or known app location |
 | `agents` | `~/.agents/skills/` | Existing `.agents` directory |
+| `copilot` | `~/.copilot/skills/` | Config directory, `copilot` CLI or installed Copilot VS Code extension; honors `COPILOT_HOME` for CLI |
 
 Platform-specific detection checks macOS app bundles, typical Windows user/system application directories, and Linux XDG config/data directories and desktop entries. Detection is best effort; portable/custom installations may need explicit `--targets`. These are agent applications and configuration folders, not installed model weights. Antigravity's destination follows its [skills documentation](https://antigravity.google/docs/skills?app=antigravity-ide).
 
@@ -118,13 +128,27 @@ Only files whose installed bytes match that trusted baseline qualify for an upda
 
 Multiple discovery roots can produce duplicate entries in an agent that reads both `~/.agents/skills/` and its own skills directory; choose the destinations you need. Existing local `~/.cursor/sync-skills.sh` wrappers still delegate to the compatible entry point; a fresh install does not create a Cursor wrapper.
 
+GitHub Copilot uses these personal skills in VS Code and Copilot CLI. Invoke a skill with `/wa-dev-pipeline`, for example. Detection recognizes installed Copilot extensions in standard VS Code/Insiders directories; VS Code by itself is not evidence. Other editors and custom extension locations can use explicit `--targets copilot`. See the official [VS Code skills documentation](https://code.visualstudio.com/docs/agent-customization/agent-skills) and [Copilot CLI reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference).
+
+## Automatic migrations
+
+Installation and reviewed updates run an ordered registry with permanent migration IDs. Migration `0001-wa-skill-namespace` moves a verified legacy runtime folder such as `dev-pipeline/` to `wa-dev-pipeline/`, together with its ownership record. Canonical source/helper paths remain unchanged. `--dry-run` shows the moves and content updates without writing folders, journals or backups.
+
+The first migration recognizes an unchanged owned `SKILL.md` using the previous installer hash, or an entire byte-identical copy of an explicitly supplied `--baseline`. Unknown folders are retained and the prefixed skill can be installed beside them. Edited/deleted owned instructions, unsafe paths, or both old and new locations/records cause a migration conflict before installation/update writes begin. Review the reported folders rather than assuming that a same-name folder belongs to Wonsky.
+
+Each move first saves the complete legacy tree and its ownership record under the runtime skill root's `.wonsky-state/migration-backups/<migration-id>/`. Extra/private files and existing instructions travel with the folder. A completed move is recorded under `.wonsky-state/migrations/<migration-id>/<slug>.json`, including its backup path. Repeating the command does not move an already migrated folder again. A move/state/journal failure restores that unit's original folder and state; backups remain. Multiple units and their subsequent content updates are not one atomic transaction.
+
+The updater reviews content at the old location while showing the prefixed destination. Its JSON report binds migration paths and fingerprints as well as update choices. Changes after review reject the saved report before applying it. Keeping a canonical or runtime skill also keeps its migration. Local edits to other managed files still follow normal Keep/Use New review; a layout migration does not authorize overwriting them.
+
+For the first upgrade from an updater that predates migrations, run `update.py` from the trusted new extracted download with `--from /path/to/that/download`. An already running old updater retains its old implementation; after an update performed by older code, run the installed updater again so the new registry can migrate the layout. No separate migration command or manual state-version edit is required.
+
 ## Session recovery setup
 
 Draft — awaiting user review: automatic installation and upgrade behavior below supersedes the earlier optional setup.
 
-The `session-ledger` skill keeps task decisions, verification evidence, running jobs and pending items in `.agent-ledger/`. Its helper uses Python 3.9+ standard library only. Git is needed to verify exclusion inside a repository; a plain directory requires explicit `--repo` and reports that exclusion is unverified. Ignored files are not confidential storage and can disappear with a removed worktree.
+The `wa-session-ledger` skill keeps task decisions, verification evidence, running jobs and pending items in `.agent-ledger/`. Its helper uses Python 3.9+ standard library only. Git is needed to verify exclusion inside a repository; a plain directory requires explicit `--repo` and reports that exclusion is unverified. Ignored files are not confidential storage and can disappear with a removed worktree.
 
-Normal installation, synchronization and reviewed updates configure recovery hooks automatically for the selected supported hosts once the session-ledger helper is accepted and installed. Dry runs show the proposed entries without writing configuration. Use `--no-session-hooks` on an installation or update to skip setup for that run. The independent commands remain available for inspection, repair and removal:
+Normal installation, synchronization and reviewed updates configure recovery hooks automatically for the selected supported hosts once the wa-session-ledger helper is accepted and installed. Dry runs show the proposed entries without writing configuration. Use `--no-session-hooks` on an installation or update to skip setup for that run. The independent commands remain available for inspection, repair and removal:
 
 ```sh
 python3 install.py --session-hooks status --targets claude,codex,cursor,antigravity
@@ -133,7 +157,7 @@ python3 install.py --session-hooks install --targets claude,codex,cursor,antigra
 python3 install.py --session-hooks remove --targets claude,codex,cursor,antigravity
 ```
 
-On Windows use `py -3` or `python`. Commands retain the setup interpreter and canonical helper's absolute paths. Claude uses direct executable arguments; other Windows hosts use a native PowerShell encoded command to preserve literal paths. Windows command generation is tested with fixtures; native Windows hook execution remains unverified. Moving Python or the collection requires setup again. App detection alone does not establish compatible hook support.
+On Windows use `py -3` or `python`. Commands retain the setup interpreter and canonical helper's absolute paths. Claude and Copilot CLI use direct executable arguments; other Windows hosts use a native PowerShell encoded command to preserve literal paths. Native Windows session-ledger operation was manually verified by the maintainer on 2026-11-18; automated Windows command fixtures remain part of the suite. Moving Python or the collection requires setup again. App detection alone does not establish compatible hook support.
 
 | Host | Configuration | Integration |
 |---|---|---|
@@ -142,38 +166,41 @@ On Windows use `py -3` or `python`. Commands retain the setup interpreter and ca
 | Cursor | `~/.cursor/hooks.json` | `sessionStart`; no promise of post-compaction reinjection |
 | Antigravity | `~/.gemini/config/hooks.json` | `SessionStart`; no promise of post-compaction reinjection |
 | Shared `.agents` | None | A skill directory is not a hook runtime |
+| Copilot CLI | `~/.copilot/hooks/wonsky-session-ledger.json` | `sessionStart`, including resume; direct executable arguments; honors `COPILOT_HOME` |
+
+Copilot recovery setup targets the CLI's user-level hooks. Installing personal skills for Copilot in VS Code does not configure a VS Code workspace hook. The dedicated CLI document preserves unrelated hook files and settings. See the [official Copilot hook reference](https://docs.github.com/en/copilot/reference/hooks-reference).
 
 Setup previews only our proposed entry, preserves unrelated settings/hooks, records ownership and backs up changed configuration under the host's `.wonsky-state/hook-backups/`. Repeated setup is idempotent. Edited, deleted or duplicated owned entries become conflicts; removal deletes only the unchanged owned entry. Invalid/duplicate-key JSON and symlink-obstructed configuration are rejected. JSON formatting may change. Writes are guarded per target, not one transaction across hosts; concurrent setup is unsupported.
 
 `status` checks configuration, not execution. Codex requires review/trust of the exact hook through `/hooks`; setup does not bypass this. Hooks are lazy and create no ledger until the workflow asks. They provide explicit host/session identities and commands, without writing shell exports. Without a hook identity, retain the ledger ID from creation and recover with `path --id ID --repo PATH`. Ambiguous identity, tracked ledgers and unsafe storage are rejected; user ignore files are preserved.
 
-An agent can complete installation, updates and recovery setup without hand-editing JSON or requesting a separate hook opt-in. Update reports include the proposed hook entries and review tokens bound to the existing configuration; edits after review invalidate the plan before skills are changed. Unrelated settings are omitted from reports. Keeping the canonical session-ledger skill skips its new hook setup, and keeping a host’s runtime ledger skips setup for that host. Conflicting hook ownership blocks apply before file changes; `--no-session-hooks` allows a skill-only update. A failure during later writes can still leave earlier units applied, as described in the update section.
+An agent can complete installation, updates and recovery setup without hand-editing JSON or requesting a separate hook opt-in. Update reports include the proposed hook entries and review tokens bound to the existing configuration; edits after review invalidate the plan before skills are changed. Unrelated settings are omitted from reports. Keeping the canonical wa-session-ledger skill skips its new hook setup, and keeping a host’s runtime ledger skips setup for that host. Conflicting hook ownership blocks apply before file changes; `--no-session-hooks` allows a skill-only update. A failure during later writes can still leave earlier units applied, as described in the update section.
 
-For the first upgrade from an older updater, use `update.py` from a trusted new download with `--from /path/to/that/download` to review the existing installation. This runs the new manual-only distribution rules and automatic hook setup from the first pass. An agent can handle that migration. A running old updater cannot acquire new behavior halfway through its own process. If using it, Keep canonical `remote-server` and any runtime units while accepting the reviewed support changes, regenerate the final report and apply; then restart the new updater and accept the remaining changes. Complete recovery setup with the installed `install.py --session-hooks install --targets <selected-hosts>` if the old updater performed the final apply. The prior two-pass path was tested in a temporary installation; the new default install/update path has regression coverage.
+For the first upgrade from an older updater, use `update.py` from a trusted new download with `--from /path/to/that/download` to review the existing installation. This runs the new manual-only distribution rules and automatic hook setup from the first pass. An agent can handle that migration. A running old updater cannot acquire new behavior halfway through its own process. If using it, Keep canonical `wa-remote-server` and any runtime units while accepting the reviewed support changes, regenerate the final report and apply; then restart the new updater and accept the remaining changes. Complete recovery setup with the installed `install.py --session-hooks install --targets <selected-hosts>` if the old updater performed the final apply. The prior two-pass path was tested in a temporary installation; the new default install/update path has regression coverage.
 
 Sources: [Claude](https://code.claude.com/docs/en/hooks), [Codex](https://learn.chatgpt.com/docs/hooks), [Cursor](https://cursor.com/docs/hooks), [Antigravity](https://antigravity.google/docs/hooks).
 
-## Explicit remote-server use
+## Explicit wa-remote-server use
 
-Invoke `$remote-server` in Codex or `/remote-server` in Claude/Cursor, name an existing SSH alias and describe the task. Example: “Use remote-server on my staging alias to check the application service status.” The agent uses existing OpenSSH configuration/authentication and the task's authorization. The skill stores no server identity, password, key or fixed agent socket; setup never connects to a server.
+Invoke `$wa-remote-server` in Codex or `/wa-remote-server` in Claude/Cursor/Copilot, name an existing SSH alias and describe the task. Example: “Use wa-remote-server on my staging alias to check the application service status.” The agent uses existing OpenSSH configuration/authentication and the task's authorization. The skill stores no server identity, password, key or fixed agent socket; setup never connects to a server.
 
-Codex's `allow_implicit_invocation: false` and Claude/Cursor's `disable-model-invocation: true` control manual invocation. No pipeline or SSH-error trigger loads it. Because an equivalent control has not been verified for Antigravity or every `.agents` consumer, install/update skip those discoverable copies. Explicitly attach the canonical `skills/remote-server/SKILL.md` there. Existing unsupported copies are preserved and reported for removal from discovery, never silently deleted.
+Codex's `allow_implicit_invocation: false` and Claude/Cursor/Copilot's `disable-model-invocation: true` control manual invocation. No pipeline or SSH-error trigger loads it. Because an equivalent control has not been verified for Antigravity or every `.agents` consumer, install/update skip those discoverable copies. Explicitly attach the canonical `skills/remote-server/SKILL.md` there. Existing unsupported copies are preserved and reported for removal from discovery, never silently deleted.
 
 Sources: [Codex skills](https://learn.chatgpt.com/docs/build-skills), [Claude invocation controls](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill), [Cursor invocation controls](https://cursor.com/docs/skills#disabling-automatic-invocation).
 
 ## Version-aware macOS guidance
 
-`macos-design-guidelines` selects advice using the app's minimum deployment target, build SDK/Xcode and runtime OS. The host OS alone does not determine which APIs the app may use. The skill includes API milestones for macOS 11–12, 13, 14–15, 26 and a documentation/SDK check for 27 and later, with availability checks and working fallbacks. It is not rewritten during installation, so a Linux or Windows agent can still work on a Mac project. Native build/runtime verification requires the corresponding macOS tools or CI.
+`wa-macos-design-guidelines` selects advice using the app's minimum deployment target, build SDK/Xcode and runtime OS. The host OS alone does not determine which APIs the app may use. The skill includes API milestones for macOS 11–12, 13, 14–15, 26 and a documentation/SDK check for 27 and later, with availability checks and working fallbacks. It is not rewritten during installation, so a Linux or Windows agent can still work on a Mac project. Native build/runtime verification requires the corresponding macOS tools or CI.
 
 ## Use the development workflow
 
-Start with `using-dev-pipeline`, then select `dev-pipeline` for Python or `unified-dev-pipeline` for other languages. The pipeline routes to the relevant specialist skills. Use the host application's skill invocation syntax or ask the agent to read the corresponding `SKILL.md`.
+Start with `wa-using-dev-pipeline`, then select `wa-dev-pipeline` for Python or `wa-unified-dev-pipeline` for other languages. The pipeline routes to the relevant specialist skills. Use the host application's skill invocation syntax or ask the agent to read the corresponding `SKILL.md`.
 
-Repository work uses `repository-context` to establish scope and load relevant instructions and documents. The agent writes missing factual context and useful factual updates as concrete drafts, then explicitly asks the user to review correctness and completeness. Existing accurate coverage needs no artificial update. Outcomes distinguish reviewed updates, verified-current coverage, drafts awaiting review, instruction changes awaiting approval and declined changes. A task plan or chat summary does not substitute for repository documentation.
+Repository work uses `wa-repository-context` to establish scope and load relevant instructions and documents. The agent writes missing factual context and useful factual updates as concrete drafts, then explicitly asks the user to review correctness and completeness. Existing accurate coverage needs no artificial update. Outcomes distinguish reviewed updates, verified-current coverage, drafts awaiting review, instruction changes awaiting approval and declined changes. A task plan or chat summary does not substitute for repository documentation.
 
 Root `AGENTS.md` stays short and points to the context index. Topic files include the useful confirmed requirements, responsibilities, patterns, boundaries, reasons and integration details needed for future work; there is no fixed word or paragraph limit. They reuse existing documentation and exclude repeated prose, speculation and task diaries. This repository's [context index](docs/agent-context/index.md) follows that structure.
 
-Existing user instructions and proposed active policies require exact approval before edits. Draft facts do not become instruction authority merely because they were written. Installation and updating preserve existing AGENTS.md and never bootstrap other repositories. See [repository-context](skills/repository-context/SKILL.md) and its [templates](skills/repository-context/references/templates.md).
+Existing user instructions and proposed active policies require exact approval before edits. Draft facts do not become instruction authority merely because they were written. Installation and updating preserve existing AGENTS.md and never bootstrap other repositories. See [wa-repository-context](skills/repository-context/SKILL.md) and its [templates](skills/repository-context/references/templates.md).
 
 These workflows guide agent behavior. They do not enforce filesystem permissions or guarantee compliance by every model.
 
@@ -212,7 +239,7 @@ These checks cover the context helper, installer, updater and selected diagnosti
 
 ## Update with review
 
-Ask an agent **“Update Wonsky Agents”** to use the [wonsky-agents-update skill](skills/wonsky-agents-update/SKILL.md), or run from the canonical folder:
+Ask an agent **“Update Wonsky Agents”** to use the [wa-wonsky-agents-update skill](skills/wonsky-agents-update/SKILL.md), or run from the canonical folder:
 
 ```sh
 python3 update.py
@@ -267,7 +294,12 @@ skills/<name>/scripts/       Helpers and tests, where needed
 install.py                  Conservative installer and sync entry point
 update.py                   Reviewed updater with diffs, choices and backups
 install.sh / install.ps1     Optional native Python launchers
-scripts/                    Detection, file state, review, acquisition and copying
+scripts/installation/       Installer CLI, target detection and destination selection
+scripts/updates/            Source acquisition, update planning, review and apply
+scripts/migrations/         Registry, versioned migration planners, review and apply
+scripts/hooks/              Host schemas, hook setup/recovery and guarded writes
+scripts/skills/             Collection copies, runtime names and distribution
+scripts/filesystem/         Shared ownership state, snapshots and synchronization
 tests/                      Installer/updater checks using temporary homes
 .github/workflows/          Windows, macOS and Linux compatibility checks
 docs/skills.md              Skill catalog
@@ -276,4 +308,4 @@ CHANGELOG.md                Collection changes
 
 ## Sources and licensing
 
-This collection combines locally maintained workflow instructions with adapted or imported skills and reference data. Existing source references and metadata remain in the individual skill folders. The repository does not assign a blanket license to third-party material. The repository-context design was informed by the scope and handoff patterns in [khc/dotagents](https://github.com/khc/dotagents); its helper was implemented locally.
+This collection combines locally maintained workflow instructions with adapted or imported skills and reference data. Existing source references and metadata remain in the individual skill folders. The repository does not assign a blanket license to third-party material. The wa-repository-context design was informed by the scope and handoff patterns in [khc/dotagents](https://github.com/khc/dotagents); its helper was implemented locally.

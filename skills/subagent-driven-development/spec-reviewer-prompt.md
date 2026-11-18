@@ -19,7 +19,7 @@ Review this implementation against the task specification.
 1. Does the implementation satisfy every requirement in the task?
 2. Is anything missing from the spec?
 3. Was anything added that the spec did not ask for?
-4. Are verification criteria met, including the Python contract from implementation-guide/references/python-structure.md and the required repository-context outcome? Read that contract for Python work. Report pending guidance separately; do not infer approval from the implementation plan.
+4. Are verification criteria met, including the Python contract from implementation-guide/references/python-structure.md and the required wa-repository-context outcome? Read that contract for Python work. Report pending guidance separately; do not infer approval from the implementation plan.
 
 ## Output
 

@@ -15,8 +15,8 @@ from urllib.request import Request, urlopen
 import zipfile
 import zlib
 
-from scripts.managed_files import regular_files, symlink_in_chain
-from scripts.models.update_source import UpdateSource
+from scripts.filesystem.managed import regular_files, symlink_in_chain
+from scripts.updates.models.source import UpdateSource
 
 
 REPOSITORY = 'Wonsky1/wonsky-agents'

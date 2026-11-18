@@ -1,5 +1,5 @@
 ---
-name: testing-pytest
+name: wa-testing-pytest
 description: Creates pytest unit tests for changed files. Detects staged/unstaged git changes, analyzes modified functions, mocks dependencies, runs tests, and fixes source code when tests fail on expected behavior. Use when writing pytest tests, adding test coverage, or when delegated by the Quality Gate skill.
 ---
 

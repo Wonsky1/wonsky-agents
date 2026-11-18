@@ -1,5 +1,5 @@
 ---
-name: writing-plans
+name: wa-writing-plans
 description: Use when design is complete and you need detailed implementation tasks for engineers with zero codebase context - creates comprehensive implementation plans with exact file paths, complete code examples, and verification steps assuming engineer has minimal domain knowledge.
 ---
 
@@ -13,7 +13,7 @@ Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.m
 
 Produce an implementation plan as **bite-sized tasks** for someone who is a **strong developer** but has **almost no context** for this repository or domain. Document files to touch, code and tests, commands, and expected outcomes. Prefer **DRY**, **YAGNI**, and **TDD** when test work is authorized. A plan does not authorize commits, pushes or deployment.
 
-**Announce at the start:** you are using the writing-plans skill to build the plan.
+**Announce at the start:** you are using the wa-writing-plans skill to build the plan.
 
 **Default save location:**
 
@@ -34,7 +34,7 @@ Before tasks, map **create / modify** files and each file’s single responsibil
 - **Co-location:** things that change together should live together; split by responsibility, not by ceremonial layers.
 - In existing repos, preserve useful boundaries. For Python, first read `~/.wonsky-agents/skills/implementation-guide/references/python-structure.md`; record the actual ownership and review evidence required by that contract. Do not copy a legacy violation or break a published API without authorized migration.
 - If a file you touch is unwieldy, include only a justified in-scope split. Focused functions are valid; do not invent layers or wrapper classes.
-- Identify existing repository-context entry/index/topic paths and the required completion outcome. Missing factual coverage needs draft-writing and user-review tasks; changes to existing rules or proposed policies keep their exact approval gate.
+- Identify existing wa-repository-context entry/index/topic paths and the required completion outcome. Missing factual coverage needs draft-writing and user-review tasks; changes to existing rules or proposed policies keep their exact approval gate.
 
 ## Task granularity
 
@@ -149,4 +149,4 @@ Which approach do you want?
 
 ## Context handoff
 
-Pass the repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.
+Pass the wa-repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.

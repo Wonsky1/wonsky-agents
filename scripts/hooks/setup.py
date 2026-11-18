@@ -2,17 +2,24 @@
 
 from pathlib import Path
 
-from scripts.hook_definitions import hook_entries, hook_entry, replace_entries
-from scripts.hook_files import encode, read_bytes, read_object
-from scripts.models.hook_plan import HookPlan
-from scripts.models.target import Target
+from scripts.hooks.definitions import hook_entries, hook_entry, replace_entries
+from scripts.hooks.files import encode, read_bytes, read_object
+from scripts.hooks.models.plan import HookPlan
+from scripts.installation.models.target import Target
+
+
+def hook_config_path(target: Target) -> Path:
+    """Locate the host hook document, including Copilot's dedicated CLI file."""
+    if target.key == 'copilot':
+        return target.path.parent / 'hooks/wonsky-session-ledger.json'
+    return target.path.parent / ('settings.json' if target.key == 'claude' else 'hooks.json')
 
 
 def plan_hook(target: Target, canonical: Path, python: Path, system: str,
               action: str, helper_source: Path = None) -> HookPlan:
     if action not in ('install', 'remove', 'status'):
         raise ValueError('Unknown hook action: {}'.format(action))
-    config = target.path.parent / ('settings.json' if target.key == 'claude' else 'hooks.json')
+    config = hook_config_path(target)
     state = target.path.parent / '.wonsky-state/session-ledger-hook.json'
     if target.key == 'agents':
         return HookPlan(target.key, config, state, 'unsupported',

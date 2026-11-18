@@ -1,5 +1,5 @@
 ---
-name: requesting-code-review
+name: wa-requesting-code-review
 description: Use after completing a major task, batch of implementation work, complex bug fix, or before merge to verify work meets requirements - dispatches reviewer subagent to review implementation against plan or requirements.
 ---
 
@@ -47,7 +47,7 @@ Before requesting review, assemble a concise package:
 
 When subagents or a separate reviewer context is available:
 
-1. Give the reviewer **only** the work product, requirements and repository-context packet — **not** your full conversation history (reduces anchoring and confirmation bias).
+1. Give the reviewer **only** the work product, requirements and wa-repository-context packet — **not** your full conversation history (reduces anchoring and confirmation bias).
 2. Keep the reviewer focused on: bugs, regressions, requirement mismatches, test gaps, security/performance red flags, and meaningful maintainability regressions.
 3. Use the template at `~/.wonsky-agents/skills/requesting-code-review/code-reviewer.md` as the body of the review request; fill every placeholder.
 
@@ -70,7 +70,7 @@ If no reviewer agent is available:
 2. **Fill `code-reviewer.md`**
    - `{DESCRIPTION}`, `{PLAN_REFERENCE}`, `{REVIEW_MODE}`, `{REVIEW_PATHS}`, `{REVIEW_EVIDENCE}`, `{REPOSITORY_CONTEXT_PACKET}`, and align `{WHAT_WAS_IMPLEMENTED}` / `{PLAN_OR_REQUIREMENTS}` with your package.
 3. **Dispatch the reviewer**
-   - Paste the completed template (or attach the file path) including the complete repository-context packet and the scoped review evidence. Keep irrelevant conversation history out of the payload.
+   - Paste the completed template (or attach the file path) including the complete wa-repository-context packet and the scoped review evidence. Keep irrelevant conversation history out of the payload.
 4. **Incorporate findings** using the severity ladder below; if a finding does not hold up on inspection, switch to `~/.wonsky-agents/skills/receiving-code-review/SKILL.md`.
 
 ## Handling Findings
@@ -93,4 +93,4 @@ If no reviewer agent is available:
 
 ## Context handoff
 
-Pass the repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.
+Pass the wa-repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.

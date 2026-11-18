@@ -1,5 +1,5 @@
 ---
-name: prompt-engineering
+name: wa-prompt-engineering
 description: Use when writing prompts for LLMs, designing system prompts, creating agent instructions, skill descriptions, or any AI interaction that needs reliable, high-quality outputs. Covers foundational techniques (zero-shot, few-shot, CoT), advanced frameworks (ToT, ReAct, self-consistency), and practical patterns for production use.
 ---
 

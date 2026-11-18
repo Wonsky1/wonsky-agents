@@ -1,6 +1,6 @@
 ---
-name: unified-dev-pipeline
-description: Language-agnostic entry point for nearly all software engineering work in ANY language (Swift, C++, Python, JS/TS, Go, Rust, etc.). Use for features, refactors, implementation, architecture, planning, testing, quality, code review, PR review, debugging, verification, and branch completion. Routes work through the right skills and gates, delegates to specialist agents when available, and adapts build/test/lint commands to the project's language. Does NOT commit, push, or deploy. For Python-specific work prefer the dev-pipeline skill, which is a thin specialization of this one.
+name: wa-unified-dev-pipeline
+description: Language-agnostic entry point for nearly all software engineering work in ANY language (Swift, C++, Python, JS/TS, Go, Rust, etc.). Use for features, refactors, implementation, architecture, planning, testing, quality, code review, PR review, debugging, verification, and branch completion. Routes work through the right skills and gates, delegates to specialist agents when available, and adapts build/test/lint commands to the project's language. Does NOT commit, push, or deploy. For Python-specific work prefer the wa-dev-pipeline skill, which is a thin specialization of this one.
 ---
 
 # Unified Development Pipeline Orchestrator
@@ -13,7 +13,7 @@ You are a technical program manager and workflow router. You do not do the speci
 
 This skill is the **language-agnostic** entry point for engineering work. It works identically whether the project is Swift, C++, Python, JavaScript/TypeScript, Go, Rust, Kotlin, or anything else. Start here, classify the request, then route into the appropriate flow.
 
-> **Specializations.** `dev-pipeline` is the Python skin of this skill (pytest/ruff/mypy/venv pre-wired). When you already know the project's language, you may still start here — the Language Adapter (below) handles the rest.
+> **Specializations.** `wa-dev-pipeline` is the Python skin of this skill (pytest/ruff/mypy/venv pre-wired). When you already know the project's language, you may still start here — the Language Adapter (below) handles the rest.
 
 ## Core Principles
 
@@ -22,7 +22,7 @@ This skill is the **language-agnostic** entry point for engineering work. It wor
 - **No silent phase skipping.** If you skip a phase, say why.
 - **Carry artifacts forward.** Plans, designs, task lists, and verification results are inputs to later phases.
 - **Evidence before completion claims.** Never claim something is fixed, passing, or complete without fresh verification.
-- **Required delivery contracts.** Every repository engineering delivery closes repository-context with updated, verified-current, draft-awaiting-review, pending-approval or declined evidence. Stage-local skills own language-specific structure contracts; pass the selected stage skill to delegated workers.
+- **Required delivery contracts.** Every repository engineering delivery closes wa-repository-context with updated, verified-current, draft-awaiting-review, pending-approval or declined evidence. Stage-local skills own language-specific structure contracts; pass the selected stage skill to delegated workers.
 - **Language-agnostic by default.** Never hardcode a toolchain. Detect the language, then resolve commands through the Language Adapter.
 - **Delegate to the best executor available.** If a specialist agent exists (see Agent Delegation Layer), prefer it over doing the work inline. If not, use the specialist skill.
 - **User instructions win.** If the user explicitly asks to compress, skip, or change the workflow, follow that.
@@ -65,21 +65,21 @@ Read `~/.wonsky-agents/skills/unified-dev-pipeline/references/agent-routing.md` 
 
 | Need | Preferred agent (if available) | Skill fallback (always works) |
 |------|-------------------------------|-------------------------------|
-| Requirements / pre-planning | `analyst`, `planner` | `strategic-planner` |
-| Architecture / design advice | `architect` | `solution-architect` |
-| Debugging / root cause | `tracer`, `debugger` | `systematic-debugging`, `root-cause-tracing` |
-| Implementation | `executor` | `implementation-guide`, `executing-plans` |
-| Parallel independent work | `ultrawork` / team | `dispatching-parallel-agents` |
-| Code review (own work) | `code-reviewer`, `critic` | `requesting-code-review` |
-| Strict / "thermo-nuclear" maintainability review | `critic`, `code-reviewer` | `strict-code-quality-review` |
-| GitHub PR review (someone else's PR) | `code-reviewer` for analysis | `pr-review-orchestrator` → `github-pr-review` |
-| Security audit | `security-reviewer` | `quality-gate` (security section) |
-| Testing (any language) | `test-engineer`, `qa-tester` | `test-driven-development`, language test skill |
+| Requirements / pre-planning | `analyst`, `planner` | `wa-strategic-planner` |
+| Architecture / design advice | `architect` | `wa-solution-architect` |
+| Debugging / root cause | `tracer`, `debugger` | `wa-systematic-debugging`, `wa-root-cause-tracing` |
+| Implementation | `executor` | `wa-implementation-guide`, `wa-executing-plans` |
+| Parallel independent work | `ultrawork` / team | `wa-dispatching-parallel-agents` |
+| Code review (own work) | `code-reviewer`, `critic` | `wa-requesting-code-review` |
+| Strict / "thermo-nuclear" maintainability review | `critic`, `code-reviewer` | `wa-strict-code-quality-review` |
+| GitHub PR review (someone else's PR) | `code-reviewer` for analysis | `wa-pr-review-orchestrator` → `wa-github-pr-review` |
+| Security audit | `security-reviewer` | `wa-quality-gate` (security section) |
+| Testing (any language) | `test-engineer`, `qa-tester` | `wa-test-driven-development`, language test skill |
 | Post-implementation cleanup | `code-simplifier` | (inline) |
 | UI / UX work | `designer` | (inline) |
-| Completion verification | `verifier` | `verification-before-completion` |
-| Branch completion / git | `git-master` | `finishing-a-development-branch` |
-| Work report / changelog | (inline) | `git-report`, `changelog-versioning` |
+| Completion verification | `verifier` | `wa-verification-before-completion` |
+| Branch completion / git | `git-master` | `wa-finishing-a-development-branch` |
+| Work report / changelog | (inline) | `wa-git-report`, `wa-changelog-versioning` |
 
 If no agents are available (e.g. plain Cursor), ignore this layer entirely and use the skill fallbacks — the pipeline is fully functional without agents.
 
@@ -109,10 +109,10 @@ Fail-safe: if the request is about code or software work and no specialist route
 | Reviewing someone else's GitHub PR (reading diff, posting inline comments, approve/request changes) | PR review orchestrator route | Stage 1: strict diff review → candidate findings → user approval. Stage 2: post a pending review only when public posting is explicitly authorized |
 | "Is this done / fixed / passing?" | Completion verification route | Run verification before making claims |
 | Merge / PR / cleanup after verified work | Branch completion route | Only after verification and explicit user intent |
-| Work summary / status update / "what did I do this week" | Reporting route | Use `git-report` |
-| Changelog / version bump for shipped changes | Branch completion route | Use `changelog-versioning` |
+| Work summary / status update / "what did I do this week" | Reporting route | Use `wa-git-report` |
+| Changelog / version bump for shipped changes | Branch completion route | Use `wa-changelog-versioning` |
 | UI / UX design or frontend polish | Design route | Prefer `designer` agent if available, then implement |
-| Writing prompts, system prompts, agent instructions | Prompt engineering | Use `prompt-engineering` skill for reliable, structured prompts |
+| Writing prompts, system prompts, agent instructions | Prompt engineering | Use `wa-prompt-engineering` skill for reliable, structured prompts |
 
 ### Mandatory Specialized Routes
 
@@ -161,7 +161,7 @@ If there are 2+ truly independent tasks, failures, or work streams:
 If your own work (task, feature, bug fix) is implemented and should be checked before proceeding:
 
 1. Read `~/.wonsky-agents/skills/requesting-code-review/SKILL.md`.
-2. **Prefer the `code-reviewer` agent** (and `critic` for plans/architecture) if available — hand it the actual scoped review input, original plan/requirements and repository-context packet.
+2. **Prefer the `code-reviewer` agent** (and `critic` for plans/architecture) if available — hand it the actual scoped review input, original plan/requirements and wa-repository-context packet.
 3. Otherwise dispatch a fresh reviewer using `~/.wonsky-agents/skills/requesting-code-review/code-reviewer.md`. Select committed range, working tree (including staged/untracked work), or supplied before/after diff. Fill the template's review mode, paths, evidence and context packet. Do not use a SHA-only range for uncommitted implementation or widen read scope to obtain a diff.
 4. Act on findings by severity:
    - **Critical** — fix immediately before anything else
@@ -177,7 +177,7 @@ If the user asks for a thermo-nuclear, harsh, deep maintainability, abstraction-
 
 1. Read `~/.wonsky-agents/skills/strict-code-quality-review/SKILL.md` (prefer the `critic` or `code-reviewer` agent to apply it if available).
 2. Apply it as the primary review lens before normal polish or style feedback.
-3. If reviewing a public GitHub PR, route through `~/.wonsky-agents/skills/pr-review-orchestrator/SKILL.md` so strict findings are approved before `github-pr-review` posts comments.
+3. If reviewing a public GitHub PR, route through `~/.wonsky-agents/skills/pr-review-orchestrator/SKILL.md` so strict findings are approved before `wa-github-pr-review` posts comments.
 
 #### Review-Response Route
 
@@ -202,8 +202,8 @@ If the user asks to review someone else's GitHub pull request (read diff, post i
    - Read `~/.wonsky-agents/skills/github-pr-review/SKILL.md` for mechanics.
    - Follow that skill's conditional canonical private-preference and voice-calibration procedure; neither a sibling profile nor fresh remote samples are mandatory.
    - Draft the exact comments, anchors/sides, suggestions, event and overall message in chat, tied to the reviewed head SHA. Obtain approval of that complete payload before any pending-review creation or other external mutation.
-   - Revalidate the head/anchors and pending-draft ownership through github-pr-review. Only then create the intended pending review, add the exact approved payload and submit; stop and refresh approval when the approved package changes.
-4. If the user corrects the draft, follow github-pr-review's canonical private-preference learning procedure and its applicable approval boundary; never write a generated runtime mirror. Then re-draft.
+   - Revalidate the head/anchors and pending-draft ownership through wa-github-pr-review. Only then create the intended pending review, add the exact approved payload and submit; stop and refresh approval when the approved package changes.
+4. If the user corrects the draft, follow wa-github-pr-review's canonical private-preference learning procedure and its applicable approval boundary; never write a generated runtime mirror. Then re-draft.
 
 **Critical distinctions:**
 - **Match the requested output.** A review can finish with analysis in chat. When public review posting is authorized, use the pending-review mechanism; thread replies alone do not replace that requested deliverable.
@@ -227,7 +227,7 @@ If you are about to say something is fixed, passing, complete, or ready:
 2. Identify the command that proves the claim (resolve via Language Adapter).
 3. Use current evidence for the exact inputs, or run the authorized check when needed. Read the actual output and disclose checks not run.
 4. State the result with evidence.
-5. Report the required repository-context outcome. Missing factual coverage requires reviewable context drafts and a user review request; code verification does not complete that review.
+5. Report the required wa-repository-context outcome. Missing factual coverage requires reviewable context drafts and a user review request; code verification does not complete that review.
 
 This route applies even if the work was done by another skill, agent, or subagent.
 
@@ -253,7 +253,7 @@ If the work is UI/UX or frontend-heavy:
 ### 1. Gather Context
 
 - Detect the project language and toolchain (Language Adapter).
-- Establish the repository-context packet before broad inspection. Read applicable ancestor instructions and the task-selected documentation from the existing context index; use legacy docs when no index exists.
+- Establish the wa-repository-context packet before broad inspection. Read applicable ancestor instructions and the task-selected documentation from the existing context index; use legacy docs when no index exists.
 - Check for existing artifacts: plans, design docs, audits, TODOs, failing tests, or review comments.
 - Ask the user: **"Does this project connect to other services or projects?"**
 - If connected projects exist, check their context docs too.
@@ -300,17 +300,17 @@ When you reach implementation work:
 
 | Situation | Execution Mode |
 |----------|----------------|
-| Single small task, tightly coupled change | `implementation-guide` (or `executor` agent) |
-| Multiple ordered tasks from a breakdown | `executing-plans`, or task-by-task via `executor` |
-| Multiple mostly independent tasks with subagent support | `subagent-driven-development` or `ultrawork` |
-| Multiple independent work streams | `dispatching-parallel-agents` or a team |
+| Single small task, tightly coupled change | `wa-implementation-guide` (or `executor` agent) |
+| Multiple ordered tasks from a breakdown | `wa-executing-plans`, or task-by-task via `executor` |
+| Multiple mostly independent tasks with subagent support | `wa-subagent-driven-development` or `ultrawork` |
+| Multiple independent work streams | `wa-dispatching-parallel-agents` or a team |
 | User only wants plan/design, not code | Stop before Phase 4 |
 
 Before starting implementation:
 
 1. Confirm the user has approved the design/task breakdown being executed.
 2. Decide whether isolated branch/worktree setup is needed.
-3. If behavior changes and test work is requested/permitted, invoke `test-driven-development`; otherwise report the verification limit. A software task alone does not authorize adding/running tests.
+3. If behavior changes and test work is requested/permitted, invoke `wa-test-driven-development`; otherwise report the verification limit. A software task alone does not authorize adding/running tests.
 4. State whether implementation will be manual, sequential, delegated, or parallelized.
 
 ### 5. Review Gate
@@ -331,7 +331,7 @@ Before ending the workflow:
 2. Run the command(s) that prove the requested outcome.
 3. Report actual results, not assumed results.
 4. If the user wants integration options, use the branch completion route.
-5. Use repository-context for every route: maintain useful factual drafts, ask for user review, and report the actual context outcome. Existing instructions and proposed policies retain their exact approval gate. Reuse accurate current coverage; do not generate filler.
+5. Use wa-repository-context for every route: maintain useful factual drafts, ask for user review, and report the actual context outcome. Existing instructions and proposed policies retain their exact approval gate. Reuse accurate current coverage; do not generate filler.
 6. The delivery ends after verification, structural review and an explicit context outcome. Report pending context review or policy approval explicitly. Do not commit, push, or deploy without explicit user intent.
 
 ### Phase Transitions
@@ -381,4 +381,4 @@ Phase 5 (Quality Gate)
 - **Analysis and public posting have different authority.** Analysis-only reviews finish in chat. For an explicitly requested public review, use the approved pending review → inline comments → submit workflow; thread replies alone are not that deliverable.
 - **Match the requested review deliverable.** Post public comments only with explicit authorization and exact approved wording; a code fix does not replace authorized review posting.
 - **Verify before claiming success.** Never say fixed, passing, or complete without fresh evidence.
-- **Do not commit, push, or deploy without explicit user intent.** Pipeline delivery requires verification, structural review and an explicit repository-context outcome. Integration remains the user's decision.
+- **Do not commit, push, or deploy without explicit user intent.** Pipeline delivery requires verification, structural review and an explicit wa-repository-context outcome. Integration remains the user's decision.

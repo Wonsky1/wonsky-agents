@@ -12,11 +12,11 @@ from session_ledger.identity import binding
 from session_ledger.models.ledger import LedgerError, Root
 from session_ledger.storage import find_ledger, new_ledger
 
-HOOK_HOSTS = ('claude', 'codex', 'cursor', 'antigravity')
+HOOK_HOSTS = ('claude', 'codex', 'cursor', 'antigravity', 'copilot')
 
 
 def workspace_root(host: str, payload: dict) -> Optional[Root]:
-    if host in ('claude', 'codex'):
+    if host in ('claude', 'codex', 'copilot'):
         cwd = payload.get('cwd')
         if not isinstance(cwd, str) or not cwd:
             return None
@@ -49,6 +49,11 @@ def command(*args: str) -> str:
 def hook_output(host: str, payload: dict, create: bool = False) -> Optional[Dict[str, object]]:
     field = 'conversationId' if host == 'antigravity' else 'session_id'
     session = payload.get(field)
+    if host == 'copilot':
+        if ('sessionId' in payload and 'session_id' in payload
+                and payload['sessionId'] != payload['session_id']):
+            raise LedgerError('conflicting Copilot session IDs; ledger hook skipped')
+        session = payload.get('sessionId', session)
     if session is None:
         return None
     identity = binding(host, session)
@@ -76,6 +81,8 @@ def hook_output(host: str, payload: dict, create: bool = False) -> Optional[Dict
         return {'hookSpecificOutput': {'hookEventName': 'SessionStart', 'additionalContext': message}}
     if host == 'cursor':
         return {'additional_context': message}
+    if host == 'copilot':
+        return {'additionalContext': message}
     return {'injectSteps': [{'systemMessage': {'systemMessage': message}}]}
 
 

@@ -1,6 +1,6 @@
 ---
-name: dev-pipeline
-description: Preferred entry point for nearly all Python software engineering work. Use for features, refactors, implementation, architecture, planning, testing, quality, code improvement, and any Python software task. Routes bugs, debugging, implementation, testing, reviews, verification, and branch completion through the right skills and gates. Coordinates Strategic Planner, Solution Architect, Task Decomposer, Implementation Guide, and Quality Gate skills. Does NOT commit, push, or deploy. For non-Python projects use unified-dev-pipeline.
+name: wa-dev-pipeline
+description: Preferred entry point for nearly all Python software engineering work. Use for features, refactors, implementation, architecture, planning, testing, quality, code improvement, and any Python software task. Routes bugs, debugging, implementation, testing, reviews, verification, and branch completion through the right skills and gates. Coordinates Strategic Planner, Solution Architect, Task Decomposer, Implementation Guide, and Quality Gate skills. Does NOT commit, push, or deploy. For non-Python projects use wa-unified-dev-pipeline.
 ---
 
 # Development Pipeline Orchestrator (Python)
@@ -9,7 +9,7 @@ description: Preferred entry point for nearly all Python software engineering wo
 
 Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed. For multi-step repository work, use `~/.wonsky-agents/skills/session-ledger/SKILL.md`; reuse the current task's ledger and recover it after resume or compaction. Delegated workers receive relevant decisions and report updates to the parent.
 
-This is the **Python specialization** of the unified pipeline. It is the preferred entry point for Python work and behaves identically to `unified-dev-pipeline`, with the Language Adapter pre-pinned to the Python toolchain.
+This is the **Python specialization** of the unified pipeline. It is the preferred entry point for Python work and behaves identically to `wa-unified-dev-pipeline`, with the Language Adapter pre-pinned to the Python toolchain.
 
 ## How to use this skill
 
@@ -17,7 +17,7 @@ This is the **Python specialization** of the unified pipeline. It is the preferr
 2. **Pin the Language Adapter to Python** (below) instead of detecting the language.
 3. **Use the Agent Delegation Layer** from unified when specialist agents are available; otherwise use the skill fallbacks. The pipeline works fully without agents.
 
-Everything in `unified-dev-pipeline` applies here. Stage skills own their implementation and review procedures.
+Everything in `wa-unified-dev-pipeline` applies here. Stage skills own their implementation and review procedures.
 
 ## Python Language Adapter (pinned)
 
@@ -40,4 +40,4 @@ Confirm against the project's own config (`pyproject.toml`, `tox.ini`, `Makefile
 
 ## Reminder
 
-Do NOT commit, push, or deploy. The pipeline ends after verification, structural review and the required repository-context outcome; context review/approval remains explicit. Integration is always the user's explicit decision. For any non-Python project, switch to `~/.wonsky-agents/skills/unified-dev-pipeline/SKILL.md`.
+Do NOT commit, push, or deploy. The pipeline ends after verification, structural review and the required wa-repository-context outcome; context review/approval remains explicit. Integration is always the user's explicit decision. For any non-Python project, switch to `~/.wonsky-agents/skills/unified-dev-pipeline/SKILL.md`.

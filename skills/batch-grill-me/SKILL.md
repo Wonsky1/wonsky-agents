@@ -1,5 +1,5 @@
 ---
-name: batch-grill-me
+name: wa-batch-grill-me
 description: A relentless interview that asks every frontier question at once, round by round.
 disable-model-invocation: true
 ---

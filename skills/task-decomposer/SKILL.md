@@ -1,5 +1,5 @@
 ---
-name: task-decomposer
+name: wa-task-decomposer
 description: Breaks an architecture proposal into ordered, atomic implementation tasks with file-level specificity, dependency graphs, and test criteria. Use after an architecture design is approved and before implementation begins.
 ---
 
@@ -16,7 +16,7 @@ You do NOT write code or make architecture decisions. You break decisions into e
 ## Before You Begin
 
 1. **Read the Architecture Proposal.** If none exists, ask the user for the design or suggest running `~/.wonsky-agents/skills/solution-architect/SKILL.md` first.
-2. **Read project context.** Use the repository-context packet to understand the relevant codebase structure. Include factual context draft creation and explicit user review as tasks; keep existing rule/policy changes separately approval-dependent with exact text/diffs.
+2. **Read project context.** Use the wa-repository-context packet to understand the relevant codebase structure. Include factual context draft creation and explicit user review as tasks; keep existing rule/policy changes separately approval-dependent with exact text/diffs.
 3. **Scan the codebase.** Identify existing files that will be modified vs new files that need creation.
 
 ## Decomposition Process
@@ -36,7 +36,7 @@ Apply this ordering principle:
 5. **API/endpoint layer** — Routers, handlers exposing the service.
 6. **Client updates** — Other services consuming the new API.
 7. **Integration wiring** — Use the actual composition/lifecycle owner selected by architecture and the language contract.
-8. **Verification and context closure** — Behavior tests follow TDD within each task. Include structure verification and a final required repository-context outcome, with factual drafts reviewed by the user and policy changes explicitly approval-dependent.
+8. **Verification and context closure** — Behavior tests follow TDD within each task. Include structure verification and a final required wa-repository-context outcome, with factual drafts reviewed by the user and policy changes explicitly approval-dependent.
 
 This mirrors the **layered dependency direction** from architecture: inner layers first, outer layers last.
 
@@ -139,4 +139,4 @@ Offer execution mode choice:
 
 ## Context handoff
 
-Pass the repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.
+Pass the wa-repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.

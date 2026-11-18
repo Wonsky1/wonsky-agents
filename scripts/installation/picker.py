@@ -3,7 +3,7 @@
 import sys
 from typing import List, Optional, Sequence
 
-from scripts.models.target import Target
+from scripts.installation.models.target import Target
 
 
 def gui_picker(targets: Sequence[Target]) -> Optional[List[str]]:

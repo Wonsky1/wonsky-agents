@@ -234,6 +234,32 @@ class LedgerTests(unittest.TestCase):
         self.assertFalse(env_file.exists())
         self.assertFalse((self.root / '.agent-ledger').exists())
 
+    def test_copilot_identity_aliases_and_existing_ledger(self):
+        path = self.new(session='copilot-123', host='copilot')
+        payloads = [{'sessionId': 'copilot-123'}, {'session_id': 'copilot-123'},
+                    {'sessionId': 'copilot-123', 'session_id': 'copilot-123'}]
+        for identity in payloads:
+            with self.subTest(identity=identity):
+                result = self.run_cli('hook', '--host', 'copilot',
+                                      stdin=json.dumps(dict(identity, cwd=str(self.root))))
+                self.assertEqual(result.returncode, 0, result.stderr)
+                context = json.loads(result.stdout)['additionalContext']
+                self.assertIn(str(path), context)
+                self.assertIn('--host copilot', context)
+
+    def test_copilot_conflicting_or_unsafe_identity_skips_without_writes(self):
+        payloads = [{'sessionId': 'first-123', 'session_id': 'other-123'},
+                    {'sessionId': 'bad; echo injected'}, {'session_id': ['wrong']},
+                    {'sessionId': '', 'session_id': 'valid-123'},
+                    {'sessionId': None, 'session_id': 'valid-123'}]
+        for identity in payloads:
+            with self.subTest(identity=identity):
+                result = self.run_cli('hook', '--host', 'copilot', '--create',
+                                      stdin=json.dumps(dict(identity, cwd=str(self.root))))
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout, '')
+        self.assertFalse((self.root / '.agent-ledger').exists())
+
     def test_hook_does_not_guess_between_workspaces(self):
         other = self.base / 'other'; other.mkdir()
         subprocess.run(['git', 'init', '-q', str(other)], check=True)

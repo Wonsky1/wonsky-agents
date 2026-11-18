@@ -1,6 +1,6 @@
 ---
-name: using-dev-pipeline
-description: Use when starting any conversation about code, software, debugging, bugs, tests, architecture, planning, refactoring, reviews, quality, or completion checks. This is the bootstrap skill that routes to dev-pipeline or the correct specialist skill before any response, file inspection, implementation, debugging, review handling, or completion claim.
+name: wa-using-dev-pipeline
+description: Use when starting any conversation about code, software, debugging, bugs, tests, architecture, planning, refactoring, reviews, quality, or completion checks. This is the bootstrap skill that routes to wa-dev-pipeline or the correct specialist skill before any response, file inspection, implementation, debugging, review handling, or completion claim.
 ---
 
 # Using Dev Pipeline
@@ -10,7 +10,7 @@ description: Use when starting any conversation about code, software, debugging,
 Before repository work, read `~/.wonsky-agents/skills/repository-context/SKILL.md` and establish or refresh its scope/context packet. Reuse a valid packet within the same session; delegated agents must receive it and read the applicable guidance. Follow that skill's draft-first context workflow and exact approval gate for existing instructions or proposed policies. A context draft is not an active rule until reviewed. For multi-step repository work, use `~/.wonsky-agents/skills/session-ledger/SKILL.md`; reuse the current task's ledger and recover it after resume or compaction. Delegated workers receive relevant decisions and report updates to the parent.
 
 <SUBAGENT-STOP>
-If you were dispatched as a subagent, skip routing again; retain the inherited scope/context packet and follow repository-context for your assigned targets.
+If you were dispatched as a subagent, skip routing again; retain the inherited scope/context packet and follow wa-repository-context for your assigned targets.
 </SUBAGENT-STOP>
 
 <EXTREMELY-IMPORTANT>
@@ -56,21 +56,21 @@ If any of these thoughts appear, **route first**.
 
 | Request Type | Route |
 |-------------|-------|
-| New feature, refactor, architecture change, project planning (Python) | `dev-pipeline` |
-| New feature, refactor, architecture, planning (Swift, C++, JS/TS, Go, Rust, any non-Python) | `unified-dev-pipeline` |
-| Bug, test failure, unexpected behavior, integration issue | `systematic-debugging` first, then `dev-pipeline` if needed |
-| Approved implementation plan, ready to build | `subagent-driven-development` or `executing-plans` |
-| Multiple independent tasks or failures | `dispatching-parallel-agents` |
-| Review your own work before merge or after a major task | `requesting-code-review` |
-| Harsh / "thermo-nuclear" maintainability or code-quality review | `strict-code-quality-review` |
-| Reviewing someone else's GitHub PR (post inline comments) | `pr-review-orchestrator` |
-| Review feedback or PR comments received on your work | `receiving-code-review` |
-| "Is this fixed?", "Does it pass?", "Are we done?" | `verification-before-completion` |
-| Work is verified and user wants merge / PR / cleanup | `finishing-a-development-branch` |
-| Changelog / version bump for shipped changes | `changelog-versioning` |
-| Work summary / status update / "what did I do this week" | `git-report` |
-| Pure testing / quality / audit request | `dev-pipeline` or `quality-gate` |
-| Creative feature work, brainstorming ideas | `brainstorming` |
+| New feature, refactor, architecture change, project planning (Python) | `wa-dev-pipeline` |
+| New feature, refactor, architecture, planning (Swift, C++, JS/TS, Go, Rust, any non-Python) | `wa-unified-dev-pipeline` |
+| Bug, test failure, unexpected behavior, integration issue | `wa-systematic-debugging` first, then `wa-dev-pipeline` if needed |
+| Approved implementation plan, ready to build | `wa-subagent-driven-development` or `wa-executing-plans` |
+| Multiple independent tasks or failures | `wa-dispatching-parallel-agents` |
+| Review your own work before merge or after a major task | `wa-requesting-code-review` |
+| Harsh / "thermo-nuclear" maintainability or code-quality review | `wa-strict-code-quality-review` |
+| Reviewing someone else's GitHub PR (post inline comments) | `wa-pr-review-orchestrator` |
+| Review feedback or PR comments received on your work | `wa-receiving-code-review` |
+| "Is this fixed?", "Does it pass?", "Are we done?" | `wa-verification-before-completion` |
+| Work is verified and user wants merge / PR / cleanup | `wa-finishing-a-development-branch` |
+| Changelog / version bump for shipped changes | `wa-changelog-versioning` |
+| Work summary / status update / "what did I do this week" | `wa-git-report` |
+| Pure testing / quality / audit request | `wa-dev-pipeline` or `wa-quality-gate` |
+| Creative feature work, brainstorming ideas | `wa-brainstorming` |
 
 All skills live in `~/.wonsky-agents/skills/{skill-name}/SKILL.md`.
 
@@ -78,7 +78,7 @@ All skills live in `~/.wonsky-agents/skills/{skill-name}/SKILL.md`.
 
 1. User instructions
 2. Specialist hard-gate skills (debugging, TDD, verification)
-3. `dev-pipeline`
+3. `wa-dev-pipeline`
 4. Ad hoc exploration or implementation
 
 ## Mandatory First Response Protocol
@@ -104,11 +104,11 @@ Before using a skill, announce it:
 
 ## Notes
 
-- `dev-pipeline` is the main entry point for **Python** delivery work; `unified-dev-pipeline` is the language-agnostic entry point for **any other language** (Swift, C++, JS/TS, Go, Rust, etc.). They share one core — `dev-pipeline` is just the Python skin.
+- `wa-dev-pipeline` is the main entry point for **Python** delivery work; `wa-unified-dev-pipeline` is the language-agnostic entry point for **any other language** (Swift, C++, JS/TS, Go, Rust, etc.). They share one core — `wa-dev-pipeline` is just the Python skin.
 - Debugging, review-feedback handling, and completion verification are separate hard-gate workflows.
-- If there is any doubt whether a bug's root cause is known, route to `systematic-debugging`.
+- If there is any doubt whether a bug's root cause is known, route to `wa-systematic-debugging`.
 - If an implementation plan already exists, do not restart planning. Route into execution.
-- If the request is software-related but does not cleanly match a specialist route, choose `dev-pipeline`.
+- If the request is software-related but does not cleanly match a specialist route, choose `wa-dev-pipeline`.
 
 ## Common Rationalizations That Mean You're About To Fail
 

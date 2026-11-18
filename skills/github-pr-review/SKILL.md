@@ -1,6 +1,6 @@
 ---
-name: github-pr-review
-description: Draft and post approved GitHub PR review comments using the GitHub MCP server (preferred) or gh fallback - creates pending reviews, batches comments, chooses event types, applies reviewer-preferences, and learns from corrections. Use directly for posting approved comments; for end-to-end PR review start with pr-review-orchestrator.
+name: wa-github-pr-review
+description: Draft and post approved GitHub PR review comments using the GitHub MCP server (preferred) or gh fallback - creates pending reviews, batches comments, chooses event types, applies reviewer-preferences, and learns from corrections. Use directly for posting approved comments; for end-to-end PR review start with wa-pr-review-orchestrator.
 ---
 
 # GitHub PR Review
@@ -97,7 +97,7 @@ Only proceed on explicit yes.
 The canonical private profile described above records focus areas, tone, suggestion patterns, severity, exclusions and project-specific preferences. Its absence must not block drafting. It is local user data, excluded from version control.
 
 1. Read relevant existing preferences without exposing them publicly.
-2. Apply a correction to the active draft immediately. For a lasting profile change, reread the relevant section, remove duplication, and present the canonical path and exact 1–2-line change. Follow the `repository-context` approval gate, unless an explicit standing user instruction already authorizes this particular correction log and operation. Do not interpret permission to post a review as permission to change lasting instructions.
+2. Apply a correction to the active draft immediately. For a lasting profile change, reread the relevant section, remove duplication, and present the canonical path and exact 1–2-line change. Follow the `wa-repository-context` approval gate, unless an explicit standing user instruction already authorizes this particular correction log and operation. Do not interpret permission to post a review as permission to change lasting instructions.
 3. Apply only approved profile changes at the canonical source, never to a generated runtime copy. If the source or approval is unavailable, keep the preference in session and report persistence as pending. Use the installer for any later synchronization and preserve destination conflicts.
 4. Re-draft and request approval of the exact public review again. A private learning change never grants authority to post.
 

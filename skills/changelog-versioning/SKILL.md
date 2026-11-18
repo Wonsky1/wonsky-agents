@@ -1,5 +1,5 @@
 ---
-name: changelog-versioning
+name: wa-changelog-versioning
 description: Create and update changelog entries when implementing features, fixes, or improvements. Use when shipping user-visible changes, completing a feature branch, cutting a release, or when the user asks to update the changelog or version.
 ---
 

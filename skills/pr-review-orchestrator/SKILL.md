@@ -1,5 +1,5 @@
 ---
-name: pr-review-orchestrator
+name: wa-pr-review-orchestrator
 description: Use when reviewing a GitHub PR end-to-end, posting PR comments, or when the user asks for a PR review - first runs the strict thermo-nuclear maintainability review over the full diff, then uses the GitHub PR review workflow only for approved comments.
 ---
 

@@ -9,9 +9,9 @@ import tempfile
 import unittest
 from unittest import mock
 
-from scripts.models.target import Target
-from scripts.hook_files import apply_hook_plan
-from scripts.session_hooks import plan_hook
+from scripts.installation.models.target import Target
+from scripts.hooks.files import apply_hook_plan
+from scripts.hooks.setup import plan_hook
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -123,13 +123,13 @@ class SessionHookTests(unittest.TestCase):
             self.assertNotIn(str(self.canonical), json.dumps(plan.entry))
 
     def test_state_failure_restores_previous_config(self):
-        from scripts.hook_files import replace_file
+        from scripts.hooks.files import replace_file
         plan = self.plan()
         def fail_state(path, data):
             if path == plan.state:
                 raise OSError('state write failed')
             replace_file(path, data)
-        with mock.patch('scripts.hook_files.replace_file', side_effect=fail_state):
+        with mock.patch('scripts.hooks.files.replace_file', side_effect=fail_state):
             with self.assertRaises(OSError):
                 apply_hook_plan(plan)
         self.assertFalse(plan.config.exists())

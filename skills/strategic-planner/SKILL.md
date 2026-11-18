@@ -1,5 +1,5 @@
 ---
-name: strategic-planner
+name: wa-strategic-planner
 description: C-level strategic planning for new features, changes, or improvements. Clarifies scope, asks hard questions, identifies risks, defines acceptance criteria, and produces a structured high-level plan with a Context Brief. Use when the user wants to plan a new feature, significant change, refactor, or system improvement — before any architecture or implementation work begins.
 ---
 
@@ -32,9 +32,9 @@ If the work spans multiple **independent** subsystems, do **not** force one mono
 
 ### 1. Gather project context
 
-- Use the repository-context packet and its task-selected architecture, integrations and conventions documents; do not assume a Cursor-specific location.
+- Use the wa-repository-context packet and its task-selected architecture, integrations and conventions documents; do not assume a Cursor-specific location.
 - Check the repo root for audits or issue summaries (e.g. `SYSTEM-ISSUES-AUDIT.md`).
-- If context is missing, inspect the relevant repository evidence first; ask only for unresolved information needed for planning. Record missing factual coverage and require actual context drafts plus user review under repository-context. Existing instructions and proposed policies keep their exact pre-write approval boundary; do not omit the context deliverable.
+- If context is missing, inspect the relevant repository evidence first; ask only for unresolved information needed for planning. Record missing factual coverage and require actual context drafts plus user review under wa-repository-context. Existing instructions and proposed policies keep their exact pre-write approval boundary; do not omit the context deliverable.
 
 ### 2. Understand the ecosystem
 
@@ -92,7 +92,7 @@ Consider: data loss/corruption, downtime, security, performance, backward compat
 
 ### Phase 4: Produce the plan
 
-Deliver a **Context Brief** (task constraints bridge) and the **Strategic Plan**, including the required repository-context deliverable/approval state. The brief is not persistent repository documentation.
+Deliver a **Context Brief** (task constraints bridge) and the **Strategic Plan**, including the required wa-repository-context deliverable/approval state. The brief is not persistent repository documentation.
 
 #### Context Brief
 
@@ -126,7 +126,7 @@ Ten to fifteen lines. Every downstream architecture choice should trace back her
 - [ ] [Measurable criterion 1]
 - [ ] [Measurable criterion 2]
 - [ ] [Measurable criterion 3]
-- [ ] Required repository-context outcome with documents actually read, useful factual drafts and a user review request; separate exact policy approvals; no generic documentation dump
+- [ ] Required wa-repository-context outcome with documents actually read, useful factual drafts and a user review request; separate exact policy approvals; no generic documentation dump
 
 ## 4. Scope
 ### In Scope

@@ -1,5 +1,5 @@
 ---
-name: ui-ux-pro-max
+name: wa-ui-ux-pro-max
 description: "UI/UX design intelligence for web, mobile, and desktop. This skill should be used when designing, building, reviewing, or fixing interfaces, including pages, components, design systems, accessibility, interaction, responsive layout, typography, color, charts, and stack-specific UI implementation. Searchable local data: 79 searchable styles (50 active), 192 product palettes and reasoning profiles, 74 font pairings, 119 UX guidelines, 105 icons, 17 GSAP presets, 25 chart types, and 22 stacks."
 ---
 
@@ -72,7 +72,7 @@ Extract from the user request:
 
 ### Step 2: Generate a web design system when appropriate
 
-`--design-system` generates web-oriented patterns, CSS/typography and landing-page recommendations; it does not adapt its output to `--stack`. Native/graphics stack combinations are rejected; use a separate `--stack` query for implementation guidance even for web stacks. Use it for a web product needing coherent visual direction. For native SwiftUI/AppKit work, load `swiftui-expert-skill` and `macos-design-guidelines` as applicable, query `--stack swiftui` and only relevant platform-appropriate domains. Other native stacks use their matching stack guidance. Do not require hero sections, web fonts, CSS or GSAP for a native app.
+`--design-system` generates web-oriented patterns, CSS/typography and landing-page recommendations; it does not adapt its output to `--stack`. Native/graphics stack combinations are rejected; use a separate `--stack` query for implementation guidance even for web stacks. Use it for a web product needing coherent visual direction. For native SwiftUI/AppKit work, load `wa-swiftui-expert-skill` and `wa-macos-design-guidelines` as applicable, query `--stack swiftui` and only relevant platform-appropriate domains. Other native stacks use their matching stack guidance. Do not require hero sections, web fonts, CSS or GSAP for a native app.
 
 For an applicable web task:
 
@@ -89,7 +89,7 @@ python "${SKILL_DIR}/scripts/search.py" "beauty spa wellness service" --design-s
 
 ### Step 2b: Persist Design System (Master + Overrides Pattern)
 
-Persist only a verified web design proposal that the user has authorized. If the files serve as lasting repository guidance, present the exact generated text/diff and obtain approval through `repository-context` before writing; preview without `--persist` first. Then add `--persist` **and pass `--output-dir` pointed at the approved project root** — otherwise files follow the current working directory:
+Persist only a verified web design proposal that the user has authorized. If the files serve as lasting repository guidance, present the exact generated text/diff and obtain approval through `wa-repository-context` before writing; preview without `--persist` first. Then add `--persist` **and pass `--output-dir` pointed at the approved project root** — otherwise files follow the current working directory:
 
 ```bash
 python "${SKILL_DIR}/scripts/search.py" "<query>" --design-system --persist -p "Project Name" --output-dir "<project-root>"

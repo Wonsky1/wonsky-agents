@@ -7,8 +7,8 @@ import tempfile
 from typing import Optional
 import uuid
 
-from scripts.managed_files import symlink_in_chain
-from scripts.models.hook_plan import HookPlan
+from scripts.filesystem.managed import symlink_in_chain
+from scripts.hooks.models.plan import HookPlan
 
 
 def read_bytes(path: Path) -> Optional[bytes]:

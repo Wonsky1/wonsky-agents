@@ -57,6 +57,6 @@ The skill infers which structure applies:
 
 - If `CONTEXT-MAP.md` exists, read it to find contexts
 - If only a root `CONTEXT.md` exists, single context
-- If neither exists, create a clearly marked root `CONTEXT.md` draft when a useful term is resolved, then ask the user to review its exact content/path through repository-context; preserve established definitions and obtain exact approval before changing them
+- If neither exists, create a clearly marked root `CONTEXT.md` draft when a useful term is resolved, then ask the user to review its exact content/path through wa-repository-context; preserve established definitions and obtain exact approval before changing them
 
 When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.

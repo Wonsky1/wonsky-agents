@@ -1,5 +1,5 @@
 ---
-name: template-slide-from-screenshot
+name: wa-template-slide-from-screenshot
 description: Match a screenshot in a python-pptx WBR/QBR report generator, with an applicability-checked cybersecurity project adapter. Use when the user shares a slide screenshot and wants to reproduce its layout, charts or style in a generated PPTX.
 disable-model-invocation: true
 ---

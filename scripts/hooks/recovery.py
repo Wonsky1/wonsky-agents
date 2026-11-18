@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 import sys
 
-from scripts.hook_files import apply_hook_plan, read_bytes
-from scripts.session_hooks import plan_hook
+from scripts.hooks.files import apply_hook_plan, read_bytes
+from scripts.hooks.setup import plan_hook
 
 
 def plan_recovery(targets: list, canonical: Path, helper: Path, system: str) -> list:

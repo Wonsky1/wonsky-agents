@@ -1,6 +1,6 @@
 ---
-name: remote-server
-description: Work on a user-selected SSH server. Use only when the user explicitly invokes remote-server.
+name: wa-remote-server
+description: Work on a user-selected SSH server. Use only when the user explicitly invokes wa-remote-server.
 disable-model-invocation: true
 ---
 # Remote server

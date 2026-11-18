@@ -1,5 +1,5 @@
 ---
-name: swiftui-expert-skill
+name: wa-swiftui-expert-skill
 description: Use when writing, reviewing, or refactoring SwiftUI code for iOS or macOS, including state and `@Observable` data flow, view composition, resizable layouts, safe areas, display scale, performance, lists, environment, localization, animation, Liquid Glass, and API migration. Also use for iPhone Duo, foldable, or large-display layouts (`NavigationSplitView` on large displays, iPhone tab sidebar, two-column reflow, foldable grids, `ArrangementView`, `ReservedRegion`), hinge effects, vertical bars, `@State` initialization or synthesized-property diagnostics, `@ContentBuilder` ambiguity, `reorderable` drag/drop, custom `AsyncImage` `URLSession`, swipe actions outside List, item-bound `alert`/`confirmationDialog`, `ToolbarOverflowMenu`, `AnimatableValues`, Document APIs (`Document`/`DocumentReader`), and Instruments `.trace` capture or analysis.
 ---
 

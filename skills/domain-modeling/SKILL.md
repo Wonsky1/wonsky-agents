@@ -1,5 +1,5 @@
 ---
-name: domain-modeling
+name: wa-domain-modeling
 description: Build and sharpen a project's domain model. Use when the user wants to pin down domain terminology or a ubiquitous language, record an architectural decision, or when another skill needs to maintain the domain model.
 ---
 
@@ -41,7 +41,7 @@ If a `CONTEXT-MAP.md` exists at the root, the repo has multiple contexts. The ma
 │       └── docs/adr/
 ```
 
-Create useful factual glossary or decision-history drafts when confirmed content exists, using repository-context draft markers and user review. Link established domain documents rather than duplicate them. Existing approved definitions, active policies and historical decisions are preserved; changes to them require exact approval before writing.
+Create useful factual glossary or decision-history drafts when confirmed content exists, using wa-repository-context draft markers and user review. Link established domain documents rather than duplicate them. Existing approved definitions, active policies and historical decisions are preserved; changes to them require exact approval before writing.
 
 ## During the session
 

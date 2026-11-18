@@ -2,7 +2,7 @@
 
 Use this file when refining the bootstrap routing behavior or checking whether the descriptions are broad enough.
 
-## Requests that should activate `using-dev-pipeline`
+## Requests that should activate `wa-using-dev-pipeline`
 
 - "help me build this feature"
 - "fix this bug"
@@ -19,15 +19,15 @@ Use this file when refining the bootstrap routing behavior or checking whether t
 
 ## Route hints
 
-- Feature, refactor, implementation request → `dev-pipeline`
-- Bug, regression, flaky test, unexpected behavior → `systematic-debugging`
-- Existing approved plan → `executing-plans` or `subagent-driven-development`
-- Review request → `requesting-code-review`
-- Review comments received → `receiving-code-review`
-- "done/fixed/passing?" → `verification-before-completion`
-- Post-verification merge/PR/cleanup request → `finishing-a-development-branch`
-- Creative / exploratory work → `brainstorming`
+- Feature, refactor, implementation request → `wa-dev-pipeline`
+- Bug, regression, flaky test, unexpected behavior → `wa-systematic-debugging`
+- Existing approved plan → `wa-executing-plans` or `wa-subagent-driven-development`
+- Review request → `wa-requesting-code-review`
+- Review comments received → `wa-receiving-code-review`
+- "done/fixed/passing?" → `wa-verification-before-completion`
+- Post-verification merge/PR/cleanup request → `wa-finishing-a-development-branch`
+- Creative / exploratory work → `wa-brainstorming`
 
 ## Fail-safe rule
 
-If a request is software-related and no specialist route is obviously a better fit, route to `dev-pipeline`.
+If a request is software-related and no specialist route is obviously a better fit, route to `wa-dev-pipeline`.

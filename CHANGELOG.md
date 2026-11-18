@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Added
+
+- `wa-explain` for concise plain-language walkthroughs, short overviews and detailed follow-ups with intermediate data and worked examples, independently of the development pipeline.
+- Automatic numbered install/update migrations with previews, ownership checks, complete backups, rollback and per-skill journals; the first migrates legacy runtime folders and installer records to `wa-*`.
+- GitHub Copilot personal skills, target detection and CLI session-ledger hook setup, with explicit-only remote-server support.
+
+### Improved
+
+- Recorded maintainer verification of native Windows session-ledger operation and removed the obsolete unverified-Windows caveat.
+- Namespaced all collection skills with `wa-`, including invocation names, runtime folders and update ownership records, so they coexist with other collections. Canonical file paths and recovery hooks remain stable; verified legacy folders migrate automatically and unknown folders are preserved for review.
+
+### Internal
+
+- Grouped collection helpers into installation, updates, migrations, hooks, skills and filesystem packages, with models beside their owners; public launch commands remain unchanged.
+
 ## 2026-11-12 — Automatic recovery and reviewed updates
 
 ### Added

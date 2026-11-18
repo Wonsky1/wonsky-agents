@@ -17,6 +17,8 @@ def shell_command(arguments: list, system: str) -> str:
 
 def hook_entry(host: str, canonical: Path, python: Path, system: str) -> dict:
     args = ['-B', str(canonical / 'skills/session-ledger/scripts/ledger.py'), 'hook', '--host', host]
+    if host == 'copilot':
+        return {'type': 'command', 'exec': str(python), 'args': args, 'timeoutSec': 10}
     if host == 'claude':
         # Exec form avoids shell interpretation on every platform.
         handler = {'type': 'command', 'command': str(python), 'args': args, 'timeout': 10}
@@ -36,14 +38,14 @@ def hook_entries(document: dict, host: str) -> list:
     if host == 'antigravity':
         key = 'wonsky-session-ledger'
         return [document[key]] if key in document else []
-    if host == 'cursor':
+    if host in ('cursor', 'copilot'):
         if document.get('version', 1) != 1:
-            raise ValueError('Unsupported Cursor hooks version; configuration preserved')
+            raise ValueError('Unsupported {} hooks version; configuration preserved'.format(host.title()))
         document.setdefault('version', 1)
     hooks = document.setdefault('hooks', {})
     if not isinstance(hooks, dict):
         raise ValueError('Expected a hooks object; configuration preserved')
-    event = 'sessionStart' if host == 'cursor' else 'SessionStart'
+    event = 'sessionStart' if host in ('cursor', 'copilot') else 'SessionStart'
     entries = hooks.setdefault(event, [])
     if not isinstance(entries, list):
         raise ValueError('Expected a {} array; configuration preserved'.format(event))
@@ -57,7 +59,7 @@ def replace_entries(document: dict, host: str, entries: list) -> None:
         else:
             document.pop('wonsky-session-ledger', None)
     else:
-        event = 'sessionStart' if host == 'cursor' else 'SessionStart'
+        event = 'sessionStart' if host in ('cursor', 'copilot') else 'SessionStart'
         if entries:
             document['hooks'][event] = entries
         else:

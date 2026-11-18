@@ -1,6 +1,7 @@
 """Review canonical and runtime updates before touching installed files."""
 
 import argparse
+from dataclasses import replace
 import json
 import os
 from pathlib import Path
@@ -8,17 +9,23 @@ import platform
 import sys
 from typing import Optional
 
-from scripts.agent_targets import detect_targets, select_keys
-from scripts.managed_files import symlink_in_chain
-from scripts.skill_files import check_overlap
-from scripts.recovery_setup import apply_recovery, plan_recovery, recovery_review, show_recovery, validate_recovery
-from scripts.target_picker import pick_targets
-from scripts.update_apply import apply_plan
-from scripts.update_collection import canonical_plans, runtime_plans
-from scripts.update_plan import effective_files, validate_plan
-from scripts.update_review import (choose, confirm, default_choice, describe, load_decisions,
+from scripts.installation.targets import detect_targets, select_keys
+from scripts.filesystem.managed import symlink_in_chain
+from scripts.migrations.apply import apply_migration, validate_migration
+from scripts.migrations.review import migration_review
+from scripts.migrations.registry import plan_migrations, ready_migration
+from scripts.migrations.review import show_migrations
+from scripts.hooks.setup import hook_config_path
+from scripts.skills.files import check_overlap
+from scripts.hooks.recovery import apply_recovery, plan_recovery, recovery_review, show_recovery, validate_recovery
+from scripts.installation.picker import pick_targets
+from scripts.updates.apply import apply_plan
+from scripts.updates.collection import canonical_plans, runtime_plans
+from scripts.skills.names import runtime_skill_name
+from scripts.updates.plan import effective_files, validate_plan
+from scripts.updates.review import (choose, confirm, default_choice, describe, load_decisions,
                                    report_data, reviewed_choices)
-from scripts.update_source import open_update_source
+from scripts.updates.source import open_update_source
 
 
 def _choices(plans: list, args, saved: Optional[dict]) -> dict:
@@ -62,7 +69,7 @@ def main(argv=None) -> int:
     parser.add_argument('--from', dest='source', type=Path, help='read a separate extracted collection instead of downloading GitHub main')
     parser.add_argument('--baseline', type=Path, help='trusted previous collection for older installations without original snapshots')
     targets = parser.add_mutually_exclusive_group()
-    targets.add_argument('--targets', help='comma-separated cursor,claude,codex,antigravity,agents')
+    targets.add_argument('--targets', help='comma-separated cursor,claude,codex,antigravity,agents,copilot')
     targets.add_argument('--all', action='store_true', help='select all detected destinations')
     parser.add_argument('--terminal', action='store_true', help='use terminal review instead of optional Tk windows')
     parser.add_argument('--dry-run', action='store_true', help='preview; never change installed files or ownership state')
@@ -106,7 +113,14 @@ def main(argv=None) -> int:
             saved = load_decisions(args.decisions, source.revision) if args.decisions else None
             canonical_units = canonical_plans(source.root, canonical, baseline)
             canonical_choices = _choices(canonical_units, args, saved)
-            runtime_units = runtime_plans(canonical_units, canonical_choices, selected, baseline)
+            migration_skills = [plan.destination for plan in canonical_units[1:]
+                                if canonical_choices[plan.id] != 'keep']
+            migrations = plan_migrations(migration_skills, selected, baseline)
+            show_migrations(migrations)
+            if any(plan.status == 'blocked' for plan in migrations):
+                print('Migration conflicts preserved. Review the reported folders before retrying.')
+                return 2
+            runtime_units = runtime_plans(canonical_units, canonical_choices, selected, baseline, migrations)
             runtime_choices = _choices(runtime_units, args, saved)
             plans = canonical_units + runtime_units
             choices = dict(canonical_choices, **runtime_choices)
@@ -120,18 +134,22 @@ def main(argv=None) -> int:
             for plan in canonical_units[1:]:
                 if plan.destination.name == 'session-ledger' and canonical_choices[plan.id] != 'keep' and not args.no_session_hooks:
                     helper = effective_files(plan, canonical_choices[plan.id]).get('scripts/ledger.py')
-                    eligible = [target for target in selected if choices.get(str(target.path / 'session-ledger')) != 'keep']
+                    eligible = [target for target in selected if choices.get(str(target.path / runtime_skill_name('session-ledger'))) != 'keep']
                     recovery = plan_recovery(eligible, canonical, helper, system)
             show_recovery(recovery)
             data = report_data(plans, choices, source.revision)
+            data['migrations'] = migration_review(migrations)
             data['recovery_hooks'] = recovery_review(recovery)
             if args.decisions and not args.dry_run:
-                reviewed = json.loads(args.decisions.read_text(encoding='utf-8')).get('recovery_hooks', [])
+                review = json.loads(args.decisions.read_text(encoding='utf-8'))
+                if review.get('migrations', []) != data['migrations']:
+                    raise ValueError('Migrations changed or were not reviewed; regenerate the preview.')
+                reviewed = review.get('recovery_hooks', [])
                 if reviewed != data['recovery_hooks']:
                     raise ValueError('Recovery hooks changed or were not reviewed; regenerate the preview.')
             if args.report:
                 hook_paths = [path for target in available for path in (
-                    target.path.parent / ('settings.json' if target.key == 'claude' else 'hooks.json'),
+                    hook_config_path(target),
                     target.path.parent / '.wonsky-state')]
                 _write_report(args.report, data, plans,
                               [canonical, source.root, *(target.path for target in available), *hook_paths])
@@ -145,12 +163,20 @@ def main(argv=None) -> int:
                 print('Cancelled. Installed files and state unchanged.')
                 return 0
             validate_recovery(recovery)
+            for migration in migrations:
+                if migration.status == 'ready':
+                    validate_migration(migration)
             # Validate every approval before starting the first unit, then recheck per apply.
             for plan in plans:
-                validate_plan(plan)
+                migration = ready_migration(migrations, plan.destination)
+                local = replace(plan, destination=migration.source, state_path=migration.state_source) if migration else plan
+                validate_plan(local)
             counts = {}
             backups = canonical / '.wonsky-backups'
             for plan in plans:
+                migration = ready_migration(migrations, plan.destination)
+                if migration and choices[plan.id] != 'keep':
+                    print('Migration backup retained: {}'.format(apply_migration(migration)))
                 result = apply_plan(plan, choices[plan.id], backups)
                 counts[result.result.status] = counts.get(result.result.status, 0) + 1
                 if result.backup:

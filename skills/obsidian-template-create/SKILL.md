@@ -1,5 +1,5 @@
 ---
-name: obsidian-template-create
+name: wa-obsidian-template-create
 description: Create Obsidian notes from existing vault templates correctly. Use when the user asks to create a note, page, record, restaurant, person note, daily note, product note, category note, or any vault item from an Obsidian template.
 ---
 
@@ -19,7 +19,7 @@ Before creating the note:
 4. Identify which fields are present in the template versus which values must come from the user.
 5. Build one concise list of all meaningful missing values that cannot be inferred from the request, attachments, or existing note context.
 
-If the template cannot be found, stop treating the request as a template flow. Either switch to `obsidian-markdown` with explicit user confirmation on the schema, or ask only for the missing required fields.
+If the template cannot be found, stop treating the request as a template flow. Either switch to `wa-obsidian-markdown` with explicit user confirmation on the schema, or ask only for the missing required fields.
 
 If the template exists but meaningful user-provided fields are still missing, ask for them before considering the note complete. Do not silently leave fields like `store`, `price`, `buy_again`, ratings, or free-text impressions blank unless the user explicitly requested a draft or placeholder-only creation.
 

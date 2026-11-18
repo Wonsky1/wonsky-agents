@@ -1,5 +1,5 @@
 ---
-name: strict-code-quality-review
+name: wa-strict-code-quality-review
 description: Use when the user asks for a thermo-nuclear, thermonuclear, harsh, deep maintainability, architecture, abstraction, spaghetti-code, large-file, or code quality review - applies an unusually strict structural quality bar.
 ---
 

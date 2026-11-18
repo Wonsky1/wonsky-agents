@@ -1,5 +1,5 @@
 ---
-name: using-git-worktrees
+name: wa-using-git-worktrees
 description: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees with smart directory selection and safety verification.
 ---
 
@@ -82,5 +82,5 @@ Apply in **priority order**:
 
 ## Integration
 
-- **Called by:** `brainstorming` and any skill that requires an isolated tree before implementation.
+- **Called by:** `wa-brainstorming` and any skill that requires an isolated tree before implementation.
 - **Pairs with:** `~/.wonsky-agents/skills/finishing-a-development-branch/SKILL.md` for merge, PR, and cleanup after work is done.

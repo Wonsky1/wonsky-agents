@@ -12,7 +12,7 @@ Review this implementation for:
 - edge cases
 - test gaps
 - alignment with planned structure and, for Python, the required implementation-guide/references/python-structure.md contract (read it first); inspect its required evidence in the actual changes
-- required repository-context outcome with actual paths/evidence; report pending context review or policy approval explicitly
+- required wa-repository-context outcome with actual paths/evidence; report pending context review or policy approval explicitly
 
 Inputs:
 - task summary

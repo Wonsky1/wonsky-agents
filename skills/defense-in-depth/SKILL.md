@@ -1,5 +1,5 @@
 ---
-name: defense-in-depth
+name: wa-defense-in-depth
 description: Use when invalid data causes failures deep in execution, requiring validation at multiple system layers - adds validation at relevant trust and responsibility boundaries to reduce bypasses and improve diagnostics.
 ---
 

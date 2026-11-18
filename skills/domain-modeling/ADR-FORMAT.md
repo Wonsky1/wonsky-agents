@@ -2,7 +2,7 @@
 
 ADRs live in `docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
 
-Write a clearly marked factual ADR draft only when justified, then ask the user to review its exact content/path through repository-context. Proposed choices remain unaccepted; edits to existing historical decisions or active policies require exact approval before writing.
+Write a clearly marked factual ADR draft only when justified, then ask the user to review its exact content/path through wa-repository-context. Proposed choices remain unaccepted; edits to existing historical decisions or active policies require exact approval before writing.
 
 ## Template
 

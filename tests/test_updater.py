@@ -7,9 +7,9 @@ import tempfile
 import unittest
 from unittest import mock
 
-from scripts.managed_files import regular_files, snapshot, write_state
-from scripts.update_apply import apply_plan
-from scripts.update_plan import build_plan, effective_files, validate_plan
+from scripts.filesystem.managed import regular_files, snapshot, write_state
+from scripts.updates.apply import apply_plan
+from scripts.updates.plan import build_plan, effective_files, validate_plan
 
 
 class UpdaterTests(unittest.TestCase):
@@ -321,7 +321,7 @@ class UpdaterTests(unittest.TestCase):
         self.original({'SKILL.md': 'old\n'})
         self.put(self.source, 'SKILL.md', 'new\n')
         plan, old_state = self.plan(), self.state.read_bytes()
-        with mock.patch('scripts.update_apply.write_state', side_effect=OSError('simulated state failure')):
+        with mock.patch('scripts.updates.apply.write_state', side_effect=OSError('simulated state failure')):
             with self.assertRaisesRegex(OSError, 'Backup retained'):
                 apply_plan(plan, 'update', self.backups)
         self.assertEqual((self.local / 'SKILL.md').read_text(), 'old\n')
@@ -403,7 +403,7 @@ class UpdaterTests(unittest.TestCase):
         self.put(self.source, 'SKILL.md', 'new\n')
         self.put(self.source, 'new/nested/asset.txt', 'new\n')
         before = snapshot(self.local)
-        with mock.patch('scripts.update_apply.write_state', side_effect=OSError('state failure')):
+        with mock.patch('scripts.updates.apply.write_state', side_effect=OSError('state failure')):
             with self.assertRaises(OSError):
                 apply_plan(self.plan(), 'update', self.backups)
         self.assertEqual(snapshot(self.local), before)

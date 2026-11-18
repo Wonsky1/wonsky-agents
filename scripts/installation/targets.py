@@ -5,22 +5,29 @@ from pathlib import Path
 import shutil
 from typing import Callable, List, Mapping, Optional, Sequence
 
-from scripts.models.target import Target
+from scripts.installation.models.target import Target
 
 
 def detect_targets(home: Path, system: str, environ: Mapping[str, str],
                    which: Callable[[str], Optional[str]] = shutil.which) -> List[Target]:
     codex = Path(environ.get('CODEX_HOME') or home / '.codex').expanduser()
+    copilot = Path(environ.get('COPILOT_HOME') or home / '.copilot').expanduser()
     definitions = (
         ('cursor', 'Cursor', home / '.cursor', ('cursor',), 'Cursor'),
         ('claude', 'Claude Code', home / '.claude', ('claude',), 'Claude'),
         ('codex', 'Codex', codex, ('codex',), 'Codex'),
         ('antigravity', 'Antigravity', home / '.gemini/config', ('antigravity', 'agy'), 'Antigravity'),
         ('agents', 'Agents standard', home / '.agents', (), None),
+        ('copilot', 'GitHub Copilot', copilot, ('copilot',), None),
     )
     targets = []
     for key, label, config, commands, app in definitions:
         evidence = [config]
+        if key == 'copilot':
+            for editor in ('.vscode', '.vscode-insiders'):
+                extensions = home / editor / 'extensions'
+                for name in ('github.copilot', 'github.copilot-chat'):
+                    evidence.extend(path for path in extensions.glob(name + '-*') if path.is_dir())
         if app and system == 'Darwin':
             evidence.extend((Path('/Applications') / (app + '.app'),
                              home / 'Applications' / (app + '.app')))

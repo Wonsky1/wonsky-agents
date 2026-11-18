@@ -1,5 +1,5 @@
 ---
-name: wonsky-agents-update
+name: wa-wonsky-agents-update
 description: Use when the user asks to update, refresh or upgrade an installed Wonsky Agents skill collection, or review local changes before an update. Preserve personal skills and instructions, preview file differences, and apply only the user's Keep or Use New choices.
 ---
 

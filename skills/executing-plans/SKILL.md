@@ -1,5 +1,5 @@
 ---
-name: executing-plans
+name: wa-executing-plans
 description: Use when you have an approved implementation plan to execute sequentially with checkpoints - loads plan, reviews critically, executes tasks in batches, reports for review between batches.
 ---
 
@@ -13,7 +13,7 @@ Execute an approved plan faithfully in **controlled batches** with verification 
 
 **Core principle:** Batch execution with visible checkpoints. Reuse explicit end-to-end execution authorization; pause for decisions, requested checkpoints or blockers rather than requiring another confirmation after every routine batch.
 
-**Announce at start:** "I'm using the executing-plans skill to implement this plan."
+**Announce at start:** "I'm using the wa-executing-plans skill to implement this plan."
 
 ## Before You Start
 
@@ -52,7 +52,7 @@ When the batch is complete:
 - Show **verification output** (commands run and key results)
 - Say: **"Ready for feedback."**
 
-If the user authorized the whole plan, continue independent in-scope batches after the update. Wait when the plan/user requires approval, an unresolved decision affects correctness or the next action is outside existing authority. Follow repository-context for factual drafts and exact policy approvals.
+If the user authorized the whole plan, continue independent in-scope batches after the update. Wait when the plan/user requires approval, an unresolved decision affects correctness or the next action is outside existing authority. Follow wa-repository-context for factual drafts and exact policy approvals.
 
 ### Step 4: Continue
 
@@ -70,7 +70,7 @@ After all tasks are complete and verified:
 
 - Run `~/.wonsky-agents/skills/quality-gate/SKILL.md`
 - Run `~/.wonsky-agents/skills/verification-before-completion/SKILL.md`
-- Close the required repository-context outcome (updated, verified-current with evidence, draft-awaiting-review, exact policy proposal pending-approval, or user-declined). Missing factual coverage requires actual reviewable drafts under repository-context; a plan/test report is not repository context. Ask the user to review those drafts and report pending review separately.
+- Close the required wa-repository-context outcome (updated, verified-current with evidence, draft-awaiting-review, exact policy proposal pending-approval, or user-declined). Missing factual coverage requires actual reviewable drafts under wa-repository-context; a plan/test report is not repository context. Ask the user to review those drafts and report pending review separately.
 - Use `~/.wonsky-agents/skills/finishing-a-development-branch/SKILL.md` only when integration/cleanup is requested; otherwise report the delivered working-tree changes and evidence without committing or pushing
 
 ## When to Stop and Ask for Help
@@ -113,4 +113,4 @@ Pause and escalate (user or plan owner) when:
 
 ## Context handoff
 
-Pass the repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.
+Pass the wa-repository-context packet with every plan or delegated task: repo root, outcome, read/write boundaries, applicable instructions, selected documents and freshness evidence, unresolved conflicts, and exact protected-document approvals. Each fresh worker reads the applicable guidance; a summary is not a replacement. Recheck changed documents on resume and instruction chains for new targets. Do not inherit broader permissions from another worker.

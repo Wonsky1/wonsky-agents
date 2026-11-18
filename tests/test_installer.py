@@ -8,9 +8,9 @@ import tempfile
 import unittest
 from unittest import mock
 
-from scripts.agent_targets import detect_targets, select_keys
-from scripts.skill_files import install_collection, sync_skill
-from scripts.target_picker import pick_targets
+from scripts.installation.targets import detect_targets, select_keys
+from scripts.skills.files import install_collection, sync_skill
+from scripts.installation.picker import pick_targets
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,12 +26,12 @@ class TargetTests(unittest.TestCase):
         return detect_targets(self.home, system, env or {}, lambda name: name if name in commands else None)
 
     def test_config_directories_work_on_all_platforms(self):
-        for name in ('.cursor', '.claude', '.codex', '.gemini/config', '.agents'):
+        for name in ('.cursor', '.claude', '.codex', '.gemini/config', '.agents', '.copilot'):
             (self.home / name).mkdir(parents=True)
         for system in ('Darwin', 'Linux', 'Windows'):
             with self.subTest(system=system):
                 targets = self.targets(system)
-                self.assertEqual(len(targets), 5)
+                self.assertEqual(len(targets), 6)
                 self.assertTrue(all(t.detected for t in targets))
                 self.assertEqual(targets[3].path, self.home / '.gemini/config/skills')
 
@@ -228,7 +228,7 @@ class CopyTests(unittest.TestCase):
         self.assertTrue(self.dest.parent.is_symlink())
 
     def test_source_scan_error_is_not_a_successful_incomplete_copy(self):
-        import scripts.managed_files as managed
+        import scripts.filesystem.managed as managed
         walk = managed.os.walk
 
         def fail_walk(root, **kwargs):
@@ -241,7 +241,7 @@ class CopyTests(unittest.TestCase):
         self.assertFalse(self.dest.parent.exists())
 
     def test_destination_scan_error_preserves_existing_copy(self):
-        import scripts.managed_files as managed
+        import scripts.filesystem.managed as managed
         sync_skill(self.source, self.dest)
         (self.source / 'SKILL.md').write_text('updated', encoding='utf-8')
         walk = managed.os.walk
@@ -268,7 +268,7 @@ class CopyTests(unittest.TestCase):
     def test_copy_failure_retains_previous_skill(self):
         sync_skill(self.source, self.dest)
         (self.source / 'SKILL.md').write_text('next', encoding='utf-8')
-        with mock.patch('scripts.managed_files.shutil.copytree', side_effect=OSError('disk full')):
+        with mock.patch('scripts.filesystem.managed.shutil.copytree', side_effect=OSError('disk full')):
             with self.assertRaises(OSError):
                 sync_skill(self.source, self.dest)
         self.assertEqual((self.dest / 'SKILL.md').read_text(), 'example')
@@ -372,14 +372,14 @@ class PickerTests(unittest.TestCase):
     def test_missing_gui_falls_back_to_checkbox_terminal_selection(self):
         with tempfile.TemporaryDirectory() as tmp:
             targets = detect_targets(Path(tmp).resolve(), 'Linux', {}, lambda name: None)
-            with mock.patch('scripts.target_picker.gui_picker', return_value=None), \
+            with mock.patch('scripts.installation.picker.gui_picker', return_value=None), \
                     mock.patch('sys.stdin.isatty', return_value=True), \
                     mock.patch('builtins.input', side_effect=['3 4', '']), \
                     mock.patch('builtins.print'):
                 self.assertEqual(pick_targets(targets), ['codex', 'antigravity'])
 
     def test_cancel_is_distinct_from_gui_unavailable(self):
-        with mock.patch('scripts.target_picker.gui_picker', return_value=[]), \
+        with mock.patch('scripts.installation.picker.gui_picker', return_value=[]), \
                 mock.patch('sys.stdin.isatty', return_value=True), \
                 mock.patch('builtins.input', side_effect=AssertionError('must not prompt again')):
             self.assertEqual(pick_targets([]), [])
@@ -427,7 +427,7 @@ class CommandTests(unittest.TestCase):
             self.assertTrue((canonical / 'install.ps1').is_file())
             self.assertFalse((canonical / '.git').exists())
             self.assertFalse((canonical / 'skills/repository-context/scripts/__pycache__').exists())
-            installed = home / '.codex/skills/macos-design-guidelines/SKILL.md'
+            installed = home / '.codex/skills/wa-macos-design-guidelines/SKILL.md'
             self.assertEqual(installed.read_bytes(), (ROOT / 'skills/macos-design-guidelines/SKILL.md').read_bytes())
             result = subprocess.run([sys.executable, '-B', str(canonical / 'install.py'),
                                      '--sync-only', '--targets', 'codex'],
@@ -437,7 +437,7 @@ class CommandTests(unittest.TestCase):
     def test_conflict_exit_and_dry_run_preserve_global_instructions(self):
         with tempfile.TemporaryDirectory() as tmp:
             home = Path(tmp).resolve()
-            skill = home / '.codex/skills/macos-design-guidelines'
+            skill = home / '.codex/skills/wa-macos-design-guidelines'
             skill.mkdir(parents=True)
             (skill / 'SKILL.md').write_text('my same-name skill', encoding='utf-8')
             global_agents = home / '.codex/AGENTS.md'
@@ -464,11 +464,11 @@ class CommandTests(unittest.TestCase):
                             ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
             source = package / 'skills/example'
             canonical = home / '.wonsky-agents'
-            for directory in (source, canonical / 'skills/example', home / '.codex/skills/example'):
+            for directory in (source, canonical / 'skills/example', home / '.codex/skills/wa-example'):
                 directory.mkdir(parents=True)
                 (directory / 'SKILL.md').write_text('same', encoding='utf-8')
             (canonical / 'skills/example/private.txt').write_text('canonical extra', encoding='utf-8')
-            local = home / '.codex/skills/example/private.txt'
+            local = home / '.codex/skills/wa-example/private.txt'
             local.write_text('runtime personal', encoding='utf-8')
             env = dict(os.environ, HOME=str(home), USERPROFILE=str(home),
                        WONSKY_AGENTS_HOME=str(canonical), CODEX_HOME=str(home / '.codex'))
@@ -509,7 +509,7 @@ class CommandTests(unittest.TestCase):
                 self.assertIn('added 1', result.stdout)
                 if extra:
                     self.assertFalse((home / '.codex').exists())
-            self.assertEqual((home / '.codex/skills/example/private.txt').read_text(), 'keep')
+            self.assertEqual((home / '.codex/skills/wa-example/private.txt').read_text(), 'keep')
 
     def test_invalid_target_has_no_side_effects(self):
         with tempfile.TemporaryDirectory() as tmp:

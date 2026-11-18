@@ -7,9 +7,9 @@ from pathlib import Path, PurePosixPath
 import re
 from typing import Mapping, Optional
 
-from scripts import managed_files
-from scripts.managed_files import blocked_path, read_state, safe_key, snapshot, symlink_in_chain
-from scripts.models.update import FileChange, UpdatePlan
+import scripts.filesystem.managed as managed_files
+from scripts.filesystem.managed import blocked_path, read_state, safe_key, snapshot, symlink_in_chain
+from scripts.updates.models.plan import FileChange, UpdatePlan
 
 
 def content_hash(value: bytes) -> str:

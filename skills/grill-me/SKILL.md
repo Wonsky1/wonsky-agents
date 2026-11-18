@@ -1,7 +1,7 @@
 ---
-name: grill-me
+name: wa-grill-me
 description: A relentless interview to sharpen a plan or design.
 disable-model-invocation: true
 ---
 
-Run a `/grilling` session.
+Run a `/wa-grilling` session.
