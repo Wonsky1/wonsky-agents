@@ -29,6 +29,7 @@ For new capabilities or hand-written mechanisms in the diff (retry, parsing, nor
 
 For every meaningful change, ask:
 
+- Does this change make the next similar extension straightforward, or does it require copying lifecycle code, expanding type checks or modifying unrelated components? Would a focused contract or pattern improve that?
 - Is there a simpler reframing that would remove branches, flags, helper layers, or modes?
 - Did the diff add ad-hoc conditionals into an already busy flow?
 - Is the logic in the canonical layer, package, or module that owns the concept?

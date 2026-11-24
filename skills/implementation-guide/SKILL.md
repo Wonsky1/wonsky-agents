@@ -28,6 +28,13 @@ Stop and satisfy these **before** writing implementation code or declaring work 
 3. **Read project context.** Use the wa-repository-context packet and selected conventions. Check ancestor guidance for newly affected files; reading shared context does not widen write scope.
 4. **Look for what already exists.** Before writing a helper, parser, client, query, model or similar capability, search the repository for one that does the same job (the concept's words, likely names, the owning area and shared packages), then the installed dependencies, the standard library and the framework. Use or extend what fits; build only what nothing covers, and state what you reused or why the existing option does not fit.
 5. **Place code by its users.** Code with one user stays in that user's module or package. When a second area needs the same capability, prefer a suitable shared owner both callers may import without violating dependency direction, compatibility or authorized scope. Switch callers and remove the old copy when safe and in scope; otherwise explain the boundary and use a staged migration or separate implementations. Keep meaningful behavioral differences explicit.
+6. **Reassess before adding a variant.** Apply [Reassess the Design as Requirements Grow](#reassess-the-design-as-requirements-grow) before implementation.
+
+## Reassess the Design as Requirements Grow
+
+Before adding another implementation, variant or special case, inspect related code for a shared contract, lifecycle or responsibility. Compare a direct addition with a focused structural improvement. Choose patterns based on concrete maintenance benefits and current requirements or explicitly planned extensions. Explain what becomes easier to change and what complexity the abstraction introduces.
+
+Make proportionate structural improvements within the authorized task. When the better design requires broader refactoring, changes to existing contracts or migration of unrelated callers, present the affected components, benefits, risks and smaller alternative, then ask for scope approval before that work. Continue independent authorized work while the decision is pending.
 
 ## Code Structure Rules
 
@@ -117,6 +124,7 @@ For each task:
 - [ ] Read the task's target files and understand surrounding code
 - [ ] Follow existing project patterns (naming, error handling, logging conventions)
 - [ ] Reuse checked (repository, installed dependencies, standard library, framework); one-user code local; suitable shared ownership considered; exceptions and migration limits explained
+- [ ] New variants assessed against the design-reassessment rule above; maintenance benefits, added complexity and any scope approval are explicit
 - [ ] For Python, the shared structure reference was read and its implementation/review evidence recorded
 - [ ] Mechanical structure findings/errors reviewed plus semantic cohesion/dependency-direction review; tests alone are insufficient
 - [ ] Dependencies passed explicitly through constructors or focused function parameters; concrete provision has a deliberate owner

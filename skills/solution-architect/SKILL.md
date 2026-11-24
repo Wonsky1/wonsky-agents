@@ -100,6 +100,8 @@ When you present pattern or layer choices, tie them back to the Context Brief (e
 
 ## Phase 3: Pattern Selection
 
+When adding another implementation, variant or special case, read and apply **Reassess the Design as Requirements Grow** in `~/.wonsky-agents/skills/implementation-guide/SKILL.md`. Carry the comparison, maintenance trade-offs and any required scope approval into the proposal.
+
 **This is a conversation, not a checklist.** Do not assume every row in the catalogue belongs in the design. For each candidate you seriously consider:
 
 1. **What problem does it solve here** — in this feature, this codebase, this team?

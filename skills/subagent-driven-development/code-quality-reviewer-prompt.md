@@ -9,6 +9,7 @@ Repository context packet: [root, task, read/write boundaries, applicable instru
 Review this implementation for:
 - bugs
 - maintainability
+- Does this change make the next similar extension straightforward, or does it require copying lifecycle code, expanding type checks or modifying unrelated components? Would a focused contract or pattern improve that?
 - edge cases
 - test gaps
 - reuse and placement: consider repository code, dependencies, standard library and framework; check suitable shared ownership and justified exceptions (run the Reuse Search in strict-code-quality-review using available, authorized context)

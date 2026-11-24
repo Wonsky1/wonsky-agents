@@ -102,6 +102,7 @@ For substantial changes, large diffs, refactors, or any user-requested code revi
 
 - [ ] No new spaghetti branching or scattered special cases
 - [ ] Logic remains in the canonical layer/module
+- [ ] Does this change make the next similar extension straightforward, or does it require copying lifecycle code, expanding type checks or modifying unrelated components? Would a focused contract or pattern improve that?
 - [ ] New abstractions reduce real complexity instead of adding indirection
 - [ ] Large-file growth is justified or decomposed according to repository standards
 - [ ] Existing helpers, installed libraries and framework features are considered; suitable shared ownership and justified exceptions are checked

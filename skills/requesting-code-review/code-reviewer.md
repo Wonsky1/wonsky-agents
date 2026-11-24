@@ -43,6 +43,7 @@ Inspect the actual scoped changes, including staged, unstaged and relevant untra
 - Edge cases handled?
 
 **Architecture**
+- Does this change make the next similar extension straightforward, or does it require copying lifecycle code, expanding type checks or modifying unrelated components? Would a focused contract or pattern improve that?
 - Aligns with the intended design?
 - No unnecessary scope creep?
 - Performance or security concerns?
