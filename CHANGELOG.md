@@ -12,6 +12,7 @@
 
 - Recorded maintainer verification of native Windows session-ledger operation and removed the obsolete unverified-Windows caveat.
 - Namespaced all collection skills with `wa-`, including invocation names, runtime folders and update ownership records, so they coexist with other collections. Canonical file paths and recovery hooks remain stable; verified legacy folders migrate automatically and unknown folders are preserved for review.
+- Strengthened reuse and placement checks in implementation and review, including searches for existing capabilities, suitable shared ownership, and explicit limits when repository context is unavailable.
 
 ### Internal
 

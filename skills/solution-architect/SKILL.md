@@ -58,6 +58,9 @@ Present a **Reuse Report**:
 ### What we still need to build
 - [domain-specific logic that no library covers]
 
+### Placement
+- [new capability] — users today; suitable owner; explain any boundary, compatibility or scope constraints
+
 ### Recommendation
 [Build vs reuse decision with rationale]
 ```

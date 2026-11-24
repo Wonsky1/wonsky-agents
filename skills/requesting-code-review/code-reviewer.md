@@ -46,6 +46,7 @@ Inspect the actual scoped changes, including staged, unstaged and relevant untra
 - Aligns with the intended design?
 - No unnecessary scope creep?
 - Performance or security concerns?
+- Reuses what exists (repository helpers, installed dependencies, standard library, framework) instead of re-implementing it? Where available and authorized, search outside the diff and read the dependency manifest; disclose unavailable context. Investigate matches for suitable reuse or a shared abstraction, and report actionable findings with both locations. Is ownership appropriate, including justified exceptions?
 
 **Testing**
 - Tests verify behavior rather than mocks?

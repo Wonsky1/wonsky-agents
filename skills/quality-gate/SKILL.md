@@ -104,7 +104,7 @@ For substantial changes, large diffs, refactors, or any user-requested code revi
 - [ ] Logic remains in the canonical layer/module
 - [ ] New abstractions reduce real complexity instead of adding indirection
 - [ ] Large-file growth is justified or decomposed according to repository standards
-- [ ] Existing helpers and patterns are reused where appropriate
+- [ ] Existing helpers, installed libraries and framework features are considered; suitable shared ownership and justified exceptions are checked
 
 ### 6. Documentation
 

@@ -26,7 +26,8 @@ Stop and satisfy these **before** writing implementation code or declaring work 
 1. **Read the Task Breakdown.** Know exactly which task you're implementing, what files to touch, and the verification criteria.
 2. **Read the Architecture Proposal.** Understand the patterns, interfaces, and layer structure decided by the architect.
 3. **Read project context.** Use the wa-repository-context packet and selected conventions. Check ancestor guidance for newly affected files; reading shared context does not widen write scope.
-4. **Read existing code.** Before writing, understand the patterns already in use. Integrate, don't reinvent.
+4. **Look for what already exists.** Before writing a helper, parser, client, query, model or similar capability, search the repository for one that does the same job (the concept's words, likely names, the owning area and shared packages), then the installed dependencies, the standard library and the framework. Use or extend what fits; build only what nothing covers, and state what you reused or why the existing option does not fit.
+5. **Place code by its users.** Code with one user stays in that user's module or package. When a second area needs the same capability, prefer a suitable shared owner both callers may import without violating dependency direction, compatibility or authorized scope. Switch callers and remove the old copy when safe and in scope; otherwise explain the boundary and use a staged migration or separate implementations. Keep meaningful behavioral differences explicit.
 
 ## Code Structure Rules
 
@@ -115,6 +116,7 @@ For each task:
 - [ ] **Hard gates:** Unknown-cause bug → systematic debugging first; authorized test work → TDD with failing test first; completion → current scoped evidence and disclosed limits
 - [ ] Read the task's target files and understand surrounding code
 - [ ] Follow existing project patterns (naming, error handling, logging conventions)
+- [ ] Reuse checked (repository, installed dependencies, standard library, framework); one-user code local; suitable shared ownership considered; exceptions and migration limits explained
 - [ ] For Python, the shared structure reference was read and its implementation/review evidence recorded
 - [ ] Mechanical structure findings/errors reviewed plus semantic cohesion/dependency-direction review; tests alone are insufficient
 - [ ] Dependencies passed explicitly through constructors or focused function parameters; concrete provision has a deliberate owner

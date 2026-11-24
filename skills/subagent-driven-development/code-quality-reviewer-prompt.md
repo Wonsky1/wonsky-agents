@@ -11,6 +11,7 @@ Review this implementation for:
 - maintainability
 - edge cases
 - test gaps
+- reuse and placement: consider repository code, dependencies, standard library and framework; check suitable shared ownership and justified exceptions (run the Reuse Search in strict-code-quality-review using available, authorized context)
 - alignment with planned structure and, for Python, the required implementation-guide/references/python-structure.md contract (read it first); inspect its required evidence in the actual changes
 - required wa-repository-context outcome with actual paths/evidence; report pending context review or policy approval explicitly
 

@@ -17,6 +17,14 @@ For Python reviews, first read `~/.wonsky-agents/skills/implementation-guide/ref
 
 Look for ways to preserve behavior while making the implementation smaller, more direct, and more obvious. Prefer changes that delete concepts, branches, wrappers, and special cases over changes that merely rearrange the same complexity.
 
+## Reuse Search (required)
+
+For new capabilities or hand-written mechanisms in the diff (retry, parsing, normalization, caching, HTTP or query helpers), investigate reuse before reporting findings:
+
+1. When available and authorized, search the repository outside the diff for code that does the same job: the concept's words, likely names and the body's key calls, in the owning area and shared packages.
+2. When available and authorized, inspect dependency manifests and lockfiles for libraries that cover it; consider the standard library and framework. For a diff-only review, proceed with available evidence and disclose checks that could not be performed.
+3. Investigate matches as candidates for reuse or a shared abstraction. Compare contracts, ownership, dependency direction and compatibility; report a finding only when the evidence supports a useful change, with both locations and a remedy. State what you searched. "May duplicate something" without evidence is not a finding.
+
 ## Review Questions
 
 For every meaningful change, ask:
@@ -24,7 +32,8 @@ For every meaningful change, ask:
 - Is there a simpler reframing that would remove branches, flags, helper layers, or modes?
 - Did the diff add ad-hoc conditionals into an already busy flow?
 - Is the logic in the canonical layer, package, or module that owns the concept?
-- Does the change reuse existing helpers and patterns, or introduce a bespoke near-duplicate?
+- Does the change reuse what already exists — repository helpers and patterns, installed dependencies, the standard library, the framework — or hand-roll a near-duplicate? Search available, authorized repository and dependency context for the capability, not only the diff.
+- Does code with one user stay local, and is suitable shared ownership considered for capabilities needed by multiple areas, with constraints or migration needs explained?
 - Did a cohesive module become more coupled, stateful, or harder to scan?
 - Did a file cross the repository's healthy size boundary? If no project rule exists, treat crossing 1000 lines as a strong smell.
 - Are repeated conditionals, nullable modes, casts, `any` / `unknown`, or optional parameters hiding a missing model or unclear boundary?
@@ -54,7 +63,7 @@ If a correctness, security, or requirement issue exists, prioritize it alongside
 - Generic or magical handling that hides a simple data shape.
 - Thin wrappers, identity abstractions, or pass-through helpers that add indirection without clarity.
 - Cast-heavy or loosely typed boundaries where an explicit model would simplify the flow.
-- Copy-pasted logic instead of a canonical helper or focused extraction.
+- Copy-pasted or re-implemented logic instead of the existing helper, installed library, standard library or framework feature; a needless second copy of a capability when suitable shared ownership is available.
 - Large-file growth, especially when the new code has a natural module boundary.
 - Refactors that move complexity around without reducing how much a reader must hold in their head.
 
@@ -93,6 +102,6 @@ Do not approve a change merely because behavior seems correct. Treat these as pr
 - The diff pushes a file past the repository's healthy size boundary without a strong reason.
 - New feature checks are scattered across shared code instead of isolated behind a clear owner.
 - The design adds unnecessary wrappers, casts, optionality, or fallback behavior that obscures the invariant.
-- Logic lands in the wrong layer or duplicates an existing canonical helper.
+- Logic lands in the wrong layer, duplicates an existing helper, library or framework feature, or needlessly copies a capability that can reasonably be shared.
 
 If the review is for a public PR, still follow the posting workflow and voice calibration in `~/.wonsky-agents/skills/github-pr-review/SKILL.md`.
