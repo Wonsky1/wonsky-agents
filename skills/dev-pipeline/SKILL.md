@@ -35,8 +35,8 @@ Confirm against the project's own config (`pyproject.toml`, `tox.ini`, `Makefile
 ## Python-specific gate notes
 
 - **Phase 4 (Implementation):** route to `~/.wonsky-agents/skills/implementation-guide/SKILL.md`.
-- **Phase 5 (Quality Gate):** `~/.wonsky-agents/skills/quality-gate/SKILL.md` detects the framework and delegates testing to `~/.wonsky-agents/skills/testing-pytest/SKILL.md`. Run `pytest`, `ruff check`, and `mypy` as the proof commands.
-- **Completion Verification:** the proving command is almost always `pytest` (optionally scoped to the changed module) plus `ruff check` and `mypy`.
+- **Phase 5 (Quality Gate):** use the project's configured runner (including unittest when applicable) and only relevant configured lint/type tools. Use `wa-testing-pytest` when pytest is actually selected.
+- **Verification:** apply `~/.wonsky-agents/skills/test-driven-development/references/behavioral-verification.md`. Select checks by the functionality, edge cases and boundaries being changed; a tool list or passing unit tests alone does not establish the full outcome.
 
 ## Reminder
 

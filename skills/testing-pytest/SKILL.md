@@ -15,7 +15,7 @@ Tests verify **what the code should do**, not what it currently does. If a test 
 
 ## Scope
 
-Use this workflow only when the user requested test creation/execution, within the approved write scope. A review-only delegation inspects and reports without test or source writes. Fix source only when remediation is also authorized; otherwise report the failing contract.
+Read `~/.wonsky-agents/skills/test-driven-development/references/behavioral-verification.md`. Implementation includes useful focused regression tests and local verification within its scope; verification-only and review-only retain their stated limits. Fix source only when remediation is authorized. Expectations come from the behavior contract and remain valid across internal refactors; test meaningful edge cases and invariants rather than incidental implementation details.
 
 Focus on changed behavior and its affected consumers, including relevant existing tests. Unchanged test files can contain the regression that matters; do not select checks solely by whether their files changed.
 
@@ -102,14 +102,12 @@ Each test asserts **one logical behavior**. Descriptive names: `test_<what>_<con
 
 ### Step 4: Set up mocks and fixtures
 
-**Mock everything external.** The unit under test runs in complete isolation:
+Choose doubles from the behavior being proved. Use real deterministic local components when inexpensive and relevant, including temporary files/databases for storage contracts. Mock genuinely remote, expensive, nondeterministic or unsafe dependencies. Never mock the boundary whose behavior the test claims to verify.
 
-- **Database sessions** → mock or fake in-memory store
-- **HTTP clients / API calls** → `AsyncMock` or `MagicMock`
-- **File system** → `tmp_path` fixture or mocks
-- **Time-dependent logic** → freeze with deterministic values
-- **Environment variables** → `monkeypatch.setenv`
-- **Module-level singletons** → patch before import if needed
+- Pure unit checks isolate irrelevant dependencies with focused fakes/mocks.
+- Persistence/integration checks use the relevant real adapter and verify outcomes through public reads, including a fresh instance/process when required.
+- Time and environment stay deterministic through controlled values/fixtures.
+- Assert saved behavior, returned values and required failure invariants; a mocked `save()` call alone does not prove persistence.
 
 Check if the project already has a `conftest.py` with reusable fixtures before creating new ones.
 

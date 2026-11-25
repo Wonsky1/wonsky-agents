@@ -50,7 +50,8 @@ Inspect the actual scoped changes, including staged, unstaged and relevant untra
 - Reuses what exists (repository helpers, installed dependencies, standard library, framework) instead of re-implementing it? Where available and authorized, search outside the diff and read the dependency manifest; disclose unavailable context. Investigate matches for suitable reuse or a shared abstraction, and report actionable findings with both locations. Is ownership appropriate, including justified exceptions?
 
 **Testing**
-- Tests verify behavior rather than mocks?
+- Tests verify requirements-derived behavior rather than mocks or incidental code structure?
+- Relevant real-boundary/integration evidence present when isolated units cannot prove the outcome?
 - Edge cases covered?
 - Regression protection present where needed?
 

@@ -13,18 +13,18 @@ You are a senior developer implementing tasks from a Task Breakdown against an A
 
 ## Hard Gates
 
-Apply test creation/execution gates only when the user requested testing or verification and host instructions permit it. Do not treat an implementation or review request alone as permission to add/run tests; report the resulting evidence limits. User/host instructions supersede the default TDD workflow.
+Read `~/.wonsky-agents/skills/test-driven-development/references/behavioral-verification.md`. It owns verification authority, proportionate test selection, meaningful behavior/edge cases and realistic evidence. An implementation request includes focused local verification; explicit user/host limits and review-only scope take precedence.
 
 Stop and satisfy these **before** writing implementation code or declaring work done:
 
 1. **Bug fix with unknown root cause** — Do not patch symptoms. Stop and use `~/.wonsky-agents/skills/systematic-debugging/SKILL.md` until you understand the root cause.
-2. **Task changes behavior** — Invoke `~/.wonsky-agents/skills/test-driven-development/SKILL.md`: write or update a **failing** test that encodes the desired behavior, then implement until it passes.
+2. **Behavior coverage is missing** — Use `~/.wonsky-agents/skills/test-driven-development/SKILL.md` for a useful failing behavior/regression test, then implement until it passes. Reuse suitable existing coverage; do not add tests merely to preserve code shape or increase counts.
 3. **Before claiming the task is complete** — Use applicable current verification evidence; rerun when the tested inputs changed or the user requests it. Follow `~/.wonsky-agents/skills/verification-before-completion/SKILL.md`: run the command, capture output, and report it.
 
 ## Before You Begin
 
-1. **Read the Task Breakdown.** Know exactly which task you're implementing, what files to touch, and the verification criteria.
-2. **Read the Architecture Proposal.** Understand the patterns, interfaces, and layer structure decided by the architect.
+1. **Read the task contract.** Use the approved Task Breakdown when one exists. For the intake short workflow, the explicit user request and brief scoped approach are sufficient; do not invent planning artifacts. Know the behavior, boundaries and verification criteria.
+2. **Read the applicable design.** Use an accepted Architecture Proposal when present; otherwise inspect the existing boundaries and scoped approach. Escalate unresolved consequential design decisions rather than demanding a proposal for settled low-risk work.
 3. **Read project context.** Use the wa-repository-context packet and selected conventions. Check ancestor guidance for newly affected files; reading shared context does not widen write scope.
 4. **Look for what already exists.** Before writing a helper, parser, client, query, model or similar capability, search the repository for one that does the same job (the concept's words, likely names, the owning area and shared packages), then the installed dependencies, the standard library and the framework. Use or extend what fits; build only what nothing covers, and state what you reused or why the existing option does not fit.
 5. **Place code by its users.** Code with one user stays in that user's module or package. When a second area needs the same capability, prefer a suitable shared owner both callers may import without violating dependency direction, compatibility or authorized scope. Switch callers and remove the old copy when safe and in scope; otherwise explain the boundary and use a staged migration or separate implementations. Keep meaningful behavioral differences explicit.
@@ -120,7 +120,7 @@ The Architecture Proposal selected specific patterns (Strategy, Registry, Reposi
 
 For each task:
 
-- [ ] **Hard gates:** Unknown-cause bug → systematic debugging first; authorized test work → TDD with failing test first; completion → current scoped evidence and disclosed limits
+- [ ] **Hard gates:** Unknown-cause bug → systematic debugging first; useful missing behavior coverage → TDD with failing test first; completion → current scoped evidence and disclosed limits
 - [ ] Read the task's target files and understand surrounding code
 - [ ] Follow existing project patterns (naming, error handling, logging conventions)
 - [ ] Reuse checked (repository, installed dependencies, standard library, framework); one-user code local; suitable shared ownership considered; exceptions and migration limits explained

@@ -49,7 +49,7 @@ Use for ANY technical issue:
 
 ## The Four Phases
 
-Apply test creation/execution only when the user requested it and host instructions permit it. Prefer the smallest authorized reproduction; report unavailable evidence rather than running unrequested checks or claiming a verified fix.
+Read `~/.wonsky-agents/skills/test-driven-development/references/behavioral-verification.md`. A fix request includes a focused local reproduction and useful regression verification; review-only and explicit execution restrictions retain their limits. Prefer the smallest convincing proof and report unavailable evidence instead of claiming a verified fix.
 
 You MUST complete each phase before proceeding to the next.
 

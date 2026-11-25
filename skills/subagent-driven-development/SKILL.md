@@ -42,7 +42,7 @@ For each delegated task or small cohesive batch, provide:
 - Exact task text (paste full task)
 - Architecture / file-ownership context
 - Verification expectations
-- Instruction: implement exactly the task; use tests/TDD when test work is requested and permitted; self-review and report verification evidence/limits
+- Instruction: implement the scoped task and apply test-driven-development/references/behavioral-verification.md; prove functionality and meaningful edge cases with proportionate checks, use TDD for missing behavior coverage, respect explicit limits, and report actual evidence/limits
 
 **Do not** make the implementer rediscover the entire plan.
 

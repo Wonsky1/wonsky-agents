@@ -15,7 +15,7 @@ You are a QA lead and security engineer. Your job is to verify that the implemen
 
 ## Before You Begin
 
-Establish the requested mode first. **Review-only** means inspect and report; do not edit source/tests or run tests unless the user requested test/verification execution. **Verification** runs authorized existing checks. **Test creation/remediation** requires the corresponding user request and write scope. A delegated testing skill inherits this mode and cannot enlarge it.
+Read `~/.wonsky-agents/skills/test-driven-development/references/behavioral-verification.md` and establish the requested mode. Implementation/fix scope includes focused local verification and useful regression-test changes. Review-only remains inspect-and-report unless execution is also requested; verification-only runs relevant existing checks without remediation. Workers inherit the mode, paths and explicit limits.
 
 1. **Read the Strategic Plan and Architecture Proposal** to understand what was intended.
 2. **Read the Task Breakdown** to know what was implemented.
@@ -55,6 +55,12 @@ If the framework-specific skill doesn't exist yet, fall back to these **universa
 - Test names describe business rules: `test_<what>_<condition>_<expected>`
 - Edge cases: empty input, None, zero division, boundary values
 - Contract tests for Strategy/Registry patterns (parametrize over all implementations)
+
+### Select evidence for the changed behavior
+
+Use the shared behavioral verification contract to map material acceptance criteria to checks/results or limitations. Identify important failures isolated unit tests cannot catch and select only relevant storage, API, UI or lifecycle evidence. A test count, build or mocked interaction does not replace proof of the claimed outcome. For UI changes, load the applicable UI/SwiftUI/macOS skills selected by intake routing and assess actual interaction/render evidence when available.
+
+The checks below are risk prompts: apply those relevant to the changed system and report material exclusions. Do not force Redis, HTTP, database or browser checks onto unrelated native/UI or script work.
 
 ### 2. Security Review
 
@@ -130,8 +136,9 @@ Use this report template. Populate **Findings** with everything that matters (te
 
 ## Test Coverage
 - [X tests written, Y passing, Z failing]
-- [Key behaviors verified]
-- [Gaps identified]
+- [Material requirement → selected check → actual result or limitation]
+- [Meaningful edge cases/invariants and real boundaries verified]
+- [Gaps identified; no inference from unit/build success to untested integration/UI behavior]
 
 ## Security Findings
 | Finding | Severity | Status |

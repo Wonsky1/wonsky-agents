@@ -52,33 +52,15 @@ These thoughts mean you are about to bypass the workflow:
 
 If any of these thoughts appear, **route first**.
 
-## Routing Table
+## Routing
 
-| Request Type | Route |
-|-------------|-------|
-| New feature, refactor, architecture change, project planning (Python) | `wa-dev-pipeline` |
-| New feature, refactor, architecture, planning (Swift, C++, JS/TS, Go, Rust, any non-Python) | `wa-unified-dev-pipeline` |
-| Bug, test failure, unexpected behavior, integration issue | `wa-systematic-debugging` first, then `wa-dev-pipeline` if needed |
-| Approved implementation plan, ready to build | `wa-subagent-driven-development` or `wa-executing-plans` |
-| Multiple independent tasks or failures | `wa-dispatching-parallel-agents` |
-| Review your own work before merge or after a major task | `wa-requesting-code-review` |
-| Harsh / "thermo-nuclear" maintainability or code-quality review | `wa-strict-code-quality-review` |
-| Reviewing someone else's GitHub PR (post inline comments) | `wa-pr-review-orchestrator` |
-| Review feedback or PR comments received on your work | `wa-receiving-code-review` |
-| "Is this fixed?", "Does it pass?", "Are we done?" | `wa-verification-before-completion` |
-| Work is verified and user wants merge / PR / cleanup | `wa-finishing-a-development-branch` |
-| Changelog / version bump for shipped changes | `wa-changelog-versioning` |
-| Work summary / status update / "what did I do this week" | `wa-git-report` |
-| Pure testing / quality / audit request | `wa-dev-pipeline` or `wa-quality-gate` |
-| Creative feature work, brainstorming ideas | `wa-brainstorming` |
-
-All skills live in `~/.wonsky-agents/skills/{skill-name}/SKILL.md`.
+Read `~/.wonsky-agents/skills/unified-dev-pipeline/references/intake-routing.md` and use its authoritative table, target-language selection and short-workflow/escalation criteria. The selected skill owns the procedure. Do not keep a separate routing table here.
 
 ## Priority
 
 1. User instructions
 2. Specialist hard-gate skills (debugging, TDD, verification)
-3. `wa-dev-pipeline`
+3. The target-language pipeline selected by the authoritative intake reference
 4. Ad hoc exploration or implementation
 
 ## Mandatory First Response Protocol
@@ -108,7 +90,7 @@ Before using a skill, announce it:
 - Debugging, review-feedback handling, and completion verification are separate hard-gate workflows.
 - If there is any doubt whether a bug's root cause is known, route to `wa-systematic-debugging`.
 - If an implementation plan already exists, do not restart planning. Route into execution.
-- If the request is software-related but does not cleanly match a specialist route, choose `wa-dev-pipeline`.
+- For software work without a better specialist route, use the authoritative intake reference to select the target-language pipeline; unresolved/mixed-language work stays in `wa-unified-dev-pipeline`.
 
 ## Common Rationalizations That Mean You're About To Fail
 

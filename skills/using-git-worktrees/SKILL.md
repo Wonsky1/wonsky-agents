@@ -51,7 +51,7 @@ Apply in **priority order**:
    - `requirements.txt` → `pip install -r requirements.txt`.
    - `pyproject.toml` → `poetry install` or `uv sync` per tool signals.
    - `go.mod` → `go mod download`.
-4. **Inspect baseline** — Record Git status and existing verification evidence. Run baseline tests only when the user requested test/verification work and host instructions permit it; otherwise report that tests were not run. Do not label an untested baseline passing.
+4. **Inspect baseline** — Record Git status and current evidence. Apply test-driven-development/references/behavioral-verification.md: run relevant existing baseline checks when needed for the implementation, reuse unchanged evidence, respect explicit limits, and avoid unbounded suites. Do not label an untested baseline passing.
 5. **Report location** — Give the absolute path, branch name and how to open it in the current host.
 
 ## Quick Reference

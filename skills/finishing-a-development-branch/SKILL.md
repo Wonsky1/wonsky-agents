@@ -37,7 +37,7 @@ Inventory the current branch/HEAD, intended base, staged changes, unstaged chang
 
 If intended implementation is uncommitted, present its concrete commit scope and obtain commit intent before committing. Do not stage unrelated files, stash, reset, switch branches with dirty work or claim a PR includes those changes. A user may explicitly choose to publish only existing commits; state the omitted local work.
 
-Use `wa-verification-before-completion` to assess evidence for the exact delivered revision. Reuse valid evidence when inputs are unchanged. Run tests only when requested and permitted; report unverified scope honestly. If tests fail, do not describe integration as safe without a fully informed user override.
+Use `wa-verification-before-completion` to assess evidence for the exact delivered revision. Reuse valid evidence when inputs are unchanged. Apply test-driven-development/references/behavioral-verification.md for proportionate checks and explicit limits; report unverified scope honestly. If tests fail, do not describe integration as safe without a fully informed user override.
 
 ### 2. Determine Base Branch
 

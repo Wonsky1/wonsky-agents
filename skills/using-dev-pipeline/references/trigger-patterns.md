@@ -1,33 +1,7 @@
-# Trigger Patterns
+# Trigger patterns
 
-Use this file when refining the bootstrap routing behavior or checking whether the descriptions are broad enough.
+Software implementation, debugging, testing, architecture, review, completion and branch work activate wa-using-dev-pipeline. Examples: “add this feature”, “fix this regression”, “implement the approved plan”, “review my branch”, “does it work?”, and “finish this branch”.
 
-## Requests that should activate `wa-using-dev-pipeline`
+Read `~/.wonsky-agents/skills/unified-dev-pipeline/references/intake-routing.md` for the authoritative route. These phrases aid discovery; they do not define another routing table. Select by the actual task, target language, existing artifacts and risk rather than matching a word in isolation.
 
-- "help me build this feature"
-- "fix this bug"
-- "why is this test failing"
-- "review my changes"
-- "is this actually fixed"
-- "what architecture should we use here"
-- "make a plan for this refactor"
-- "add tests for this"
-- "can you improve this code"
-- "what should happen with this branch"
-- "brainstorm ideas for this feature"
-- "let's design this service"
-
-## Route hints
-
-- Feature, refactor, implementation request → `wa-dev-pipeline`
-- Bug, regression, flaky test, unexpected behavior → `wa-systematic-debugging`
-- Existing approved plan → `wa-executing-plans` or `wa-subagent-driven-development`
-- Review request → `wa-requesting-code-review`
-- Review comments received → `wa-receiving-code-review`
-- "done/fixed/passing?" → `wa-verification-before-completion`
-- Post-verification merge/PR/cleanup request → `wa-finishing-a-development-branch`
-- Creative / exploratory work → `wa-brainstorming`
-
-## Fail-safe rule
-
-If a request is software-related and no specialist route is obviously a better fit, route to `wa-dev-pipeline`.
+Use [evaluation-scenarios.md](evaluation-scenarios.md) to exercise normal behavior, failures and valid overrides. Correct action matters more than announcing a skill name.

@@ -309,3 +309,11 @@ CHANGELOG.md                Collection changes
 ## Sources and licensing
 
 This collection combines locally maintained workflow instructions with adapted or imported skills and reference data. Existing source references and metadata remain in the individual skill folders. The repository does not assign a blanket license to third-party material. The wa-repository-context design was informed by the scope and handoff patterns in [khc/dotagents](https://github.com/khc/dotagents); its helper was implemented locally.
+
+### Development workflow verification
+
+[Authoritative intake routing](skills/unified-dev-pipeline/references/intake-routing.md) selects the target-language pipeline and a workflow proportionate to risk. Clear local changes use a short implementation path; uncertain or consequential decisions receive planning. Existing UI/platform skills participate in the relevant routes.
+
+[Behavioral verification](skills/test-driven-development/references/behavioral-verification.md) makes focused local checks and useful regression coverage part of implementation. Tests establish required functionality, meaningful edge cases and invariants while remaining valid across internal refactors. Explicit test/execution restrictions and review-only scope still apply.
+
+[Pipeline scenarios](skills/using-dev-pipeline/references/evaluation-scenarios.md) describe repeatable agent evaluations, including a disposable favorites CLI and a real-process functionality oracle. Scenario results are separate from installer/helper CI tests.

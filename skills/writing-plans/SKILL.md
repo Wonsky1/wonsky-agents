@@ -61,7 +61,7 @@ Treat each atomic step as **~2–5 minutes** of work, for example:
 
 **Tech Stack:** [Languages, frameworks, key libraries, actual project test runner]
 
-**Authority:** [Write scope; whether test creation/execution is requested; explicit Git intent]
+**Authority:** [Write scope and requested mode; implementation includes focused local verification; explicit execution/test restrictions and separate Git intent]
 
 **Context:** [Entry/index/topics actually read; factual drafts to write and ask the user to review; separate exact policy approvals]
 
@@ -72,7 +72,7 @@ Treat each atomic step as **~2–5 minutes** of work, for example:
 
 ## Task template
 
-Use this shape for every task. Adjust language and commands to the actual project. Include test creation/execution only when the user requested it and host instructions permit it; otherwise state the verification limit. Do not add a commit step unless the user explicitly requested commits.
+Use this shape when useful missing behavior coverage warrants a new test; otherwise select suitable existing checks and omit redundant test-writing steps. Read test-driven-development/references/behavioral-verification.md for authority, contract-derived expectations, meaningful edge cases and realistic evidence. Adjust commands to the actual project, respect explicit limits and state verification gaps. Do not add a commit step without explicit commit intent.
 
 ````markdown
 ### Task N: [Component or behavior]

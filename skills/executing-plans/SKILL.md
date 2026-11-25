@@ -39,7 +39,7 @@ For each task in the batch:
 
 1. Mark as **in_progress**
 2. Follow each step **exactly** as written (plans should be bite-sized)
-3. Perform authorized verification and retain evidence for the exact inputs; do not add/run tests unless requested and permitted
+3. Apply the shared behavioral verification contract from test-driven-development/references/behavioral-verification.md: focused local verification and useful regression tests are part of implementation; retain exact evidence and respect explicit limits
 4. Mark as **completed** only after verification passes
 
 Use `~/.wonsky-agents/skills/implementation-guide/SKILL.md` while coding. For behavior changes, follow `~/.wonsky-agents/skills/test-driven-development/SKILL.md`.

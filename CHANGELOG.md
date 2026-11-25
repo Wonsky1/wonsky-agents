@@ -10,6 +10,9 @@
 
 ### Improved
 
+- Unified development intake by target language and risk, added a short workflow for clear low-risk changes, and connected existing UI/platform skills.
+- Made focused local verification part of implementation, with requirements-derived behavior/edge-case tests and proportionate real-boundary evidence instead of tests that freeze internals.
+
 - Added design reassessment before new variants: compare focused structural improvements with direct additions, explain maintenance trade-offs, and obtain scope approval for broader refactoring; architecture and review guidance carry the same check.
 
 - Recorded maintainer verification of native Windows session-ledger operation and removed the obsolete unverified-Windows caveat.
@@ -17,6 +20,8 @@
 - Strengthened reuse and placement checks in implementation and review, including searches for existing capabilities, suitable shared ownership, and explicit limits when repository context is unavailable.
 
 ### Internal
+
+- Added a reusable pipeline scenario corpus and a disposable persistent-CLI fixture with an independent behavior oracle; agent trial evidence is recorded separately from helper/installer tests.
 
 - Grouped collection helpers into installation, updates, migrations, hooks, skills and filesystem packages, with models beside their owners; public launch commands remain unchanged.
 

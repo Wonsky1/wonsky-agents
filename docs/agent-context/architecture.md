@@ -35,3 +35,9 @@ Draft — awaiting user review: Copilot is an appended destination, detected by 
 Draft — awaiting user review: collection helpers are grouped into six packages under `scripts/`. `installation/` owns target detection, selection and the install CLI; `updates/` owns source acquisition, plans, review and application; `migrations/` owns its ordered registry, concrete versioned planners, review and guarded application; `hooks/` owns host schemas, setup, recovery and configuration writes; `skills/` owns collection copying, names and distribution; `filesystem/` owns shared ownership state, snapshots and guarded synchronization. Each data model lives in its owning package's `models/`. Initializers are inert and imports name defining modules.
 
 Draft — awaiting user review: `install.py`, `update.py` and `scripts/sync-skills.sh` remain the public entry points. Install CLI root discovery uses its new package depth, so copied/ZIP installations still resolve the collection root. Tests and mock targets import the new defining modules. The refactor changes code organization without changing migration IDs, state/backup locations, hook paths or skill discovery behavior. It introduces no dependency-provider lifecycle.
+
+## Development workflow contracts
+
+`skills/unified-dev-pipeline/references/intake-routing.md` owns intake decisions, target-language continuation and risk-based short/full workflows. Bootstrap/validation references point to that table; specialist skills retain their procedures. UI work selects existing UI/SwiftUI/macOS skills even when delegated.
+
+`skills/test-driven-development/references/behavioral-verification.md` owns verification authority, requirements-derived behavior/edge-case coverage and proof selection. Implementation includes focused local verification, while explicit limits and review-only scope remain binding. Runtime mirrors are still generated only after exact canonical instruction approval.

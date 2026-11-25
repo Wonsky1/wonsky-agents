@@ -27,6 +27,8 @@ Group changes by service/project. For multi-service changes, identify which serv
 
 ### Step 2: Order by Dependency
 
+Prefer a small working behavior slice, then extend it. Within each slice, apply the relevant dependency order below; do not build every layer for the entire feature before proving one path end to end. Schema changes must preserve required compatibility and are not a blanket instruction to deploy a destructive migration first.
+
 Apply this ordering principle:
 
 1. **Database/schema changes first** — Migrations, new tables, new columns.
@@ -49,7 +51,7 @@ Each task must be:
 - **Independently completable** — No partial states. After each task, the system works (even if the feature isn't fully wired yet).
 - **File-specific** — Name the exact files to create or modify.
 - **Testable** — Include what to verify after completing the task.
-- **Small** — If a task touches more than 3-4 files, split it.
+- **Cohesive and proportionate** — Split by independently verifiable behavior, risk or clean ownership boundaries. File count is a signal, not a mandatory split; a complete behavior slice may legitimately span several focused files.
 
 **TDD alignment:** When a task changes behavior, its verification should follow the TDD cycle — failing test first, implementation, then green. Reference `~/.wonsky-agents/skills/test-driven-development/SKILL.md`.
 

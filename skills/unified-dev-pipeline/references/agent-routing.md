@@ -7,7 +7,7 @@ This file maps pipeline phases and routes to specialist sub-agents that may be a
 - **Agents available** (Claude Code + OMC, or any host exposing these agents): prefer the agent for the job, then return to the orchestrator to enforce gates.
 - **No agents available** (plain Cursor, plain Codex): ignore this file. Use the skill fallbacks. The pipeline is fully functional without any agents.
 
-**The orchestrator stays in control.** Agents execute a phase; they do not own the workflow. After an agent returns, you still enforce the approval gate, carry artifacts forward, and verify before claiming completion.
+**The orchestrator stays in control.** Agents execute a phase; they do not own the workflow. After an agent returns, enforce applicable decision gates, reuse existing authority, carry artifacts forward, and verify before claiming completion.
 
 ## Phase → agent map
 
@@ -26,7 +26,7 @@ This file maps pipeline phases and routes to specialist sub-agents that may be a
 | **Work report / changelog** | (inline) | Management summary from git history; changelog/version bump | `wa-git-report`, `wa-changelog-versioning` |
 | **Testing** | `oh-my-claudecode:test-engineer` (strategy, e2e, flaky), `oh-my-claudecode:qa-tester` (tmux CLI) | Language-agnostic test coverage | `wa-test-driven-development`, `wa-testing-anti-patterns`, language test skill |
 | **Cleanup** | `oh-my-claudecode:code-simplifier` | Post-implementation simplification | (inline) |
-| **UI / UX** | `oh-my-claudecode:designer` (Sonnet) | Stunning interfaces | (inline) |
+| **UI / UX** | `oh-my-claudecode:designer` (Sonnet) | Platform-appropriate interface design | `wa-ui-ux-pro-max`, plus applicable `wa-swiftui-expert-skill` / `wa-macos-design-guidelines` |
 | **Completion verification** | `oh-my-claudecode:verifier` | Evidence-based completion checks | `wa-verification-before-completion` |
 | **Branch completion / git** | `oh-my-claudecode:git-master` | Atomic commits, rebase, history | `wa-finishing-a-development-branch` |
 | **Codebase exploration** | `Explore` / `oh-my-claudecode:explore` | Find files & patterns fast | (inline search) |
@@ -46,7 +46,7 @@ These are workflow skills, not agents — invoke when the situation fits:
 
 ## Guardrails
 
-- Delegating to an agent does **not** skip a gate. The orchestrator still presents output for approval.
+- Delegating does not skip applicable gates. Reuse end-to-end authority for routine transitions; present unresolved decisions and exact instruction changes for approval.
 - Never let an agent commit, push, or deploy. That remains the user's explicit decision.
 - An agent's claim of "done/passing/fixed" is not evidence. Run the Completion Verification Route yourself.
 - Pass the selected stage skill to every executor/reviewer; that stage loads its owning language contract. Delegation does not bypass it. Every delivery also carries the required wa-repository-context outcome with actual paths/evidence and approval state.

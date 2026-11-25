@@ -25,7 +25,7 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 
 Evidence must identify the command/check, relevant source revision or working-tree inputs, environment and result. Reuse evidence already obtained in the current task when those relevant inputs are unchanged and the claim has the same scope. Rerun after a relevant change, when freshness is uncertain or when the user requests it. A new chat message alone does not invalidate evidence.
 
-Respect the user/host limits on running checks. Do not add/run tests solely because this skill was loaded; if testing was not requested or a check is unavailable, state exactly what was inspected and what remains unverified. Do not claim a check passed without its actual result.
+Read `~/.wonsky-agents/skills/test-driven-development/references/behavioral-verification.md` for authority and proof selection. Implementation includes focused local verification; review-only and explicit user/host restrictions retain their limits. Loading this skill does not enlarge scope. If a check is unavailable or prohibited, state what was inspected and what remains unverified; never invent a passing result.
 
 ## The Gate Function
 

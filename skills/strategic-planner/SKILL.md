@@ -38,7 +38,7 @@ If the work spans multiple **independent** subsystems, do **not** force one mono
 
 ### 2. Understand the ecosystem
 
-- Ask: **Does this project connect to or depend on other services, APIs, or repos?**
+- Inspect available repository evidence for services/APIs/repos; ask only about unresolved dependencies material to this plan.
 - If yes, locate them and skim their rules or contracts (interfaces, ownership).
 - Map which services are in the blast radius of the proposed change.
 
@@ -50,7 +50,7 @@ Do **not** proceed until the request is understood. Select relevant categories; 
 
 **Question batching (structured):**
 
-1. **Batch size:** One message = one **batch**. Each batch contains **one primary question** plus optional **sub-items** only if they are the same decision (e.g. “Confirm A/B/C for auth model” with one-line sub-bullets).
+1. **Batch size:** Group related unresolved decisions into one concise message with recommended options. Do not force a separate turn for each question or ask for facts already available in the task/repository.
 2. **Order batches:** (a) intent and success, (b) scope boundaries, (c) constraints (scale, time, compliance), (d) ecosystem and dependencies. Skip entire batches when not applicable.
 3. **Reduce user labor:** Where context allows, state your **best guess** and ask for confirm/correct — not open-ended essays.
 4. **Stop early for oversized work:** If the request implies multiple loosely coupled programs (e.g. platform + billing + analytics in one sentence), **pause feature questions**. First batch should establish **slices**, **build order**, and **which slice** this plan covers.

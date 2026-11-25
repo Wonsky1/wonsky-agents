@@ -1,32 +1,7 @@
-# Validation Prompts
+# Validation prompts
 
-Use these prompts to check whether the local workflow tends to route through `wa-using-dev-pipeline` and `wa-dev-pipeline` instead of bypassing them.
+Expected routes come from `~/.wonsky-agents/skills/unified-dev-pipeline/references/intake-routing.md`. Use [evaluation-scenarios.md](evaluation-scenarios.md) for concrete tasks and observation criteria; do not maintain language-blind expected routes here.
 
-## Entry-point prompts
+Discovery samples include: “plan a retry strategy for notification delivery”, “fix duplicate sends”, “review my current branch”, “is the issue actually fixed?”, “implement this approved plan”, and “improve the settings UI”. Specify the actual target language and available evidence when evaluating them.
 
-- `plan a retry strategy for notification delivery`
-- `fix duplicate sends in the notifier`
-- `review my current branch`
-- `is the notifier issue actually fixed`
-- `help me refactor this service`
-- `how should we structure this change`
-- `implement this approved plan`
-- `add tests for throttling logic`
-- `brainstorm the auth flow`
-- `what's the best architecture for this`
-
-## Expected first route
-
-- planning / design / refactor / implementation → `wa-using-dev-pipeline` then `wa-dev-pipeline`
-- bug / failure / regression → `wa-using-dev-pipeline` then `wa-systematic-debugging`
-- review → `wa-using-dev-pipeline` then `wa-requesting-code-review`
-- completion claim → `wa-using-dev-pipeline` then `wa-verification-before-completion`
-- creative work → `wa-using-dev-pipeline` then `wa-brainstorming`
-
-## What counts as a miss
-
-- Direct code changes without routing
-- File inspection before route selection
-- Jumping to implementation on an unknown-cause bug
-- Claiming "fixed" or "done" without verification
-- Skipping brainstorming for creative feature work
+A route miss includes wrong-toolchain selection, implementing an unknown-cause bug before investigation, replanning an accepted plan, skipping relevant platform guidance, ignoring explicit limits, or claiming an outcome without evidence. A legitimate user override or proportionate short workflow is not a miss.

@@ -76,7 +76,7 @@ Read `~/.wonsky-agents/skills/unified-dev-pipeline/references/agent-routing.md` 
 | Security audit | `security-reviewer` | `wa-quality-gate` (security section) |
 | Testing (any language) | `test-engineer`, `qa-tester` | `wa-test-driven-development`, language test skill |
 | Post-implementation cleanup | `code-simplifier` | (inline) |
-| UI / UX work | `designer` | (inline) |
+| UI / UX work | `designer` | `wa-ui-ux-pro-max`, plus applicable SwiftUI/macOS skills |
 | Completion verification | `verifier` | `wa-verification-before-completion` |
 | Branch completion / git | `git-master` | `wa-finishing-a-development-branch` |
 | Work report / changelog | (inline) | `wa-git-report`, `wa-changelog-versioning` |
@@ -91,28 +91,7 @@ Fail-safe: if the request is about code or software work and no specialist route
 
 ### Route Selection
 
-| Request Type | Route | Notes |
-|-------------|-------|-------|
-| New feature, new project, significant refactor | Phase 1 | Full pipeline by default |
-| Small but non-trivial feature | Phase 1 or 2 | Start at Phase 1 unless scope is already clear |
-| Architecture or pattern question | Phase 2 | Skip Phase 1 only if goals and constraints are already clear |
-| Approved design exists | Phase 3 | Skip earlier phases only if artifacts are already present and accepted |
-| Approved task breakdown exists | Phase 4 | Implement against the existing breakdown |
-| Written implementation plan exists | Execution route | Choose the right implementation skill/agent instead of replanning |
-| Bug, test failure, unexpected behavior | Debugging route first | Do not jump to implementation until root cause is known |
-| Known bug fix with root cause verified | Phase 4 | Apply authorized verification/TDD gates and report evidence limits |
-| Multiple independent tasks or failures | Parallelization route | Route to parallel work only when scopes are truly independent |
-| Add or improve tests only | Phase 5 or Phase 4 | If code behavior changes, go through implementation; if validating existing behavior, start at quality/testing |
-| Code review of your own work / branch | Review route | Prefer `code-reviewer` agent, else dispatch reviewer subagent with explicit scoped review input; act on findings by severity |
-| Strict maintainability / "thermo-nuclear" code quality review | Strict code-quality review route | Use when the user asks for an unusually harsh review of abstraction quality, large files, spaghetti growth, or maintainability |
-| Review feedback received | Review-response route | Evaluate feedback before implementing changes |
-| Reviewing someone else's GitHub PR (reading diff, posting inline comments, approve/request changes) | PR review orchestrator route | Stage 1: strict diff review → candidate findings → user approval. Stage 2: post a pending review only when public posting is explicitly authorized |
-| "Is this done / fixed / passing?" | Completion verification route | Run verification before making claims |
-| Merge / PR / cleanup after verified work | Branch completion route | Only after verification and explicit user intent |
-| Work summary / status update / "what did I do this week" | Reporting route | Use `wa-git-report` |
-| Changelog / version bump for shipped changes | Branch completion route | Use `wa-changelog-versioning` |
-| UI / UX design or frontend polish | Design route | Prefer `designer` agent if available, then implement |
-| Writing prompts, system prompts, agent instructions | Prompt engineering | Use `wa-prompt-engineering` skill for reliable, structured prompts |
+Read `~/.wonsky-agents/skills/unified-dev-pipeline/references/intake-routing.md`. It owns the intake table, target-language selection, short workflow and risk escalation. Use it before selecting a phase. The specialized routes below own execution details; they do not redefine the intake table.
 
 ### Mandatory Specialized Routes
 
@@ -145,7 +124,7 @@ If an implementation plan or approved task breakdown already exists:
    - `~/.wonsky-agents/skills/implementation-guide/SKILL.md`
    - `~/.wonsky-agents/skills/executing-plans/SKILL.md`
    - `~/.wonsky-agents/skills/subagent-driven-development/SKILL.md`
-3. If behavior changes and test work is requested/permitted, invoke `~/.wonsky-agents/skills/test-driven-development/SKILL.md`; otherwise report the verification limit.
+3. Apply `~/.wonsky-agents/skills/test-driven-development/references/behavioral-verification.md`. Implementation includes proportionate local verification; use TDD when missing behavior coverage warrants a new test, and respect explicit limits.
 4. Prefer delegated or plan-driven execution for larger, multi-task work.
 
 #### Parallelization Route
@@ -244,9 +223,9 @@ If quality checks passed and the user now wants integration choices:
 
 If the work is UI/UX or frontend-heavy:
 
-1. Prefer the `designer` agent if available.
-2. Produce or align on the visual/interaction design before implementing.
-3. Then route to Phase 4 for implementation and Phase 5 for quality.
+1. Read `~/.wonsky-agents/skills/ui-ux-pro-max/SKILL.md`; for SwiftUI also read `~/.wonsky-agents/skills/swiftui-expert-skill/SKILL.md`, and for macOS UI read `~/.wonsky-agents/skills/macos-design-guidelines/SKILL.md`. Supply the applicable guidance to any designer/implementer agent.
+2. Produce or align on unresolved visual/interaction decisions before implementation; reuse an accepted design and the intake short workflow when applicable.
+3. Implement through the selected execution skill and select actual interaction/render evidence under the behavioral verification contract; disclose unavailable UI checks.
 
 ## How to Start
 
@@ -255,35 +234,13 @@ If the work is UI/UX or frontend-heavy:
 - Detect the project language and toolchain (Language Adapter).
 - Establish the wa-repository-context packet before broad inspection. Read applicable ancestor instructions and the task-selected documentation from the existing context index; use legacy docs when no index exists.
 - Check for existing artifacts: plans, design docs, audits, TODOs, failing tests, or review comments.
-- Ask the user: **"Does this project connect to other services or projects?"**
+- Inspect repository evidence for connected services/projects; ask only when an unresolved integration affects the task.
 - If connected projects exist, check their context docs too.
 - State the selected route and the expected next step before deeper exploration.
 
 ### 2. Assess the Request
 
-Not every request needs all 5 phases. Decide the route first, then choose the starting phase.
-
-| Request Type | Start At | Skip |
-|-------------|----------|------|
-| New feature (multi-service) | Phase 1 | — |
-| New feature (single service) | Phase 1 | — |
-| New project from scratch | Phase 1 | — |
-| Significant refactor | Phase 1 | — |
-| Small feature (< 3 files) | Phase 1 or 2 | Skip Phase 1 only if scope is already explicit |
-| Approved implementation plan | Execution Route | Phases 1-3 |
-| Bug fix (known cause) | Phase 4 | Phases 1-3 |
-| Bug fix (unknown cause) | Debugging Route | Do not start at Phase 2 |
-| Multiple independent failures | Parallelization Route | Use only if scopes are independent |
-| Add tests to existing code | Phase 5 or Phase 4 | Use Phase 4 if code behavior must change |
-| Code review of your own work | Review Route | Phases 1-4; prefer reviewer agent or subagent with explicit scoped review input |
-| Strict maintainability / "thermo-nuclear" review | Strict Code-Quality Review Route | Phases 1-4 |
-| Review feedback received | Review-Response Route | Phase 4 only after evaluation |
-| Reviewing someone else's GitHub PR | PR Review Orchestrator Route | Review the supplied/authorized diff; analysis finishes in chat. Public posting requires explicit intent and exact draft approval before external writes |
-| Work report / status update | Reporting Route | Skip the pipeline |
-| Completion check | Completion Verification Route | Run before any success claim |
-| Merge / PR / cleanup | Branch Completion Route | Only after verification |
-
-When in doubt, start at Phase 1. Over-planning a small task costs minutes. Under-planning a large task costs days.
+Use the authoritative intake reference above. Clear, reversible, low-risk work follows its short workflow; uncertain or consequential changes receive planning/design proportionate to their risk. Reuse approved artifacts and end-to-end authority. Do not decide process depth from file count or automatically restart planning.
 
 ### 3. Execute the Pipeline
 
@@ -308,9 +265,9 @@ When you reach implementation work:
 
 Before starting implementation:
 
-1. Confirm the user has approved the design/task breakdown being executed.
+1. Reuse the approved design/task breakdown when the selected route has one. For the short workflow, the clear implementation request and brief scoped approach are the task contract; no additional planning artifact or confirmation is required. Stop only for unresolved consequential decisions or a separate approval boundary.
 2. Decide whether isolated branch/worktree setup is needed.
-3. If behavior changes and test work is requested/permitted, invoke `wa-test-driven-development`; otherwise report the verification limit. A software task alone does not authorize adding/running tests.
+3. Read and apply `~/.wonsky-agents/skills/test-driven-development/references/behavioral-verification.md`; carry the requested mode, explicit limits, relevant behavior/edge cases and selected proof into the task. Implementation includes focused local verification.
 4. State whether implementation will be manual, sequential, delegated, or parallelized.
 
 ### 5. Review Gate

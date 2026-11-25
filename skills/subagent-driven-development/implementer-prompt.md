@@ -22,8 +22,8 @@ Do not guess.
 ## Your Job
 
 1. Read implementation-guide/SKILL.md and, for Python, its references/python-structure.md from the canonical skill directory. Apply that contract even if the task omitted it; surface required scope/API migrations before breaking callers. Implement the authorized task.
-2. Use tests / TDD when the task changes behavior
-3. Verify the implementation
+2. Read test-driven-development/references/behavioral-verification.md from the supplied skill root. Carry the requested mode and explicit limits; add useful missing behavior/regression coverage with TDD, not tests that freeze internals.
+3. Verify the actual functionality, meaningful edge cases and relevant real boundaries; map acceptance criteria to checks/results or limitations
 4. Self-review before reporting back
 
 ## Report Format

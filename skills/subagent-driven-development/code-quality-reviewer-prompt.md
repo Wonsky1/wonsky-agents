@@ -11,7 +11,7 @@ Review this implementation for:
 - maintainability
 - Does this change make the next similar extension straightforward, or does it require copying lifecycle code, expanding type checks or modifying unrelated components? Would a focused contract or pattern improve that?
 - edge cases
-- test gaps
+- test gaps: requirements-derived outcomes, meaningful edge cases/invariants, refactor-resilient assertions and relevant real-boundary evidence under test-driven-development/references/behavioral-verification.md
 - reuse and placement: consider repository code, dependencies, standard library and framework; check suitable shared ownership and justified exceptions (run the Reuse Search in strict-code-quality-review using available, authorized context)
 - alignment with planned structure and, for Python, the required implementation-guide/references/python-structure.md contract (read it first); inspect its required evidence in the actual changes
 - required wa-repository-context outcome with actual paths/evidence; report pending context review or policy approval explicitly

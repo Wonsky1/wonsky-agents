@@ -15,7 +15,7 @@ Tests must verify real behavior, not mock behavior. Mocks are a means to isolate
 
 **Core principle:** Test what the code does, not what the mocks do.
 
-**Following strict TDD prevents these anti-patterns.**
+**Test-first order alone does not guarantee useful coverage.** Apply `~/.wonsky-agents/skills/test-driven-development/references/behavioral-verification.md`: requirements-derived outcomes, deliberate doubles and appropriate real-boundary checks expose these anti-patterns.
 
 ## The Iron Laws
 
@@ -232,30 +232,13 @@ BEFORE creating mock responses:
   If uncertain: Include all documented fields
 ```
 
-## Anti-Pattern 5: Integration Tests as Afterthought
+## Anti-Pattern 5: A Unit Check Substitutes for Integration Evidence
 
-**The violation:**
-```
-✅ Implementation complete
-❌ No tests written
-"Ready for testing"
-```
+**The violation:** A test asserts that a mocked `save()` was called, then the task claims persistence works without reopening the real storage. The mock does not establish that a fresh process can recover the data.
 
-**Why this is wrong:**
-- Testing is part of implementation, not optional follow-up
-- TDD would have caught this
-- Can't claim complete without tests
+**The fix:** Select the smallest real-boundary check for the claim. For persistence, use temporary real storage and read through a fresh instance/process. For a UI action, a handler test or build alone does not prove the actual interaction. Follow the shared behavioral verification contract; disclose unavailable checks rather than claiming the whole behavior works.
 
-**The fix:**
-```
-TDD cycle:
-1. Write failing test
-2. Implement to pass
-3. Refactor
-4. THEN claim complete
-```
-
-See `~/.wonsky-agents/skills/test-driven-development/SKILL.md` for the full cycle.
+A new integration suite is not mandatory for every change. Reuse suitable existing evidence and add coverage only for meaningful gaps.
 
 ## When Mocks Become Too Complex
 
@@ -269,15 +252,9 @@ See `~/.wonsky-agents/skills/test-driven-development/SKILL.md` for the full cycl
 
 **Consider:** Integration tests with real components often simpler than complex mocks
 
-## TDD Prevents These Anti-Patterns
+## TDD and Test Quality
 
-**Why TDD helps:**
-1. **Write test first** → Forces you to think about what you're actually testing
-2. **Watch it fail** → Confirms test tests real behavior, not mocks
-3. **Minimal implementation** → No test-only methods creep in
-4. **Real dependencies** → You see what the test actually needs before mocking
-
-**If you're testing mock behavior, you violated TDD** - you added mocks without watching test fail against real code first.
+A failing test can demonstrate a missing behavior, but a poorly chosen assertion or mock can still miss the real defect. Define expectations from requirements, inspect the actual dependency boundary and verify the relevant outcome. Preserve useful tests across internal refactors; do not freeze private calls or current implementation shape.
 
 ## Quick Reference
 
@@ -287,7 +264,7 @@ See `~/.wonsky-agents/skills/test-driven-development/SKILL.md` for the full cycl
 | Test-only methods in production | Move to test utilities |
 | Mock without understanding | Understand dependencies first, mock minimally |
 | Incomplete mocks | Mirror real API completely |
-| Tests as afterthought | TDD - tests first |
+| Unit check substitutes for integration | Verify the relevant real boundary and disclose limits |
 | Over-complex mocks | Consider integration tests |
 
 ## Red Flags
@@ -303,6 +280,6 @@ See `~/.wonsky-agents/skills/test-driven-development/SKILL.md` for the full cycl
 
 **Mocks are tools to isolate, not things to test.**
 
-If TDD reveals you're testing mock behavior, you've gone wrong.
+If a test only proves mock behavior, reconsider the assertion and boundary regardless of whether it was written first.
 
 Fix: Test real behavior or question why you're mocking at all.
